@@ -1,4 +1,4 @@
-name: Deploy to Docker and Github Pages
+name: Deploy to Docker
 
 on:
   push:
