@@ -107,20 +107,6 @@ const TAGS = getEnv(import.meta.env, Astro, 'TAGS')
               {GOOGLE_SEARCH_SITE ? <input type="hidden" name="as_sitesearch" value={GOOGLE_SEARCH_SITE} /> : null}
               <input type="text" name="q" placeholder="Search" />
             </form>
-            <div class="copyright-wrap">
-              Powered by
-              <a
-                href="https://github.com/ccbikai/BroadcastChannel"
-                title="BroadcastChannel"
-                target="_blank"
-                rel="noopener"
-              >
-                BroadcastChannel
-              </a> &
-              <a href="https://github.com/Planetable/SiteTemplateSepia" title="Sepia" target="_blank" rel="noopener">
-                Sepia
-              </a>
-            </div>
           </slot>
         </div>
       </div>
