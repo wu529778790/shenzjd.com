@@ -1,144 +1,88 @@
-# BroadcastChannel
+# shenzjd.com
 
-**Turn your Telegram Channel into a MicroBlog.**
+**将你的 Telegram Channel 转为微博客。**
 
 ---
 
-English | [简体中文](./README.zh-cn.md)
+## ✨ 特性
 
-## ✨ Features
+- **将 Telegram Channel 转为微博客**
+- **SEO 友好** `/sitemap.xml`
+- **浏览器端 0 JS**
+- **提供 RSS 和 RSS JSON** `/rss.xml` `/rss.json`
 
-- **Turn your Telegram Channel into a MicroBlog**
-- **SEO friendly** `/sitemap.xml`
-- **0 JS on the browser side**
-- **RSS and RSS JSON** `/rss.xml` `/rss.json`
+## 演示
 
-## 🪧 Demo
+### 平台
 
-### Real users
+广播频道支持部署在 Cloudflare、Netlify、Vercel 等支持 Node.js SSR 的无服务器平台或者 VPS。
+具体教程见[部署你的 Astro 站点](https://docs.astro.build/zh-cn/guides/deploy/)。
 
-- [面条实验室](https://memo.miantiao.me/)
-- [Find Blog👁发现博客](https://broadcastchannel.pages.dev/)
-- [Memos 广场 🎪](https://now.memobbs.app/)
-- [APPDO 数字生活指南](https://mini.appdo.xyz/)
-- [85.60×53.98卡粉订阅/提醒](https://tg.docofcard.com/)
-- [新闻在花频道](https://tg.istore.app/)
-- [ALL About RSS](https://blog.rss.tips/)
-- [Charles Chin's Whisper](https://memo.eallion.com/)
-- [PlayStation 新闻转发](https://playstationnews.pages.dev)
-- [Yu's Life](https://daily.pseudoyu.com/)
-- [Leslie 和朋友们](https://tg.imlg.co/)
-- [OKHK 分享](https://tg.okhk.net/)
-- [gledos 的微型博客](https://microblogging.gledos.science)
-- [Steve Studio](https://tgc.surgeee.me/)
-- [LiFePO4:沙雕吐槽](https://lifepo4.top)
-- [Hotspot Hourly](https://hourly.top/)
-- [大河马中文财经新闻分享](https://a.xiaomi318.com/)
-- [\_My. Tricks 🎩 Collection](https://channel.mykeyvans.com)
-- [小报童专栏精选](https://xiaobaotong.genaiprism.site/)
-- [Fake news](https://fake-news.csgo.ovh/)
-- [miyi23's Geekhub资源分享](https://gh.miyi23.top/)
-- [Magazine｜期刊杂志｜财新周刊](https://themagazine.top)
-- [Remote Jobs & Cooperation](https://share-remote-jobs.vercel.app/)
-- [甬哥侃侃侃--频道发布](https://ygkkktg.pages.dev)
-- [Fugoou.log](https://fugoou.xyz)
-- [Bboysoul的博客](https://tg.bboy.app/)
-- [MakerHunter](https://share.makerhunter.com/)
-- [ChatGPT/AI新闻聚合](https://g4f.icu/)
-- [Abner's memos](https://memos.abnerz6.top/)
-- [Appinn Talk](https://talk.appinn.net/)
+## 🧱 技术栈
 
-### Platform
+- 框架：[Astro](https://astro.build/)
+- 内容管理系统：[Telegram Channels](https://telegram.org/tour/channels)
+- 模板: [Sepia](https://github.com/Planetable/SiteTemplateSepia)
 
-1. [Cloudflare](https://broadcast-channel.pages.dev/)
-2. [Netlify](https://broadcast-channel.netlify.app/)
-3. [Vercel](https://broadcast-channel.vercel.app/)
-
-BroadcastChannel supports deployment on serverless platforms like Cloudflare, Netlify, Vercel that support Node.js SSR, or on a VPS.
-For detailed tutorials, see [Deploy your Astro site](https://docs.astro.build/en/guides/deploy/).
-
-## 🧱 Tech Stack
-
-- Framework: [Astro](https://astro.build/)
-- CMS: [Telegram Channels](https://telegram.org/tour/channels)
-- Template: [Sepia](https://github.com/Planetable/SiteTemplateSepia)
-
-## 🏗️ Deployment
+## 🏗️ 部署
 
 ### Docker
 
 1. `docker pull ghcr.io/ccbikai/broadcastchannel:main`
-2. `docker run -d --name broadcastchannel -p 4321:4321 -e CHANNEL=miantiao_me ghcr.io/ccbikai/broadcastchannel:main`
+2. `docker run -d --name broadcastchannel -p 4321:4321 -e CHANNEL=shenzjd_com ghcr.io/ccbikai/broadcastchannel:main`
 
 ### Serverless
 
-1. [Fork](https://github.com/ccbikai/BroadcastChannel/fork) this project to your GitHub
-2. Create a project on Cloudflare/Netlify/Vercel
-3. Select the `BroadcastChannel` project and the `Astro` framework
-4. Configure the environment variable `CHANNEL` with your channel name. This is the minimal configuration, for more configurations see the options below
-5. Save and deploy
-6. Bind a domain (optional).
-7. Update code, refer to the official GitHub documentation [Syncing a fork branch from the web UI](https://docs.github.com/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork#syncing-a-fork-branch-from-the-web-ui).
+1. [Fork](https://github.com/ccbikai/BroadcastChannel/fork) 此项目到你 GitHub
+2. 在 Cloudflare/Netlify/Vercel 创建项目
+3. 选择 `BroadcastChannel` 项目和 `Astro` 框架
+4. 配置环境变量 `CHANNEL` 为你的频道名称。此为最小化配置，更多配置见下面的配置项
+5. 保存并部署
+6. 绑定域名（可选）。
+7. 更新代码，参考 GitHub 官方文档 [从 Web UI 同步分叉分支](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork#syncing-a-fork-branch-from-the-web-ui)。
 
-## ⚒️ Configuration
+## ⚒️ 配置
 
 ```env
-## Telegram Channel Username, must be configured. The string of characters following t.me/
-CHANNEL=miantiao_me
+## Telegram 频道用户名，必须配置。 t.me/ 后面那串字符
+CHANNEL=shenzjd_com
 
-## Language and timezone settings, language options see [dayjs](https://github.com/iamkun/dayjs/tree/dev/src/locale)
-LOCALE=en
-TIMEZONE=America/New_York
+## 语言和时区设置，语言选项见[dayjs](https://github.com/iamkun/dayjs/tree/dev/src/locale)
+LOCALE=zh-cn
+TIMEZONE=Asia/Shanghai
 
-## Social media usernames
+## 社交媒体用户名
 TELEGRAM=ccbikai
 TWITTER=ccbikai
 GITHUB=ccbikai
-MASTODON=mastodon.social/@Mastodon
-BLUESKY=bsky.app
 
-## The following two social media need to be URLs
+## 下面两个社交媒体需要为 URL
 DISCORD=https://DISCORD.com
-PODCAST=https://PODCAST.com
+PODCASRT=https://PODCASRT.com
 
-## Header and footer code injection, supports HTML
+## 头部尾部代码注入，支持 HTML
 FOOTER_INJECT=FOOTER_INJECT
 HEADER_INJECT=HEADER_INJECT
 
-## SEO configuration options, can prevent search engines from indexing content
+## SEO 配置项，可不让搜索引擎索引内容
 NO_FOLLOW=false
 NO_INDEX=false
 
-## Sentry configuration options, collect server-side errors
+## Sentry 配置项，收集服务端报错
 SENTRY_AUTH_TOKEN=SENTRY_AUTH_TOKEN
 SENTRY_DSN=SENTRY_DSN
 SENTRY_PROJECT=SENTRY_PROJECT
 
-## Telegram host name and static resource proxy, not recommended to modify
+## Telegram 主机名称和静态资源代理，不建议修改
 HOST=telegram.dog
 STATIC_PROXY=
 
-## Enable Google Site Search
+## 启用谷歌站内搜索
 GOOGLE_SEARCH_SITE=memo.miantiao.me
 
-## Enable tags page, separate tags with commas
-TAGS=tag1,tag2,tag3
+## 启用标签页, 标签使用英文逗号分割
+TAGS=标签A,标签B,标签C
 
-## Show comments
+## 展示评论
 COMMENTS=true
 ```
-
-## 🙋🏻 FAQs
-
-1. Why is the content empty after deployment?
-   - Check if the channel is public, it must be public
-   - The channel username is a string, not a number
-   - Turn off the "Restricting Saving Content" setting in the channel
-   - Redeploy after modifying environment variables
-   - Telegram blocks public display of some sensitive channels, you can verify by visiting `https://t.me/s/channelusername`.
-
-## ☕ Sponsor
-
-1. [Follow me on Telegram](https://t.me/miantiao_me)
-2. [Follow me on 𝕏](https://x.com/0xKaiBi)
-3. [Sponsor me on GitHub](https://github.com/sponsors/ccbikai)
