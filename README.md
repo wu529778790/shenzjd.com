@@ -33,7 +33,7 @@
 
 ### Serverless
 
-1. [Fork](https://github.com/ccbikai/BroadcastChannel/fork) 此项目到你 GitHub
+1. Fork此项目到你 GitHub
 2. 在 Cloudflare/Netlify/Vercel 创建项目
 3. 选择 `BroadcastChannel` 项目和 `Astro` 框架
 4. 配置环境变量 `CHANNEL` 为你的频道名称。此为最小化配置，更多配置见下面的配置项
@@ -54,7 +54,7 @@ TIMEZONE=Asia/Shanghai
 ## 社交媒体用户名
 TELEGRAM=ccbikai
 TWITTER=ccbikai
-GITHUB=ccbikai
+GITHUB=wu529778790
 
 ## 下面两个社交媒体需要为 URL
 DISCORD=https://DISCORD.com
@@ -78,7 +78,7 @@ HOST=telegram.dog
 STATIC_PROXY=
 
 ## 启用谷歌站内搜索
-GOOGLE_SEARCH_SITE=memo.miantiao.me
+GOOGLE_SEARCH_SITE=shenzjd.com
 
 ## 启用标签页, 标签使用英文逗号分割
 TAGS=标签A,标签B,标签C
