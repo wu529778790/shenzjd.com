@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    image: wu529778790/shenzjd.com
+    container_name: shenzjd.com
+    ports:
+      - '5248:3000' # 将容器的 3000 端口映射到主机的 3000 端口
+    volumes:
+      - .:/app # 可选：将主机的当前目录挂载到容器的 /app 目录
+    environment:
+      - NODE_ENV=production # 设置环境变量，可根据需要调整
+      - CHANNEL=shenzjd_com
+      - LOCALE=zh-cn
+      - TIMEZONE=Asia/Shanghai
+      - TELEGRAM=@shenzjd
+      - GITHUB=wu529778790
+      - NO_FOLLOW=false
+      - NO_INDEX=false
+      - GOOGLE_SEARCH_SITE=shenzjd.com
+      - COMMENTS=true
+      # - PATH=/pnpm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      # - NODE_VERSION=22.11.0
+      # - YARN_VERSION=1.22.22
+      # - PNPM_HOME=/pnpm
+      - HOST=0.0.0.0
+      - PORT=4321
+    restart: on-failure # 只有容器失败时才会重启
+    restart_policy:
+      delay: 10s # 每次重启的间隔
+      max_retries: 3 # 最多重试 3 次
