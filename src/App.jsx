@@ -1,11 +1,13 @@
-import Navigation from "@/components/Navigation";
 import "./App.css";
+import { Outlet } from "react-router-dom";
+import Header from "@/components/Header";
 
 function App() {
   return (
-    <div>
-      <Navigation />
-    </div>
+    <>
+      <Header />
+      <Outlet />
+    </>
   );
 }
 
