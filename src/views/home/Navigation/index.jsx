@@ -1,7 +1,6 @@
 import "./index.css";
-import data from "@/data/navigation.json";
 
-function Navigation() {
+function Navigation({ data }) {
   return (
     <div className="nav-container">
       {data?.map((category) => (
