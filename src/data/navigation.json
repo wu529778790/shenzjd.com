@@ -1,0 +1,62 @@
+[
+  {
+    "category": "搜索引擎",
+    "sites": [
+      {
+        "name": "Google",
+        "url": "https://www.google.com",
+        "description": "全球最大的搜索引擎"
+      },
+      {
+        "name": "Bing",
+        "url": "https://www.bing.com",
+        "description": "微软的搜索引擎"
+      },
+      {
+        "name": "Baidu",
+        "url": "https://www.baidu.com",
+        "description": "中国最大的搜索引擎"
+      }
+    ]
+  },
+  {
+    "category": "社交媒体",
+    "sites": [
+      {
+        "name": "Facebook",
+        "url": "https://www.facebook.com",
+        "description": "全球最大的社交网络"
+      },
+      {
+        "name": "Twitter",
+        "url": "https://www.twitter.com",
+        "description": "实时信息和短消息分享平台"
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com",
+        "description": "职业社交网络"
+      }
+    ]
+  },
+  {
+    "category": "新闻",
+    "sites": [
+      {
+        "name": "CNN",
+        "url": "https://www.cnn.com",
+        "description": "美国有线电视新闻网"
+      },
+      {
+        "name": "BBC",
+        "url": "https://www.bbc.com",
+        "description": "英国广播公司"
+      },
+      {
+        "name": "The New York Times",
+        "url": "https://www.nytimes.com",
+        "description": "美国知名报纸"
+      }
+    ]
+  }
+]
