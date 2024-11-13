@@ -1,25 +1,20 @@
 import { useState } from "react";
-import axios from "axios";
 import data from "@/data/navigation.json";
 import "./index.css";
+import { fetchSiteDataApi } from "./api";
 
 function AddNavigation() {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [favicon, setFavicon] = useState("");
+  const [image, setImage] = useState("");
 
   const fetchSiteData = async () => {
     try {
-      const response = await axios.get(`/urlMetaApi/meta?url=${url}`, {
-        headers: {
-          Authorization: `Basic ${import.meta.env.VITE_META_API_KEY}`,
-        },
-      });
-      const { title, description, image } = response.data.meta;
+      const { title, description, image } = await fetchSiteDataApi(url);
       setTitle(title);
       setDescription(description);
-      setFavicon(image);
+      setImage(image);
     } catch (error) {
       console.error("Error fetching site data:", error);
     }
@@ -30,7 +25,7 @@ function AddNavigation() {
       name: title,
       url,
       description,
-      favicon,
+      image,
     };
     data.push(newSite);
     // Save the updated data to the JSON file or state management
@@ -53,9 +48,7 @@ function AddNavigation() {
       <div className="site-data">
         <h2 className="subtitle">Title: {title}</h2>
         <p className="description">Description: {description}</p>
-        {favicon && (
-          <img src={favicon} alt="Site Favicon" className="favicon" />
-        )}
+        {image && <img src={image} alt="Site Favicon" className="image" />}
       </div>
       <button onClick={handleSubmit} className="button">
         Save
