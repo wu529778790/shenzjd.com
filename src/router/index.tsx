@@ -1,9 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouteObject } from "react-router-dom";
 import App from "@/App";
 import Home from "@/views/home";
 import AddNavigation from "@/views/addNavigation";
 
-const router = createBrowserRouter([
+const routes: RouteObject[] = [
   {
     path: "/",
     element: <App />,
@@ -18,6 +18,9 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+];
+
+const router: ReturnType<typeof createBrowserRouter> =
+  createBrowserRouter(routes);
 
 export default router;

@@ -1,8 +1,21 @@
-import PropTypes from "prop-types";
 import SiteLink from "../SiteLink";
 import "./index.css";
 
-function Category({ category }) {
+interface Site {
+  name: string;
+  url: string;
+}
+
+interface CategoryData {
+  category: string;
+  sites: Site[];
+}
+
+interface CategoryProps {
+  category: CategoryData;
+}
+
+function Category({ category }: CategoryProps) {
   return (
     <div className="category">
       <h2>{category.category}</h2>
@@ -14,16 +27,5 @@ function Category({ category }) {
     </div>
   );
 }
-
-Category.propTypes = {
-  category: PropTypes.shape({
-    category: PropTypes.string.isRequired,
-    sites: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-  }).isRequired,
-};
 
 export default Category;
