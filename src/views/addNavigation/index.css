@@ -1,0 +1,63 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* 添加此行以防止子元素溢出 */
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.input-text {
+  width: calc(100% - 22px); /* 调整宽度以防止溢出 */
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* 确保padding和border不会导致溢出 */
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px 0;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.site-data {
+  margin-top: 20px;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.description {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.favicon {
+  width: 32px;
+  height: 32px;
+  display: block;
+  margin: 10px 0;
+}

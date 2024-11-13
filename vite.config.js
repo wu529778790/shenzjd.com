@@ -10,4 +10,14 @@ export default defineConfig({
       "@": path.resolve(path.dirname(""), "src"),
     },
   },
+  server: {
+    proxy: {
+      "/urlMetaApi": {
+        target: "https://api.urlmeta.org",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/urlMetaApi/, ""),
+        timeout: 5000,
+      },
+    },
+  },
 });
