@@ -1,26 +1,29 @@
 import "./index.css";
+import PropTypes from "prop-types";
+import Category from "../Category";
 
 function Navigation({ data }) {
   return (
     <div className="nav-container">
-      {data?.map((category) => (
-        <div key={category.category} className="category">
-          <h2>{category.category}</h2>
-          <div className="links-grid">
-            {category.sites.map((site) => (
-              <a
-                key={site.name}
-                href={site.url}
-                target="_blank"
-                className="nav-link">
-                {site.name}
-              </a>
-            ))}
-          </div>
-        </div>
+      {data?.map((cat) => (
+        <Category key={cat.category} category={cat} />
       ))}
     </div>
   );
 }
+
+Navigation.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.string.isRequired,
+      sites: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          url: PropTypes.string.isRequired,
+        })
+      ).isRequired,
+    })
+  ).isRequired,
+};
 
 export default Navigation;
