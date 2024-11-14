@@ -23,10 +23,10 @@ function Home() {
   }, []);
 
   return (
-    <>
+    <div className="max-w-screen-lg mx-auto">
       <Navigation data={data} />
       <AddNavigationModal />
-    </>
+    </div>
   );
 }
 

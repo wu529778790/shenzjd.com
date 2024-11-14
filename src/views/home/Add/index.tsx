@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { fetchSiteDataApi } from "./api";
 
 function AddNavigationModal() {
@@ -19,7 +18,20 @@ function AddNavigationModal() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
 
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const fetchSiteData = async () => {
+    if (!isValidUrl(url)) {
+      console.error("无效的URL");
+      return;
+    }
     try {
       const { title, description, image } = await fetchSiteDataApi(url);
       setTitle(title);
@@ -53,10 +65,7 @@ function AddNavigationModal() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="url" className="text-right">
-              网址
-            </Label>
+          <div className="grid items-center gap-4 col-span-4">
             <Input
               id="url"
               value={url}
@@ -69,16 +78,20 @@ function AddNavigationModal() {
             获取网站数据
           </Button>
           <div className="col-span-4">
-            <div className="font-bold">标题: {title}</div>
-            <div className="text-gray-600">描述: {description}</div>
+            {title && <div className="font-bold">标题: {title}</div>}
+            {description && (
+              <div className="text-gray-600">描述: {description}</div>
+            )}
             {image && <img src={image} alt="网站图标" className="mt-2" />}
           </div>
         </div>
-        <DialogFooter>
-          <Button onClick={handleSubmit} type="submit">
-            保存
-          </Button>
-        </DialogFooter>
+        {(title || description || image) && (
+          <DialogFooter>
+            <Button onClick={handleSubmit} type="submit">
+              保存
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
