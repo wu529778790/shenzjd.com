@@ -1,12 +1,11 @@
 import SiteLink from "../SiteLink";
-import "./index.css";
 import { CategoryData } from "../types";
 
 function Category({ category }: { category: CategoryData }) {
   return (
-    <div className="category">
-      <h2>{category.category}</h2>
-      <div className="links-grid">
+    <div>
+      <h2 className="text-2xl font-bold mb-4">{category.category}</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {category.sites.map((site) => (
           <SiteLink key={site.name} site={site} />
         ))}

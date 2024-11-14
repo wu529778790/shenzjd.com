@@ -45,7 +45,7 @@ function AddNavigationModal() {
       <DialogTrigger asChild>
         <Button variant="outline">添加导航</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>添加导航</DialogTitle>
           <DialogDescription>
@@ -68,10 +68,10 @@ function AddNavigationModal() {
           <Button onClick={fetchSiteData} className="col-span-4">
             获取网站数据
           </Button>
-          <div className="site-data col-span-4">
-            <div className="subtitle">标题: {title}</div>
-            <div className="description">描述: {description}</div>
-            {image && <img src={image} alt="网站图标" className="image" />}
+          <div className="col-span-4">
+            <div className="font-bold">标题: {title}</div>
+            <div className="text-gray-600">描述: {description}</div>
+            {image && <img src={image} alt="网站图标" className="mt-2" />}
           </div>
         </div>
         <DialogFooter>
