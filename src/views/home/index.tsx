@@ -23,9 +23,11 @@ function Home() {
   }, []);
 
   return (
-    <div className="max-w-screen-lg mx-auto">
-      <Navigation data={data} />
+    <div className="p-4 flex flex-col">
       <AddNavigationModal />
+      <div className="max-w-screen-lg mx-auto">
+        <Navigation data={data} />
+      </div>
     </div>
   );
 }

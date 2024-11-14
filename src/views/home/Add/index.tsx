@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Plus } from "lucide-react";
 import { fetchSiteDataApi } from "./api";
 
 function AddNavigationModal() {
@@ -55,7 +56,10 @@ function AddNavigationModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">添加导航</Button>
+        <Button className="ml-auto flex items-center">
+          <Plus className="mr-2 h-4 w-4" />
+          添加导航
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
