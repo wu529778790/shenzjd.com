@@ -1,21 +1,8 @@
 import "./index.css";
 import Category from "../Category";
+import { CategoryData } from "../types";
 
-interface Site {
-  name: string;
-  url: string;
-}
-
-interface CategoryData {
-  category: string;
-  sites: Site[];
-}
-
-interface NavigationProps {
-  data: CategoryData[];
-}
-
-function Navigation({ data }: NavigationProps) {
+function Navigation({ data }: { data: CategoryData[] }) {
   return (
     <div className="nav-container">
       {data?.map((cat) => (

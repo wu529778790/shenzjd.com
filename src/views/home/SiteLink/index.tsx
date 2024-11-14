@@ -1,15 +1,7 @@
 import "./index.css";
+import { Site } from "../types";
 
-interface Site {
-  name: string;
-  url: string;
-}
-
-interface SiteLinkProps {
-  site: Site;
-}
-
-function SiteLink({ site }: SiteLinkProps) {
+function SiteLink({ site }: { site: Site }) {
   return (
     <a href={site.url} target="_blank" className="nav-link">
       {site.name}

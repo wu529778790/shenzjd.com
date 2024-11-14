@@ -1,21 +1,8 @@
 import SiteLink from "../SiteLink";
 import "./index.css";
+import { CategoryData } from "../types";
 
-interface Site {
-  name: string;
-  url: string;
-}
-
-interface CategoryData {
-  category: string;
-  sites: Site[];
-}
-
-interface CategoryProps {
-  category: CategoryData;
-}
-
-function Category({ category }: CategoryProps) {
+function Category({ category }: { category: CategoryData }) {
   return (
     <div className="category">
       <h2>{category.category}</h2>

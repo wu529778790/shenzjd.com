@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import App from "@/App";
-import Home from "@/views/home";
-import AddNavigation from "@/views/addNavigation";
+import Home from "@/views/home/index";
 
 const routes: RouteObject[] = [
   {
@@ -11,10 +10,6 @@ const routes: RouteObject[] = [
       {
         path: "",
         element: <Home />,
-      },
-      {
-        path: "addNavigation",
-        element: <AddNavigation />,
       },
     ],
   },

@@ -1,8 +1,8 @@
 export interface Site {
   name: string;
   url: string;
-  description?: string;
-  image?: string;
+  image: string;
+  description: string;
 }
 
 export interface CategoryData {
