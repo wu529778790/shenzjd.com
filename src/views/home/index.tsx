@@ -13,7 +13,6 @@ const fetchNavigationData = async (): Promise<CategoryData[]> => {
 
 function Home() {
   const [data, setData] = useState<CategoryData[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchNavigationData()
@@ -23,21 +22,10 @@ function Home() {
       );
   }, []);
 
-  const handleAddButtonClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <>
-      <button onClick={handleAddButtonClick} className="button">
-        Add Navigation
-      </button>
       <Navigation data={data} />
-      <AddNavigationModal isOpen={isModalOpen} onClose={handleCloseModal} />
+      <AddNavigationModal />
     </>
   );
 }
