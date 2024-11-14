@@ -5,37 +5,20 @@
       {
         "name": "Google",
         "url": "https://www.google.com",
+        "image": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
         "description": "全球最大的搜索引擎"
       },
       {
         "name": "Bing",
         "url": "https://www.bing.com",
+        "image": "https://www.bing.com/sa/simg/bing_p_rr_teal_min.ico",
         "description": "微软的搜索引擎"
       },
       {
         "name": "Baidu",
         "url": "https://www.baidu.com",
+        "image": "https://www.baidu.com/img/bd_logo1.png",
         "description": "中国最大的搜索引擎"
-      }
-    ]
-  },
-  {
-    "category": "社交媒体",
-    "sites": [
-      {
-        "name": "Facebook",
-        "url": "https://www.facebook.com",
-        "description": "全球最大的社交网络"
-      },
-      {
-        "name": "Twitter",
-        "url": "https://www.twitter.com",
-        "description": "实时信息和短消息分享平台"
-      },
-      {
-        "name": "LinkedIn",
-        "url": "https://www.linkedin.com",
-        "description": "职业社交网络"
       }
     ]
   },
@@ -45,16 +28,19 @@
       {
         "name": "CNN",
         "url": "https://www.cnn.com",
+        "image": "https://cdn.cnn.com/cnn/.e1mo/img/4.0/logos/cnn_logo_social.jpg",
         "description": "美国有线电视新闻网"
       },
       {
         "name": "BBC",
         "url": "https://www.bbc.com",
+        "image": "https://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif",
         "description": "英国广播公司"
       },
       {
         "name": "The New York Times",
         "url": "https://www.nytimes.com",
+        "image": "https://static01.nyt.com/images/misc/NYT_logo_rss_250x40.png",
         "description": "美国知名报纸"
       }
     ]
