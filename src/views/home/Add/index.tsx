@@ -6,14 +6,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { fetchSiteDataApi } from "./api";
 
-function AddNavigationModal() {
+function AddNavigation() {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,10 +33,10 @@ function AddNavigationModal() {
       return;
     }
     try {
-      const { title, description, image } = await fetchSiteDataApi(url);
+      const { title, description, image, site } = await fetchSiteDataApi(url);
       setTitle(title);
       setDescription(description);
-      setImage(image);
+      setImage(image || site.favicon);
     } catch (error) {
       console.error("获取网站数据时出错:", error);
     }
@@ -64,9 +63,6 @@ function AddNavigationModal() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>添加导航</DialogTitle>
-          <DialogDescription>
-            在此处添加新导航。完成后点击保存。
-          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid items-center gap-4 col-span-4">
@@ -101,4 +97,4 @@ function AddNavigationModal() {
   );
 }
 
-export default AddNavigationModal;
+export default AddNavigation;

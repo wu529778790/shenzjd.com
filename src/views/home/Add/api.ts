@@ -1,18 +1,21 @@
-interface MetaResponse {
-  meta: {
-    title: string;
-    description: string;
-    image: string;
-  };
+interface Site {
+  theme_color: string;
+  favicon: string;
+  logo: string;
 }
 
-export const fetchSiteDataApi = async (
-  url: string
-): Promise<{
+interface Meta {
   title: string;
   description: string;
+  site: Site;
   image: string;
-}> => {
+}
+
+interface MetaResponse {
+  meta: Meta;
+}
+
+export const fetchSiteDataApi = async (url: string): Promise<Meta> => {
   try {
     const response = await fetch(`/urlMetaApi/meta?url=${url}`, {
       headers: {
