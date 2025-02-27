@@ -1,7 +1,11 @@
-export default function Page() {
+import { Button } from "@/components/ui/button";
+
+export default function Home() {
   return (
     <div>
-      <h1>首页</h1>
+      <h1>
+        <Button>Click me</Button>
+      </h1>
     </div>
   );
 }
