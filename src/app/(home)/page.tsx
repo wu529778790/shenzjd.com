@@ -13,21 +13,22 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   // 获取所有站点数据
-  useEffect(() => {
-    const fetchSites = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        if (!response.ok) throw new Error("获取数据失败");
-        const data = await response.json();
-        setCategories(data);
-      } catch (error) {
-        console.error("获取站点数据失败:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("/api/categories");
+      if (!response.ok) throw new Error("获取数据失败");
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("获取站点数据失败:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchSites();
+  // 初始加载
+  useEffect(() => {
+    fetchCategories();
   }, []);
 
   if (loading) {
@@ -40,6 +41,7 @@ export default function Home() {
         categories={categories}
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
+        onCategoriesChange={fetchCategories}
       />
 
       <main className="pl-16">

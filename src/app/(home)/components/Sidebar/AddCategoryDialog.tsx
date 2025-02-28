@@ -66,7 +66,13 @@ const commonIcons = {
   settings: Settings,
 };
 
-export default function AddCategoryDialog() {
+interface AddCategoryDialogProps {
+  onSuccess?: () => void;
+}
+
+export default function AddCategoryDialog({
+  onSuccess,
+}: AddCategoryDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string>("");
   const [name, setName] = useState("");
@@ -103,8 +109,8 @@ export default function AddCategoryDialog() {
       setSelectedIcon("");
       setOpen(false);
 
-      // 刷新页面以显示新分类
-      window.location.reload();
+      // 调用成功回调来更新UI
+      onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "添加分类失败");
     } finally {

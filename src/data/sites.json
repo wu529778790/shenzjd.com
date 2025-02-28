@@ -3,46 +3,6 @@
     "id": "default",
     "name": "默认",
     "icon": "Home",
-    "sites": [
-      {
-        "title": "WeTab 新标签页",
-        "favicon": "https://web.wetab.link/icon_zh_48.png",
-        "url": "https://web.wetab.link/"
-      },
-      {
-        "title": "现代 JavaScript 教程",
-        "favicon": "https://zh.javascript.info/img/favicon/favicon.png",
-        "url": "https://zh.javascript.info/"
-      },
-      {
-        "title": "快速入门 – React 中文文档",
-        "favicon": "https://zh-hans.react.dev/favicon-32x32.png",
-        "url": "https://zh-hans.react.dev/learn"
-      }
-    ]
-  },
-  {
-    "id": "1",
-    "name": "常用工具",
-    "icon": "Code",
-    "sites": [
-      {
-        "title": "百度一下，你就知道",
-        "favicon": "https://www.baidu.com/favicon.ico",
-        "url": "https://baidu.com"
-      }
-    ]
-  },
-  {
-    "id": "1740753225745",
-    "name": "测试",
-    "icon": "briefcase",
-    "sites": []
-  },
-  {
-    "id": "1740753306356",
-    "name": "1",
-    "icon": "heart",
     "sites": []
   }
 ]

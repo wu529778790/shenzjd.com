@@ -11,6 +11,7 @@ interface SidebarProps {
   categories: Category[];
   activeCategory: string | null;
   onSelectCategory: (categoryId: string) => void;
+  onCategoriesChange?: () => void;
 }
 
 type IconComponent = React.ForwardRefExoticComponent<
@@ -21,6 +22,7 @@ export default function Sidebar({
   categories,
   activeCategory,
   onSelectCategory,
+  onCategoriesChange,
 }: SidebarProps) {
   const getIconComponent = (iconName: string): IconComponent => {
     // 将图标名称转换为 Pascal Case（首字母大写）
@@ -54,7 +56,7 @@ export default function Sidebar({
         );
       })}
 
-      <AddCategoryDialog />
+      <AddCategoryDialog onSuccess={onCategoriesChange} />
     </div>
   );
 }
