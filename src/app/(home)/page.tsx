@@ -9,7 +9,7 @@ interface Site {
   title: string;
   description: string;
   url: string;
-  icon?: string;
+  favicon?: string;
 }
 
 export default function HomePage() {
@@ -35,7 +35,7 @@ export default function HomePage() {
             key={index}
             title={site.title}
             url={site.url}
-            icon={site.icon}
+            favicon={site.favicon}
           />
         ))}
       </div>

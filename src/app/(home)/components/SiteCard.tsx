@@ -3,10 +3,10 @@ import Image from "next/image";
 interface SiteCardProps {
   title: string;
   url: string;
-  icon?: string;
+  favicon?: string;
 }
 
-export function SiteCard({ title, url, icon }: SiteCardProps) {
+export function SiteCard({ title, url, favicon }: SiteCardProps) {
   return (
     <a
       href={url}
@@ -14,9 +14,9 @@ export function SiteCard({ title, url, icon }: SiteCardProps) {
       rel="noopener noreferrer"
       className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-100 transition-colors">
       <div className="relative w-12 h-12 mb-2">
-        {icon ? (
+        {favicon ? (
           <Image
-            src={icon}
+            src={favicon}
             alt={title}
             fill
             className="object-contain rounded-lg"

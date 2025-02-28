@@ -23,7 +23,7 @@ interface AddDialogProps {
     title: string;
     description: string;
     url: string;
-    icon?: string;
+    favicon?: string;
   }) => void;
 }
 
@@ -54,6 +54,7 @@ export function AddDialog({ onAddSuccess }: AddDialogProps) {
       }
 
       const data = await response.json();
+      console.log(data);
 
       // 调用成功回调
       onAddSuccess(data);
