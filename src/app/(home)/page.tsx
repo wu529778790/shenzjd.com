@@ -4,15 +4,12 @@ import { AddDialog } from "./components/addDialog";
 import { ModeToggle } from "./components/modeToggle";
 import { SiteCard } from "./components/SiteCard";
 import { useEffect, useState } from "react";
-import { Site } from "@/types/site";
 import { Category } from "@/types/category";
 import Sidebar from "./components/Sidebar";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string | null>(
-    "default"
-  );
+  const [activeCategory, setActiveCategory] = useState<string>("default");
   const [categories, setCategories] = useState<Category[]>([]);
 
   // 获取所有站点数据
@@ -33,25 +30,6 @@ export default function Home() {
     fetchSites();
   }, []);
 
-  const handleAddSuccess = async (newSite: Site) => {
-    try {
-      const response = await fetch("/api/sites", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...newSite,
-        }),
-      });
-
-      if (!response.ok) throw new Error("保存失败");
-      // setSites((prevSites) => [...prevSites, newSite]);
-    } catch (error) {
-      console.error("保存站点数据失败:", error);
-    }
-  };
-
   if (loading) {
     return <div className="container mx-auto p-4">加载中...</div>;
   }
@@ -69,7 +47,7 @@ export default function Home() {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">我的导航</h1>
             <div className="flex items-center gap-2">
-              <AddDialog onAddSuccess={handleAddSuccess} />
+              <AddDialog activeCategory={activeCategory} />
               <ModeToggle />
             </div>
           </div>

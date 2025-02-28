@@ -20,10 +20,10 @@ import { Site } from "@/types/site";
 const urlSchema = z.string().url("请输入有效的URL");
 
 interface AddDialogProps {
-  onAddSuccess: (newSite: Site) => void;
+  activeCategory: string;
 }
 
-export function AddDialog({ onAddSuccess }: AddDialogProps) {
+export function AddDialog({ activeCategory }: AddDialogProps) {
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,13 +61,28 @@ export function AddDialog({ onAddSuccess }: AddDialogProps) {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!siteInfo) return;
 
-    onAddSuccess({
-      ...siteInfo,
-      title: editedTitle || siteInfo.title,
-    });
+    try {
+      await fetch("/api/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          categoryId: activeCategory,
+          sites: [
+            {
+              ...siteInfo,
+              title: editedTitle || siteInfo.title,
+            },
+          ],
+        }),
+      });
+    } catch (error) {
+      console.error("添加站点失败:", error);
+    }
 
     // 重置状态
     setLink("");
