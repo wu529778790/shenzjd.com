@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",
-    "@radix-ui/react-dropdown-menu": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
