@@ -23,15 +23,14 @@ export default function Sidebar({
   onSelectCategory,
 }: SidebarProps) {
   const getIconComponent = (iconName: string): IconComponent => {
-    // 将图标名称转换为 Pascal Case（首字母大写）
-    const formattedName =
-      iconName.charAt(0).toUpperCase() + iconName.slice(1).toLowerCase();
-    // 获取图标组件，如果不存在则使用 Folder 图标
-    return (
-      (LucideIcons as unknown as Record<string, IconComponent>)[
-        formattedName
-      ] || LucideIcons.Folder
-    );
+    // 处理空值情况
+    if (!iconName) return LucideIcons.Folder;
+
+    // 直接获取图标组件
+    const IconComponent = (
+      LucideIcons as unknown as Record<string, IconComponent>
+    )[iconName];
+    return IconComponent || LucideIcons.Folder;
   };
 
   return (
