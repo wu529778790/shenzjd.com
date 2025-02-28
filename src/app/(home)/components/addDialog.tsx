@@ -17,10 +17,21 @@ import { z } from "zod";
 // URL schema 验证
 const urlSchema = z.string().url("请输入有效的URL");
 
-export function AddDialog() {
+// 添加 Props 类型定义
+interface AddDialogProps {
+  onAddSuccess: (newSite: {
+    title: string;
+    description: string;
+    url: string;
+    icon?: string;
+  }) => void;
+}
+
+export function AddDialog({ onAddSuccess }: AddDialogProps) {
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
 
   const handleAdd = async () => {
     try {
@@ -43,10 +54,14 @@ export function AddDialog() {
       }
 
       const data = await response.json();
-      console.log("网站信息:", data);
 
+      // 调用成功回调
+      onAddSuccess(data);
+
+      // 重置状态
       setLink("");
       setLoading(false);
+      setOpen(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "发生未知错误");
       setLoading(false);
@@ -54,7 +69,7 @@ export function AddDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="w-4 h-4" />
