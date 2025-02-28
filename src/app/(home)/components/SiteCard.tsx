@@ -20,6 +20,9 @@ export function SiteCard({ title, url, favicon }: SiteCardProps) {
             alt={title}
             fill
             className="object-contain rounded-lg"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
           />
         ) : (
           <div className="w-full h-full bg-gray-200 rounded-lg" />
