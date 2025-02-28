@@ -70,11 +70,46 @@ export default function AddCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string>("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    // TODO: 实现添加分类的API调用
-    console.log("添加分类", name, selectedIcon);
-    setOpen(false);
+    if (!name || !selectedIcon) return;
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch("/api/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: Date.now().toString(), // 使用时间戳作为临时ID
+          name,
+          icon: selectedIcon,
+          sites: [],
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "添加分类失败");
+      }
+
+      // 重置表单
+      setName("");
+      setSelectedIcon("");
+      setOpen(false);
+
+      // 刷新页面以显示新分类
+      window.location.reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "添加分类失败");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,9 +158,10 @@ export default function AddCategoryDialog() {
           <Button
             className="w-full"
             onClick={handleSubmit}
-            disabled={!name || !selectedIcon}>
-            添加分类
+            disabled={!name || !selectedIcon || loading}>
+            {loading ? "添加中..." : "添加分类"}
           </Button>
+          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
         </div>
       </DialogContent>
     </Dialog>

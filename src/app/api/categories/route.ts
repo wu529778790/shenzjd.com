@@ -34,12 +34,11 @@ export async function POST(request: Request) {
     const categories = await readCategories();
 
     // 判断是添加分类还是添加站点
-    if ("sites" in data) {
+    if ("categoryId" in data) {
       // 添加站点
       const { categoryId, sites } = data;
-      const targetCategoryId = categoryId;
       const categoryIndex = categories.findIndex(
-        (category) => category.id === targetCategoryId
+        (category) => category.id === categoryId
       );
 
       if (categoryIndex === -1) {
