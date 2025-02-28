@@ -1,8 +1,8 @@
 [
   {
-    "id": "",
-    "name": "常用工具",
-    "icon": "tools",
+    "id": "default",
+    "name": "默认",
+    "icon": "Home",
     "sites": [
       {
         "title": "WeTab 新标签页",
@@ -13,6 +13,18 @@
         "title": "现代 JavaScript 教程",
         "favicon": "https://zh.javascript.info/img/favicon/favicon.png",
         "url": "https://zh.javascript.info/"
+      }
+    ]
+  },
+  {
+    "id": "1",
+    "name": "常用工具",
+    "icon": "GalleryHorizontal",
+    "sites": [
+      {
+        "title": "WeTab 新标签页",
+        "favicon": "https://web.wetab.link/icon_zh_48.png",
+        "url": "https://web.wetab.link/"
       }
     ]
   }
