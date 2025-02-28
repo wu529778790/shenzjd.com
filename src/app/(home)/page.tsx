@@ -9,19 +9,18 @@ import { Category } from "@/types/category";
 import Sidebar from "./components/Sidebar";
 
 export default function Home() {
-  const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [categories] = useState<Category[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string | null>("");
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // 获取所有站点数据
   useEffect(() => {
     const fetchSites = async () => {
       try {
-        const response = await fetch("/api/sites");
+        const response = await fetch("/api/categories");
         if (!response.ok) throw new Error("获取数据失败");
         const data = await response.json();
-        setSites(data);
+        setCategories(data);
       } catch (error) {
         console.error("获取站点数据失败:", error);
       } finally {
@@ -45,7 +44,7 @@ export default function Home() {
       });
 
       if (!response.ok) throw new Error("保存失败");
-      setSites((prevSites) => [...prevSites, newSite]);
+      // setSites((prevSites) => [...prevSites, newSite]);
     } catch (error) {
       console.error("保存站点数据失败:", error);
     }
@@ -74,14 +73,16 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-            {sites.map((site, index) => (
-              <SiteCard
-                key={index}
-                title={site.title}
-                url={site.url}
-                favicon={site.favicon}
-              />
-            ))}
+            {categories
+              .find((category) => category.id === activeCategory)
+              ?.sites.map((site, index) => (
+                <SiteCard
+                  key={index}
+                  title={site.title}
+                  url={site.url}
+                  favicon={site.favicon}
+                />
+              ))}
           </div>
         </div>
       </main>

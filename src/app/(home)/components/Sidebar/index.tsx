@@ -17,6 +17,7 @@ export default function Sidebar({
   activeCategory,
   onSelectCategory,
 }: SidebarProps) {
+  console.log("categories", categories);
   return (
     <div className="w-16 bg-card fixed left-0 top-0 h-full flex flex-col items-center py-4 border-r">
       {categories.map((category) => {

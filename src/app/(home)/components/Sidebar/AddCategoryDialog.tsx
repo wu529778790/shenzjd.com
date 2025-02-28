@@ -73,6 +73,7 @@ export default function AddCategoryDialog() {
 
   const handleSubmit = async () => {
     // TODO: 实现添加分类的API调用
+    console.log("添加分类", name, selectedIcon);
     setOpen(false);
   };
 
