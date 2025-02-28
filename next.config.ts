@@ -6,8 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "web.wetab.link",
-        pathname: "/**",
+        hostname: "**",
       },
     ],
   },
