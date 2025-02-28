@@ -5,10 +5,14 @@ import { ModeToggle } from "./components/modeToggle";
 import { SiteCard } from "./components/SiteCard";
 import { useEffect, useState } from "react";
 import { Site } from "@/types/site";
+import { Category } from "@/types/category";
+import Sidebar from "./components/Sidebar";
 
-export default function HomePage() {
+export default function Home() {
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [categories] = useState<Category[]>([]);
 
   // 获取所有站点数据
   useEffect(() => {
@@ -52,25 +56,35 @@ export default function HomePage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">我的导航</h1>
-        <div className="flex items-center gap-2">
-          <AddDialog onAddSuccess={handleAddSuccess} />
-          <ModeToggle />
-        </div>
-      </div>
+    <div className="min-h-screen">
+      <Sidebar
+        categories={categories}
+        activeCategory={activeCategory}
+        onSelectCategory={setActiveCategory}
+      />
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-        {sites.map((site, index) => (
-          <SiteCard
-            key={index}
-            title={site.title}
-            url={site.url}
-            favicon={site.favicon}
-          />
-        ))}
-      </div>
+      <main className="pl-16">
+        <div className="container mx-auto p-4">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">我的导航</h1>
+            <div className="flex items-center gap-2">
+              <AddDialog onAddSuccess={handleAddSuccess} />
+              <ModeToggle />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+            {sites.map((site, index) => (
+              <SiteCard
+                key={index}
+                title={site.title}
+                url={site.url}
+                favicon={site.favicon}
+              />
+            ))}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
