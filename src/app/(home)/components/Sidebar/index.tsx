@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Category } from "@/types/category";
 import { cn } from "@/lib/utils";
-import { icons } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { LucideProps } from "lucide-react";
 import AddCategoryDialog from "./AddCategoryDialog";
 
 interface SidebarProps {
@@ -12,16 +13,32 @@ interface SidebarProps {
   onSelectCategory: (categoryId: string | null) => void;
 }
 
+type IconComponent = React.ForwardRefExoticComponent<
+  Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+>;
+
 export default function Sidebar({
   categories,
   activeCategory,
   onSelectCategory,
 }: SidebarProps) {
-  console.log("categories", categories);
+  const getIconComponent = (iconName: string): IconComponent => {
+    // 将图标名称转换为 Pascal Case（首字母大写）
+    const formattedName =
+      iconName.charAt(0).toUpperCase() + iconName.slice(1).toLowerCase();
+    // 获取图标组件，如果不存在则使用 Folder 图标
+    return (
+      (LucideIcons as unknown as Record<string, IconComponent>)[
+        formattedName
+      ] || LucideIcons.Folder
+    );
+  };
+
   return (
     <div className="w-16 bg-card fixed left-0 top-0 h-full flex flex-col items-center py-4 border-r">
       {categories.map((category) => {
-        const IconComponent = icons[category.icon as keyof typeof icons];
+        const IconComponent = getIconComponent(category.icon);
+
         return (
           <Button
             key={category.id}
@@ -32,7 +49,7 @@ export default function Sidebar({
               activeCategory === category.id && "bg-accent"
             )}
             onClick={() => onSelectCategory(category.id)}>
-            {IconComponent && <IconComponent className="h-5 w-5" />}
+            <IconComponent className="h-5 w-5" />
           </Button>
         );
       })}

@@ -10,7 +10,9 @@ import Sidebar from "./components/Sidebar";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string | null>("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(
+    "default"
+  );
   const [categories, setCategories] = useState<Category[]>([]);
 
   // 获取所有站点数据
