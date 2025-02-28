@@ -13,6 +13,11 @@
         "title": "现代 JavaScript 教程",
         "favicon": "https://zh.javascript.info/img/favicon/favicon.png",
         "url": "https://zh.javascript.info/"
+      },
+      {
+        "title": "百度一下，你就知道",
+        "favicon": "https://www.baidu.com/favicon.ico",
+        "url": "https://baidu.com"
       }
     ]
   },

@@ -10,7 +10,7 @@ import AddCategoryDialog from "./AddCategoryDialog";
 interface SidebarProps {
   categories: Category[];
   activeCategory: string | null;
-  onSelectCategory: (categoryId: string | null) => void;
+  onSelectCategory: (categoryId: string) => void;
 }
 
 type IconComponent = React.ForwardRefExoticComponent<
