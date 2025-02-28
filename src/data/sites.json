@@ -1,0 +1,24 @@
+{
+  "sites": [
+    {
+      "title": "WeTab 新标签页",
+      "favicon": "https://web.wetab.link/icon_zh_48.png",
+      "url": "https://web.wetab.link/"
+    },
+    {
+      "title": "现代 JavaScript 教程",
+      "favicon": "https://zh.javascript.info/img/favicon/favicon.png",
+      "url": "https://zh.javascript.info/"
+    },
+    {
+      "title": "Attention Required! | Cloudflare",
+      "favicon": "https://dash.cloudflare.com/favicon.ico",
+      "url": "https://dash.cloudflare.com/"
+    },
+    {
+      "title": "Just a moment...",
+      "favicon": "https://dash.cloudflare.com/favicon.ico",
+      "url": "https://dash.cloudflare.com/"
+    }
+  ]
+}

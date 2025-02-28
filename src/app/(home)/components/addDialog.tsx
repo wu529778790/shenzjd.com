@@ -14,18 +14,13 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
+import { Site } from "@/types/site";
 
 // URL schema 验证
 const urlSchema = z.string().url("请输入有效的URL");
 
-interface SiteInfo {
-  title: string;
-  url: string;
-  favicon?: string;
-}
-
 interface AddDialogProps {
-  onAddSuccess: (newSite: SiteInfo) => void;
+  onAddSuccess: (newSite: Site) => void;
 }
 
 export function AddDialog({ onAddSuccess }: AddDialogProps) {
@@ -33,7 +28,7 @@ export function AddDialog({ onAddSuccess }: AddDialogProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
-  const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null);
+  const [siteInfo, setSiteInfo] = useState<Site | null>(null);
 
   // 新增编辑状态的网站信息
   const [editedTitle, setEditedTitle] = useState("");

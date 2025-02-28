@@ -3,21 +3,53 @@
 import { AddDialog } from "./components/addDialog";
 import { ModeToggle } from "./components/modeToggle";
 import { SiteCard } from "./components/SiteCard";
-import { useState } from "react";
-
-interface Site {
-  title: string;
-  description: string;
-  url: string;
-  favicon?: string;
-}
+import { useEffect, useState } from "react";
+import { Site } from "@/types/site";
 
 export default function HomePage() {
   const [sites, setSites] = useState<Site[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAddSuccess = (newSite: Site) => {
-    setSites((prevSites) => [...prevSites, newSite]);
+  // 获取所有站点数据
+  useEffect(() => {
+    const fetchSites = async () => {
+      try {
+        const response = await fetch("/api/sites");
+        if (!response.ok) throw new Error("获取数据失败");
+        const data = await response.json();
+        setSites(data);
+      } catch (error) {
+        console.error("获取站点数据失败:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSites();
+  }, []);
+
+  const handleAddSuccess = async (newSite: Site) => {
+    try {
+      const response = await fetch("/api/sites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...newSite,
+        }),
+      });
+
+      if (!response.ok) throw new Error("保存失败");
+      setSites((prevSites) => [...prevSites, newSite]);
+    } catch (error) {
+      console.error("保存站点数据失败:", error);
+    }
   };
+
+  if (loading) {
+    return <div className="container mx-auto p-4">加载中...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
