@@ -49,7 +49,10 @@ export default function Home() {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">我的导航</h1>
             <div className="flex items-center gap-2">
-              <AddDialog activeCategory={activeCategory} />
+              <AddDialog
+                activeCategory={activeCategory}
+                onSuccess={fetchCategories}
+              />
               <ModeToggle />
             </div>
           </div>

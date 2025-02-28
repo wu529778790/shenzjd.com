@@ -21,9 +21,10 @@ const urlSchema = z.string().url("请输入有效的URL");
 
 interface AddDialogProps {
   activeCategory: string;
+  onSuccess?: () => void;
 }
 
-export function AddDialog({ activeCategory }: AddDialogProps) {
+export function AddDialog({ activeCategory, onSuccess }: AddDialogProps) {
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -65,7 +66,7 @@ export function AddDialog({ activeCategory }: AddDialogProps) {
     if (!siteInfo) return;
 
     try {
-      await fetch("/api/categories", {
+      const response = await fetch("/api/categories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,15 +81,22 @@ export function AddDialog({ activeCategory }: AddDialogProps) {
           ],
         }),
       });
+
+      if (!response.ok) {
+        throw new Error("添加站点失败");
+      }
+
+      // 重置状态
+      setLink("");
+      setSiteInfo(null);
+      setEditedTitle("");
+      setOpen(false);
+
+      // 调用成功回调函数
+      onSuccess?.();
     } catch (error) {
       console.error("添加站点失败:", error);
     }
-
-    // 重置状态
-    setLink("");
-    setSiteInfo(null);
-    setEditedTitle("");
-    setOpen(false);
   };
 
   return (
