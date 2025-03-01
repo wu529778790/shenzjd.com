@@ -5,7 +5,7 @@ import { ModeToggle } from "./components/modeToggle";
 import { SiteCard } from "./components/SiteCard";
 import { useEffect, useState } from "react";
 import { Category } from "@/types/category";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/Sidebar/index";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
