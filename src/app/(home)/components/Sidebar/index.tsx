@@ -47,8 +47,10 @@ export default function Sidebar({
             variant="ghost"
             size="icon"
             className={cn(
-              "mb-2",
-              activeCategory === category.id && "bg-accent"
+              "mb-2 transition-colors duration-200",
+              activeCategory === category.id
+                ? "bg-primary/10 text-primary border-primary hover:bg-primary/20"
+                : "hover:bg-accent"
             )}
             onClick={() => onSelectCategory(category.id)}>
             <IconComponent className="h-5 w-5" />
