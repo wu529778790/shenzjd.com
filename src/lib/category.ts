@@ -71,3 +71,20 @@ export async function removeSiteFromCategory(
     await fs.writeFile(sitesPath, JSON.stringify(categories, null, 2));
   }
 }
+
+// 更新分类中的站点
+export async function updateSiteInCategory(
+  categoryId: string,
+  oldUrl: string,
+  site: Site
+): Promise<void> {
+  const categories = await getAllCategories();
+  const category = categories.find((c) => c.id === categoryId);
+  if (category) {
+    const siteIndex = category.sites.findIndex((s) => s.url === oldUrl);
+    if (siteIndex !== -1) {
+      category.sites[siteIndex] = site;
+      await fs.writeFile(sitesPath, JSON.stringify(categories, null, 2));
+    }
+  }
+}

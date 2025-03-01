@@ -66,6 +66,8 @@ export default function Home() {
                   title={site.title}
                   url={site.url}
                   favicon={site.favicon}
+                  categoryId={activeCategory}
+                  onSiteChange={fetchCategories}
                 />
               ))}
           </div>

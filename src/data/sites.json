@@ -5,9 +5,14 @@
     "icon": "Home",
     "sites": [
       {
-        "title": "Lucide",
-        "favicon": "https://lucide.dev/favicon.ico",
-        "url": "https://lucide.dev/icons/"
+        "title": "Lucide1",
+        "url": "https://lucide.dev/icons/",
+        "favicon": "https://lucide.dev/favicon.ico"
+      },
+      {
+        "title": "WeTab",
+        "url": "https://web.wetab.link/",
+        "favicon": "https://web.wetab.link/icon_zh_48.png"
       }
     ]
   },
