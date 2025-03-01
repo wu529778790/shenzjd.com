@@ -114,7 +114,7 @@ export function SiteCard({
               <div className="w-full h-full bg-gray-100" />
             )}
           </div>
-          <span className="text-xs text-center text-gray-600 line-clamp-2 w-full">
+          <span className="text-xs text-center text-gray-600 truncate w-full">
             {initialTitle}
           </span>
         </div>
