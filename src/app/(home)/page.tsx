@@ -6,11 +6,12 @@ import { SiteCard } from "./components/SiteCard";
 import { useEffect, useState } from "react";
 import { Category } from "@/types/category";
 import Sidebar from "./components/Sidebar/index";
+import { FullPageScroll } from "@/components/FullPageScroll";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string>("default");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string>("default");
 
   // 获取所有站点数据
   const fetchCategories = async () => {
@@ -31,6 +32,18 @@ export default function Home() {
     fetchCategories();
   }, []);
 
+  // 处理页面切换
+  const handlePageChange = (pageIndex: number) => {
+    if (categories[pageIndex]) {
+      setActiveCategory(categories[pageIndex].id);
+    }
+  };
+
+  // 获取当前分类的索引
+  const getCurrentPageIndex = () => {
+    return categories.findIndex((category) => category.id === activeCategory);
+  };
+
   if (loading) {
     return <div className="container mx-auto p-4">加载中...</div>;
   }
@@ -45,33 +58,38 @@ export default function Home() {
       />
 
       <main className="pl-16">
-        <div className="container mx-auto p-4">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">我的导航</h1>
-            <div className="flex items-center gap-2">
-              <AddDialog
-                activeCategory={activeCategory}
-                onSuccess={fetchCategories}
-              />
-              <ModeToggle />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-            {categories
-              .find((category) => category.id === activeCategory)
-              ?.sites.map((site, index) => (
-                <SiteCard
-                  key={index}
-                  title={site.title}
-                  url={site.url}
-                  favicon={site.favicon}
-                  categoryId={activeCategory}
-                  onSiteChange={fetchCategories}
-                />
-              ))}
-          </div>
+        <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+          <AddDialog
+            activeCategory={activeCategory}
+            onSuccess={fetchCategories}
+          />
+          <ModeToggle />
         </div>
+
+        <FullPageScroll
+          onPageChange={handlePageChange}
+          initialPage={getCurrentPageIndex()}>
+          {categories.map((category) => (
+            <div key={category.id} className="container mx-auto p-4">
+              <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold">{category.name}</h1>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                {category.sites.map((site, index) => (
+                  <SiteCard
+                    key={index}
+                    title={site.title}
+                    url={site.url}
+                    favicon={site.favicon}
+                    categoryId={category.id}
+                    onSiteChange={fetchCategories}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </FullPageScroll>
       </main>
     </div>
   );
