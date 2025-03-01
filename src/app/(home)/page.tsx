@@ -71,10 +71,6 @@ export default function Home() {
           initialPage={getCurrentPageIndex()}>
           {categories.map((category) => (
             <div key={category.id} className="container mx-auto p-4">
-              <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">{category.name}</h1>
-              </div>
-
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                 {category.sites.map((site, index) => (
                   <SiteCard
