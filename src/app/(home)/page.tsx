@@ -3,6 +3,7 @@
 import { AddDialog } from "./components/addDialog";
 import { ModeToggle } from "./components/modeToggle";
 import { SiteCard } from "./components/SiteCard";
+import { SearchBar } from "./components/SearchBar";
 import { useEffect, useState } from "react";
 import { Category } from "@/types/category";
 import Sidebar from "./components/Sidebar/index";
@@ -12,6 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("default");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // 获取所有站点数据
   const fetchCategories = async () => {
@@ -44,6 +46,19 @@ export default function Home() {
     return categories.findIndex((category) => category.id === activeCategory);
   };
 
+  // 处理搜索
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  // 过滤站点
+  const getFilteredSites = (category: Category) => {
+    if (!searchQuery) return category.sites;
+    return category.sites.filter((site) =>
+      site.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   if (loading) {
     return <div className="container mx-auto p-4">加载中...</div>;
   }
@@ -66,13 +81,17 @@ export default function Home() {
           <ModeToggle />
         </div>
 
+        <div className="pt-4 px-4">
+          <SearchBar onSearch={handleSearch} />
+        </div>
+
         <FullPageScroll
           onPageChange={handlePageChange}
           initialPage={getCurrentPageIndex()}>
           {categories.map((category) => (
             <div key={category.id} className="container mx-auto p-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                {category.sites.map((site, index) => (
+                {getFilteredSites(category).map((site, index) => (
                   <SiteCard
                     key={index}
                     title={site.title}
