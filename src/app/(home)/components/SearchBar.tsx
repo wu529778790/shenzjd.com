@@ -48,7 +48,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && query.trim()) {
       performSearch();
     }
@@ -90,7 +90,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             type="text"
             value={query}
             onChange={handleSearch}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             className="w-full h-10 pl-10 pr-4 rounded-lg bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             placeholder={
               selectedEngine === "local"
