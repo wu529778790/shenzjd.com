@@ -97,25 +97,24 @@ export function SiteCard({
         onDelete={handleDelete}>
         <div
           onClick={handleCardClick}
-          className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
-          <div className="relative w-12 h-12 mb-2">
+          className="flex flex-col items-center gap-2 cursor-pointer group w-[80px]">
+          <div className="w-12 h-12 relative flex items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-200">
             {favicon ? (
               <Image
                 src={favicon}
                 alt={initialTitle}
                 fill
-                sizes="48px"
+                className="object-cover"
                 unoptimized
-                className="object-contain rounded-lg"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}
               />
             ) : (
-              <div className="w-full h-full bg-gray-200 rounded-lg" />
+              <div className="w-full h-full bg-gray-100" />
             )}
           </div>
-          <span className="text-sm text-center text-gray-700 line-clamp-1">
+          <span className="text-xs text-center text-gray-600 line-clamp-2 w-full">
             {initialTitle}
           </span>
         </div>

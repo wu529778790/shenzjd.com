@@ -13,6 +13,11 @@
         "title": "WeTab ",
         "url": "https://web.wetab.link/",
         "favicon": "https://web.wetab.link/icon_zh_48.png"
+      },
+      {
+        "title": "Select - shadcn/ui中文文档 | shadcn/ui中文网",
+        "favicon": "https://www.shadcn-ui.cn/favicon.ico",
+        "url": "https://www.shadcn-ui.cn/docs/components/select"
       }
     ]
   },

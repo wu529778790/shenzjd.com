@@ -90,7 +90,7 @@ export default function Home() {
           initialPage={getCurrentPageIndex()}>
           {categories.map((category) => (
             <div key={category.id} className="container mx-auto p-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+              <div className="flex flex-wrap gap-4 justify-start items-start">
                 {getFilteredSites(category).map((site, index) => (
                   <SiteCard
                     key={index}
