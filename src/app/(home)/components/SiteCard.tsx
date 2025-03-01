@@ -19,6 +19,8 @@ export function SiteCard({ title, url, favicon }: SiteCardProps) {
             src={favicon}
             alt={title}
             fill
+            sizes="48px"
+            unoptimized
             className="object-contain rounded-lg"
             onError={(e) => {
               e.currentTarget.style.display = "none";
