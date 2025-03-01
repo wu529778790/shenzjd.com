@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Select,
   SelectContent,
@@ -39,6 +39,11 @@ interface SearchBarProps {
 export function SearchBar({ onSearch }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const [selectedEngine, setSelectedEngine] = useState<string>("local");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -87,6 +92,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
           <input
+            ref={inputRef}
             type="text"
             value={query}
             onChange={handleSearch}
