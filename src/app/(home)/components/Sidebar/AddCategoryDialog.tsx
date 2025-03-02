@@ -7,15 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Plus,
   Home,
   Globe,
   Folder,
@@ -39,11 +34,8 @@ import {
   Laptop,
   Cloud,
   Settings,
-  Trash2,
-  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Category } from "@/types/category";
 
 // 预定义常用图标
 const commonIcons = {
@@ -72,20 +64,16 @@ const commonIcons = {
   settings: Settings,
 };
 
-interface EditCategoryPopoverProps {
-  category: Category;
+interface AddCategoryDialogProps {
   onSuccess?: () => void;
-  children: React.ReactNode;
 }
 
-export default function EditCategoryPopover({
-  category,
+export default function AddCategoryDialog({
   onSuccess,
-  children,
-}: EditCategoryPopoverProps) {
+}: AddCategoryDialogProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedIcon, setSelectedIcon] = useState(category.icon);
-  const [name, setName] = useState(category.name);
+  const [selectedIcon, setSelectedIcon] = useState<string>("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -96,76 +84,49 @@ export default function EditCategoryPopover({
       setLoading(true);
       setError("");
 
-      const response = await fetch(`/api/categories/${category.id}`, {
-        method: "PUT",
+      const response = await fetch("/api/categories", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id: Date.now().toString(),
           name,
           icon: selectedIcon,
+          sites: [],
         }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "更新分类失败");
+        throw new Error(data.error || "添加分类失败");
       }
 
+      setName("");
+      setSelectedIcon("");
       setIsDialogOpen(false);
       onSuccess?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "更新分类失败");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirm("确定要删除这个分类吗？此操作不可撤销。")) return;
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch(`/api/categories/${category.id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "删除分类失败");
-      }
-
-      setIsDialogOpen(false);
-      onSuccess?.();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "删除分类失败");
+      setError(err instanceof Error ? err.message : "添加分类失败");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem onSelect={() => setIsDialogOpen(true)}>
-          <Pencil className="mr-2 h-4 w-4" />
-          编辑分类
-        </ContextMenuItem>
-        <ContextMenuItem
-          onSelect={handleDelete}
-          className="text-red-600 focus:text-red-600">
-          <Trash2 className="mr-2 h-4 w-4" />
-          删除分类
-        </ContextMenuItem>
-      </ContextMenuContent>
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="mt-auto"
+        onClick={() => setIsDialogOpen(true)}>
+        <Plus className="h-5 w-5" />
+      </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>编辑分类</DialogTitle>
+            <DialogTitle>添加分类</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -204,12 +165,12 @@ export default function EditCategoryPopover({
               className="w-full"
               onClick={handleSubmit}
               disabled={!name || !selectedIcon || loading}>
-              {loading ? "更新中..." : "更新分类"}
+              {loading ? "添加中..." : "添加分类"}
             </Button>
             {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
           </div>
         </DialogContent>
       </Dialog>
-    </ContextMenu>
+    </>
   );
 }

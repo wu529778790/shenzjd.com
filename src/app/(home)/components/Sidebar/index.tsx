@@ -5,8 +5,8 @@ import { Category } from "@/types/category";
 import { cn } from "@/lib/utils";
 import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
-import AddCategoryPopover from "./AddCategoryPopover";
-import EditCategoryPopover from "./EditCategoryPopover";
+import AddCategoryDialog from "./AddCategoryDialog";
+import EditCategoryDialog from "./EditCategoryDialog";
 
 interface SidebarProps {
   categories: Category[];
@@ -43,7 +43,7 @@ export default function Sidebar({
         const IconComponent = getIconComponent(category.icon);
 
         return (
-          <EditCategoryPopover
+          <EditCategoryDialog
             key={category.id}
             category={category}
             onSuccess={onCategoriesChange}>
@@ -59,11 +59,11 @@ export default function Sidebar({
               onClick={() => onSelectCategory(category.id)}>
               <IconComponent className="h-5 w-5" />
             </Button>
-          </EditCategoryPopover>
+          </EditCategoryDialog>
         );
       })}
 
-      <AddCategoryPopover onSuccess={onCategoriesChange} />
+      <AddCategoryDialog onSuccess={onCategoriesChange} />
     </div>
   );
 }
