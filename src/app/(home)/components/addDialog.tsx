@@ -8,9 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
@@ -22,16 +20,20 @@ const urlSchema = z.string().url("请输入有效的URL");
 interface AddDialogProps {
   activeCategory: string;
   onSuccess?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function AddDialog({ activeCategory, onSuccess }: AddDialogProps) {
+export function AddDialog({
+  activeCategory,
+  onSuccess,
+  open,
+  onOpenChange,
+}: AddDialogProps) {
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
   const [siteInfo, setSiteInfo] = useState<Site | null>(null);
-
-  // 新增编辑状态的网站信息
   const [editedTitle, setEditedTitle] = useState("");
 
   const handleParse = async () => {
@@ -90,7 +92,7 @@ export function AddDialog({ activeCategory, onSuccess }: AddDialogProps) {
       setLink("");
       setSiteInfo(null);
       setEditedTitle("");
-      setOpen(false);
+      onOpenChange?.(false);
 
       // 调用成功回调函数
       onSuccess?.();
@@ -100,13 +102,7 @@ export function AddDialog({ activeCategory, onSuccess }: AddDialogProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus className="w-4 h-4" />
-          添加
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>添加</DialogTitle>
@@ -138,7 +134,7 @@ export function AddDialog({ activeCategory, onSuccess }: AddDialogProps) {
                       fill
                       sizes="24px"
                       className="object-contain"
-                      unoptimized // 由于 favicon 通常很小，我们可以禁用优化
+                      unoptimized
                     />
                   </div>
                 )}

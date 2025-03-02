@@ -1,6 +1,5 @@
 "use client";
 
-import { AddDialog } from "./components/addDialog";
 import { ModeToggle } from "./components/modeToggle";
 import { SiteCard } from "./components/SiteCard";
 import { SearchBar } from "./components/SearchBar";
@@ -8,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Category } from "@/types/category";
 import Sidebar from "./components/Sidebar/index";
 import { FullPageScroll } from "@/components/FullPageScroll";
+import { PageContextMenu } from "./components/PageContextMenu";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -74,10 +74,6 @@ export default function Home() {
 
       <main className="pl-16">
         <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-          <AddDialog
-            activeCategory={activeCategory}
-            onSuccess={fetchCategories}
-          />
           <ModeToggle />
         </div>
 
@@ -85,26 +81,30 @@ export default function Home() {
           <SearchBar onSearch={handleSearch} />
         </div>
 
-        <FullPageScroll
-          onPageChange={handlePageChange}
-          initialPage={getCurrentPageIndex()}>
-          {categories.map((category) => (
-            <div key={category.id} className="container mx-auto p-4">
-              <div className="flex flex-wrap gap-4 justify-start items-start">
-                {getFilteredSites(category).map((site, index) => (
-                  <SiteCard
-                    key={index}
-                    title={site.title}
-                    url={site.url}
-                    favicon={site.favicon}
-                    categoryId={category.id}
-                    onSiteChange={fetchCategories}
-                  />
-                ))}
+        <PageContextMenu
+          activeCategory={activeCategory}
+          onSuccess={fetchCategories}>
+          <FullPageScroll
+            onPageChange={handlePageChange}
+            initialPage={getCurrentPageIndex()}>
+            {categories.map((category) => (
+              <div key={category.id} className="container mx-auto p-4">
+                <div className="flex flex-wrap gap-4 justify-start items-start">
+                  {getFilteredSites(category).map((site, index) => (
+                    <SiteCard
+                      key={index}
+                      title={site.title}
+                      url={site.url}
+                      favicon={site.favicon}
+                      categoryId={category.id}
+                      onSiteChange={fetchCategories}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </FullPageScroll>
+            ))}
+          </FullPageScroll>
+        </PageContextMenu>
       </main>
     </div>
   );
