@@ -7,6 +7,7 @@ import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
 import AddCategoryDialog from "./AddCategoryDialog";
 import EditCategoryDialog from "./EditCategoryDialog";
+import { ModeToggle } from "./modeToggle";
 
 interface SidebarProps {
   categories: Category[];
@@ -64,6 +65,7 @@ export default function Sidebar({
       })}
 
       <AddCategoryDialog onSuccess={onCategoriesChange} />
+      <ModeToggle />
     </div>
   );
 }

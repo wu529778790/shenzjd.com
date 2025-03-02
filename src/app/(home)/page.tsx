@@ -1,6 +1,5 @@
 "use client";
 
-import { ModeToggle } from "./components/modeToggle";
 import { SiteCard } from "./components/SiteCard";
 import { SearchBar } from "./components/SearchBar";
 import { useEffect, useState } from "react";
@@ -73,10 +72,6 @@ export default function Home() {
       />
 
       <main className="pl-16">
-        <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-          <ModeToggle />
-        </div>
-
         <div className="pt-4 px-4">
           <SearchBar onSearch={handleSearch} />
         </div>
