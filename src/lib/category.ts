@@ -1,19 +1,18 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { Category } from "@/types/category";
 import { Site } from "@/types/site";
-
-const sitesPath = path.join(process.cwd(), "src/data/sites.json");
+import { getGitHubFileContent, updateGitHubFile } from "./github";
 
 // 读取所有分类数据
 export async function readCategories(): Promise<Category[]> {
-  const data = await fs.readFile(sitesPath, "utf8");
-  return JSON.parse(data);
+  return getGitHubFileContent();
 }
 
 // 写入所有分类数据
 export async function writeCategories(categories: Category[]): Promise<void> {
-  await fs.writeFile(sitesPath, JSON.stringify(categories, null, 2));
+  const success = await updateGitHubFile(categories);
+  if (!success) {
+    throw new Error("Failed to update categories");
+  }
 }
 
 // 获取所有分类和站点数据
@@ -21,10 +20,10 @@ export async function getAllCategories(): Promise<Category[]> {
   return readCategories();
 }
 
-// 根据ID获取特定分类
-export async function getCategoryById(id: string): Promise<Category | null> {
+// 获取单个分类
+export async function getCategory(id: string): Promise<Category | undefined> {
   const categories = await readCategories();
-  return categories.find((category) => category.id === id) || null;
+  return categories.find((category) => category.id === id);
 }
 
 // 添加新分类

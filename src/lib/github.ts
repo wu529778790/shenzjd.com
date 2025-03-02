@@ -13,6 +13,7 @@ export async function getGitHubFileContent(): Promise<Category[]> {
     const response = await fetch(url, {
       headers: {
         Accept: "application/vnd.github.v3.raw",
+        Authorization: `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
       },
       next: {
         revalidate: 3600, // 缓存1小时
@@ -20,7 +21,9 @@ export async function getGitHubFileContent(): Promise<Category[]> {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch data from GitHub");
+      throw new Error(
+        `Failed to fetch data from GitHub: ${response.statusText}`
+      );
     }
 
     return response.json();
@@ -49,12 +52,19 @@ export async function updateGitHubFile(
         headers: {
           Authorization: `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
           Accept: "application/vnd.github.v3+json",
+          "X-GitHub-Api-Version": "2022-11-28",
         },
       }
     );
 
     if (!currentFileResponse.ok) {
-      throw new Error("Failed to get current file info");
+      console.error(
+        "Failed to get current file info:",
+        await currentFileResponse.text()
+      );
+      throw new Error(
+        `Failed to get current file info: ${currentFileResponse.statusText}`
+      );
     }
 
     const currentFile = await currentFileResponse.json();
@@ -68,6 +78,7 @@ export async function updateGitHubFile(
           Authorization: `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
           "Content-Type": "application/json",
           Accept: "application/vnd.github.v3+json",
+          "X-GitHub-Api-Version": "2022-11-28",
         },
         body: JSON.stringify({
           message: "Update sites.json",
@@ -75,11 +86,17 @@ export async function updateGitHubFile(
             "base64"
           ),
           sha: currentFile.sha,
+          branch: config.github.branch,
         }),
       }
     );
 
-    return response.ok;
+    if (!response.ok) {
+      console.error("Failed to update file:", await response.text());
+      throw new Error(`Failed to update file: ${response.statusText}`);
+    }
+
+    return true;
   } catch (error) {
     console.error("Error updating GitHub file:", error);
     return false;
