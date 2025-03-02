@@ -18,6 +18,11 @@
         "title": "Select - shadcn/ui中文文档 | shadcn/ui中文网",
         "favicon": "https://www.shadcn-ui.cn/favicon.ico",
         "url": "https://www.shadcn-ui.cn/docs/components/select"
+      },
+      {
+        "title": "小红书创作服务平台",
+        "favicon": "https://www.xiaohongshu.com/favicon.ico",
+        "url": "https://creator.xiaohongshu.com/creator/home"
       }
     ]
   },
@@ -32,23 +37,5 @@
         "url": "https://tool.browser.qq.com/"
       }
     ]
-  },
-  {
-    "id": "1740882304687",
-    "name": "gsfg",
-    "icon": "heart",
-    "sites": []
-  },
-  {
-    "id": "1740882310115",
-    "name": "fdsaf",
-    "icon": "film",
-    "sites": []
-  },
-  {
-    "id": "1740882544797",
-    "name": "fdasf",
-    "icon": "cloud",
-    "sites": []
   }
 ]

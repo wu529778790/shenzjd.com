@@ -8,6 +8,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -84,6 +94,7 @@ export default function EditCategoryDialog({
   children,
 }: EditCategoryDialogProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState(category.icon);
   const [name, setName] = useState(category.name);
   const [loading, setLoading] = useState(false);
@@ -122,8 +133,6 @@ export default function EditCategoryDialog({
   };
 
   const handleDelete = async () => {
-    if (!confirm("确定要删除这个分类吗？此操作不可撤销。")) return;
-
     try {
       setLoading(true);
       setError("");
@@ -137,7 +146,7 @@ export default function EditCategoryDialog({
         throw new Error(data.error || "删除分类失败");
       }
 
-      setIsDialogOpen(false);
+      setIsDeleteAlertOpen(false);
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "删除分类失败");
@@ -147,20 +156,22 @@ export default function EditCategoryDialog({
   };
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem onSelect={() => setIsDialogOpen(true)}>
-          <Pencil className="mr-2 h-4 w-4" />
-          编辑分类
-        </ContextMenuItem>
-        <ContextMenuItem
-          onSelect={handleDelete}
-          className="text-red-600 focus:text-red-600">
-          <Trash2 className="mr-2 h-4 w-4" />
-          删除分类
-        </ContextMenuItem>
-      </ContextMenuContent>
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem onSelect={() => setIsDialogOpen(true)}>
+            <Pencil className="mr-2 h-4 w-4" />
+            编辑分类
+          </ContextMenuItem>
+          <ContextMenuItem
+            onSelect={() => setIsDeleteAlertOpen(true)}
+            className="text-red-600 focus:text-red-600">
+            <Trash2 className="mr-2 h-4 w-4" />
+            删除分类
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
@@ -210,6 +221,26 @@ export default function EditCategoryDialog({
           </div>
         </DialogContent>
       </Dialog>
-    </ContextMenu>
+
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确定要删除这个分类吗？</AlertDialogTitle>
+            <AlertDialogDescription>
+              此操作不可撤销。删除分类后，该分类下的所有网站也将被删除。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600">
+              {loading ? "删除中..." : "确认删除"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
