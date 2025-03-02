@@ -147,25 +147,23 @@ export default function EditCategoryPopover({
   };
 
   return (
-    <>
-      <ContextMenu>
-        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem onClick={() => setIsDialogOpen(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            编辑分类
-          </ContextMenuItem>
-          <ContextMenuItem
-            onClick={handleDelete}
-            className="text-red-600 focus:text-red-600">
-            <Trash2 className="mr-2 h-4 w-4" />
-            删除分类
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onSelect={() => setIsDialogOpen(true)}>
+          <Pencil className="mr-2 h-4 w-4" />
+          编辑分类
+        </ContextMenuItem>
+        <ContextMenuItem
+          onSelect={handleDelete}
+          className="text-red-600 focus:text-red-600">
+          <Trash2 className="mr-2 h-4 w-4" />
+          删除分类
+        </ContextMenuItem>
+      </ContextMenuContent>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>编辑分类</DialogTitle>
           </DialogHeader>
@@ -212,6 +210,6 @@ export default function EditCategoryPopover({
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </ContextMenu>
   );
 }
