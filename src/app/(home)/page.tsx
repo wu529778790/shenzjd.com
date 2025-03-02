@@ -63,7 +63,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar
         categories={categories}
         activeCategory={activeCategory}
@@ -71,34 +71,36 @@ export default function Home() {
         onCategoriesChange={fetchCategories}
       />
 
-      <main className="pl-16">
-        <div className="pt-4 px-4">
+      <main className="flex-1 pl-16">
+        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-4 px-4">
           <SearchBar onSearch={handleSearch} />
         </div>
 
         <PageContextMenu
           activeCategory={activeCategory}
           onSuccess={fetchCategories}>
-          <FullPageScroll
-            onPageChange={handlePageChange}
-            initialPage={getCurrentPageIndex()}>
-            {categories.map((category) => (
-              <div key={category.id} className="container mx-auto p-4">
-                <div className="flex flex-wrap gap-4 justify-start items-start">
-                  {getFilteredSites(category).map((site, index) => (
-                    <SiteCard
-                      key={index}
-                      title={site.title}
-                      url={site.url}
-                      favicon={site.favicon}
-                      categoryId={category.id}
-                      onSiteChange={fetchCategories}
-                    />
-                  ))}
+          <div className="h-[calc(100vh-5rem)]">
+            <FullPageScroll
+              onPageChange={handlePageChange}
+              initialPage={getCurrentPageIndex()}>
+              {categories.map((category) => (
+                <div key={category.id} className="container mx-auto p-4">
+                  <div className="flex flex-wrap gap-4 justify-start items-start">
+                    {getFilteredSites(category).map((site, index) => (
+                      <SiteCard
+                        key={index}
+                        title={site.title}
+                        url={site.url}
+                        favicon={site.favicon}
+                        categoryId={category.id}
+                        onSiteChange={fetchCategories}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </FullPageScroll>
+              ))}
+            </FullPageScroll>
+          </div>
         </PageContextMenu>
       </main>
     </div>
