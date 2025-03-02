@@ -1,25 +1,11 @@
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import { getGitHubFileContent, updateGitHubFile } from "@/lib/github";
 import { Category } from "@/types/category";
 
-const sitesPath = path.join(process.cwd(), "src/data/sites.json");
-
-// 读取所有分类数据
-async function readCategories(): Promise<Category[]> {
-  const data = await fs.readFile(sitesPath, "utf8");
-  return JSON.parse(data);
-}
-
-// 写入分类数据
-async function writeCategories(categories: Category[]): Promise<void> {
-  await fs.writeFile(sitesPath, JSON.stringify(categories, null, 2));
-}
-
-// 获取所有分类
+// GET 请求处理
 export async function GET() {
   try {
-    const categories = await readCategories();
+    const categories = await getGitHubFileContent();
     return NextResponse.json(categories);
   } catch (error) {
     console.error("获取分类失败:", error);
@@ -31,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const categories = await readCategories();
+    const categories = await getGitHubFileContent();
 
     // 判断是添加分类还是添加站点
     if ("categoryId" in data) {
@@ -47,7 +33,11 @@ export async function POST(request: Request) {
 
       // 添加新站点到分类
       categories[categoryIndex].sites.push(...sites);
-      await writeCategories(categories);
+      const success = await updateGitHubFile(categories);
+
+      if (!success) {
+        return NextResponse.json({ error: "更新数据失败" }, { status: 500 });
+      }
 
       return NextResponse.json({
         message: "添加站点成功",
@@ -72,7 +62,11 @@ export async function POST(request: Request) {
 
       // 添加新分类
       categories.push(newCategory);
-      await writeCategories(categories);
+      const success = await updateGitHubFile(categories);
+
+      if (!success) {
+        return NextResponse.json({ error: "更新数据失败" }, { status: 500 });
+      }
 
       return NextResponse.json({
         message: "添加分类成功",
@@ -89,7 +83,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const { id, ...updateData } = await request.json();
-    const categories = await readCategories();
+    const categories = await getGitHubFileContent();
     const categoryIndex = categories.findIndex(
       (category) => category.id === id
     );
@@ -103,7 +97,7 @@ export async function PUT(request: Request) {
       ...updateData,
     };
 
-    await writeCategories(categories);
+    await updateGitHubFile(categories);
     return NextResponse.json({ message: "更新成功" });
   } catch (error) {
     console.error("更新分类失败:", error);
@@ -115,13 +109,13 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    const categories = await readCategories();
+    const categories = await getGitHubFileContent();
 
     const filteredCategories = categories.filter(
       (category) => category.id !== id
     );
 
-    await writeCategories(filteredCategories);
+    await updateGitHubFile(filteredCategories);
     return NextResponse.json({ message: "删除成功" });
   } catch (error) {
     console.error("删除分类失败:", error);
