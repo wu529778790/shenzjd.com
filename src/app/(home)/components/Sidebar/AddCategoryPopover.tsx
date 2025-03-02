@@ -123,11 +123,6 @@ export default function AddCategoryPopover({
       <PopoverContent className="w-80">
         <div className="space-y-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">添加新分类</h4>
-            <p className="text-sm text-muted-foreground">添加一个新分类</p>
-          </div>
-
-          <div className="space-y-2">
             <label className="text-sm font-medium">分类名称</label>
             <Input
               value={name}
@@ -145,8 +140,10 @@ export default function AddCategoryPopover({
                   variant="ghost"
                   size="icon"
                   className={cn(
-                    "p-2",
-                    selectedIcon === iconName && "bg-accent"
+                    "p-2 hover:bg-transparent",
+                    selectedIcon === iconName
+                      ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                      : "hover:bg-transparent"
                   )}
                   onClick={() => setSelectedIcon(iconName)}>
                   <IconComponent className="h-4 w-4" />
