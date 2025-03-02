@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Pencil } from "lucide-react";
 import { Category } from "@/types/category";
-import { IconPicker } from "./IconPicker";
+import { IconPicker } from "../components/IconPicker";
 import { DeleteCategoryDialog } from "./DeleteCategoryDialog";
 
 interface EditCategoryDialogProps {

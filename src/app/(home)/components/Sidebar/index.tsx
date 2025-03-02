@@ -5,7 +5,7 @@ import { Category } from "@/types/category";
 import { cn } from "@/lib/utils";
 import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
-import AddCategoryDialog from "./AddCategoryDialog";
+import { AddCategoryDialog } from "./AddCategoryDialog/index";
 import { EditCategoryDialog } from "./EditCategoryDialog";
 import { ModeToggle } from "./modeToggle";
 
