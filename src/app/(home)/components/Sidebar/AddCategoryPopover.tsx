@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,13 +63,13 @@ const commonIcons = {
   settings: Settings,
 };
 
-interface AddCategoryDialogProps {
+interface AddCategoryPopoverProps {
   onSuccess?: () => void;
 }
 
-export default function AddCategoryDialog({
+export default function AddCategoryPopover({
   onSuccess,
-}: AddCategoryDialogProps) {
+}: AddCategoryPopoverProps) {
   const [open, setOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string>("");
   const [name, setName] = useState("");
@@ -92,7 +89,7 @@ export default function AddCategoryDialog({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: Date.now().toString(), // 使用时间戳作为临时ID
+          id: Date.now().toString(),
           name,
           icon: selectedIcon,
           sites: [],
@@ -104,12 +101,9 @@ export default function AddCategoryDialog({
         throw new Error(data.error || "添加分类失败");
       }
 
-      // 重置表单
       setName("");
       setSelectedIcon("");
       setOpen(false);
-
-      // 调用成功回调来更新UI
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "添加分类失败");
@@ -119,21 +113,21 @@ export default function AddCategoryDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="mt-auto">
           <Plus className="h-5 w-5" />
         </Button>
-      </DialogTrigger>
+      </PopoverTrigger>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>添加新分类</DialogTitle>
-          <DialogDescription>添加一个新分类</DialogDescription>
-        </DialogHeader>
-
+      <PopoverContent className="w-80">
         <div className="space-y-4">
-          <div>
+          <div className="space-y-2">
+            <h4 className="font-medium leading-none">添加新分类</h4>
+            <p className="text-sm text-muted-foreground">添加一个新分类</p>
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-medium">分类名称</label>
             <Input
               value={name}
@@ -142,9 +136,9 @@ export default function AddCategoryDialog({
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <label className="text-sm font-medium">选择图标</label>
-            <div className="grid grid-cols-6 gap-2 mt-2">
+            <div className="grid grid-cols-6 gap-2">
               {Object.entries(commonIcons).map(([iconName, IconComponent]) => (
                 <Button
                   key={iconName}
@@ -169,7 +163,7 @@ export default function AddCategoryDialog({
           </Button>
           {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
         </div>
-      </DialogContent>
-    </Dialog>
+      </PopoverContent>
+    </Popover>
   );
 }

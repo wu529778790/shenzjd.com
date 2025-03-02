@@ -5,7 +5,7 @@ import { Category } from "@/types/category";
 import { cn } from "@/lib/utils";
 import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
-import AddCategoryDialog from "./AddCategoryDialog";
+import AddCategoryPopover from "./AddCategoryPopover";
 
 interface SidebarProps {
   categories: Category[];
@@ -58,7 +58,7 @@ export default function Sidebar({
         );
       })}
 
-      <AddCategoryDialog onSuccess={onCategoriesChange} />
+      <AddCategoryPopover onSuccess={onCategoriesChange} />
     </div>
   );
 }
