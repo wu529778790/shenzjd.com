@@ -14,9 +14,13 @@ import { IconPicker } from "../components/IconPicker";
 
 interface AddCategoryDialogProps {
   onSuccess?: () => void;
+  children?: React.ReactNode;
 }
 
-export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
+export function AddCategoryDialog({
+  onSuccess,
+  children,
+}: AddCategoryDialogProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string>("");
   const [name, setName] = useState("");
@@ -61,13 +65,17 @@ export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="mt-auto"
-        onClick={() => setIsDialogOpen(true)}>
-        <Plus className="h-5 w-5" />
-      </Button>
+      {children ? (
+        <div onClick={() => setIsDialogOpen(true)}>{children}</div>
+      ) : (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mt-auto"
+          onClick={() => setIsDialogOpen(true)}>
+          <Plus className="h-5 w-5" />
+        </Button>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">

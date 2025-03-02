@@ -27,10 +27,8 @@ export default function Sidebar({
   onCategoriesChange,
 }: SidebarProps) {
   const getIconComponent = (iconName: string): IconComponent => {
-    // 将图标名称转换为 Pascal Case（首字母大写）
     const formattedName =
       iconName.charAt(0).toUpperCase() + iconName.slice(1).toLowerCase();
-    // 获取图标组件，如果不存在则使用 Folder 图标
     return (
       (LucideIcons as unknown as Record<string, IconComponent>)[
         formattedName
@@ -64,8 +62,18 @@ export default function Sidebar({
         );
       })}
 
-      <AddCategoryDialog onSuccess={onCategoriesChange} />
-      <ModeToggle />
+      <AddCategoryDialog onSuccess={onCategoriesChange}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mb-2 transition-colors duration-200 hover:bg-accent">
+          <LucideIcons.Plus className="h-5 w-5" />
+        </Button>
+      </AddCategoryDialog>
+
+      <div className="mt-auto">
+        <ModeToggle />
+      </div>
     </div>
   );
 }
