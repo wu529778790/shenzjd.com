@@ -3,15 +3,13 @@ import { readCategories, writeCategories } from "@/lib/category";
 import { Category } from "@/types/category";
 
 // PUT 请求处理更新分类
-export async function PUT(
-  request: Request,
-  { params }: { params: { categoryId: string } }
-) {
+export async function PUT(request: Request) {
   try {
+    const categoryId = new URL(request.url).pathname.split("/").pop();
     const { name, icon } = await request.json();
     const categories = await readCategories();
     const categoryIndex = categories.findIndex(
-      (category: Category) => category.id === params.categoryId
+      (category: Category) => category.id === categoryId
     );
 
     if (categoryIndex === -1) {
@@ -38,14 +36,12 @@ export async function PUT(
 }
 
 // DELETE 请求处理删除分类
-export async function DELETE(
-  request: Request,
-  { params }: { params: { categoryId: string } }
-) {
+export async function DELETE(request: Request) {
   try {
+    const categoryId = new URL(request.url).pathname.split("/").pop();
     const categories = await readCategories();
     const categoryIndex = categories.findIndex(
-      (category: Category) => category.id === params.categoryId
+      (category: Category) => category.id === categoryId
     );
 
     if (categoryIndex === -1) {
