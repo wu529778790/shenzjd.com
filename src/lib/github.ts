@@ -13,7 +13,7 @@ export async function getGitHubFileContent(): Promise<Category[]> {
     const response = await fetch(url, {
       headers: {
         Accept: "application/vnd.github.v3.raw",
-        Authorization: `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+        Authorization: `token ${process.env.GITHUB_TOKEN}`,
       },
       next: {
         revalidate: 3600, // 缓存1小时
@@ -21,6 +21,7 @@ export async function getGitHubFileContent(): Promise<Category[]> {
     });
 
     if (!response.ok) {
+      console.error("Failed to fetch data:", await response.text());
       throw new Error(
         `Failed to fetch data from GitHub: ${response.statusText}`
       );
@@ -37,20 +38,20 @@ export async function getGitHubFileContent(): Promise<Category[]> {
 export async function updateGitHubFile(
   categories: Category[]
 ): Promise<boolean> {
-  if (!process.env.NEXT_PUBLIC_GITHUB_TOKEN) {
+  if (!process.env.GITHUB_TOKEN) {
     console.error("GitHub token not found");
     return false;
   }
 
-  const { owner, repo, path } = config.github;
+  const { owner, repo, branch, path } = config.github;
 
   try {
     // 1. 获取当前文件的 SHA
     const currentFileResponse = await fetch(
-      `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}`,
+      `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,
       {
         headers: {
-          Authorization: `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
           Accept: "application/vnd.github.v3+json",
           "X-GitHub-Api-Version": "2022-11-28",
         },
@@ -75,7 +76,7 @@ export async function updateGitHubFile(
       {
         method: "PUT",
         headers: {
-          Authorization: `token ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
           "Content-Type": "application/json",
           Accept: "application/vnd.github.v3+json",
           "X-GitHub-Api-Version": "2022-11-28",
@@ -86,7 +87,7 @@ export async function updateGitHubFile(
             "base64"
           ),
           sha: currentFile.sha,
-          branch: config.github.branch,
+          branch: branch,
         }),
       }
     );
