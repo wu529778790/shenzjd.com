@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
 import AddCategoryPopover from "./AddCategoryPopover";
+import EditCategoryPopover from "./EditCategoryPopover";
 
 interface SidebarProps {
   categories: Category[];
@@ -42,19 +43,23 @@ export default function Sidebar({
         const IconComponent = getIconComponent(category.icon);
 
         return (
-          <Button
+          <EditCategoryPopover
             key={category.id}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "mb-2 transition-colors duration-200",
-              activeCategory === category.id
-                ? "bg-primary/10 text-primary border-primary hover:bg-primary/20"
-                : "hover:bg-accent"
-            )}
-            onClick={() => onSelectCategory(category.id)}>
-            <IconComponent className="h-5 w-5" />
-          </Button>
+            category={category}
+            onSuccess={onCategoriesChange}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "mb-2 transition-colors duration-200",
+                activeCategory === category.id
+                  ? "bg-primary/10 text-primary border-primary hover:bg-primary/20"
+                  : "hover:bg-accent"
+              )}
+              onClick={() => onSelectCategory(category.id)}>
+              <IconComponent className="h-5 w-5" />
+            </Button>
+          </EditCategoryPopover>
         );
       })}
 
