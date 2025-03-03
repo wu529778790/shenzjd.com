@@ -1,15 +1,15 @@
 import { Category } from "@/types/category";
 import { Site } from "@/types/site";
-import { getGitHubFileContent, updateGitHubFile } from "./github";
+import { readLocalData, writeLocalData } from "./local-data";
 
 // 读取所有分类数据
 export async function readCategories(): Promise<Category[]> {
-  return getGitHubFileContent();
+  return readLocalData();
 }
 
 // 写入所有分类数据
 export async function writeCategories(categories: Category[]): Promise<void> {
-  const success = await updateGitHubFile(categories);
+  const success = await writeLocalData(categories);
   if (!success) {
     throw new Error("Failed to update categories");
   }

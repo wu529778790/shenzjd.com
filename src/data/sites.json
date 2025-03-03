@@ -1,11 +1,8 @@
-{
-  "categoryId": "default",
-  "sites": [
-    {
-      "title": "GitHub - octokit/rest.js: GitHub REST API client for JavaScript",
-      "favicon": "https://github.githubassets.com/favicons/favicon.svg",
-      "url": "https://github.com/octokit/rest.js/",
-      "id": "1740982265332"
-    }
-  ]
-}
+[
+  {
+    "id": "default",
+    "name": "默认分类",
+    "icon": "bookmark",
+    "sites": []
+  }
+]
