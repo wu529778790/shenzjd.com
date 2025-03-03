@@ -17,35 +17,55 @@ function writeData(data: Category[]) {
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  context: { params: { categoryId: string } }
 ) {
+  const { categoryId } = await context.params;
   try {
     const data = readData();
-    const category = data.find((c) => c.id === params.categoryId);
+    const category = data.find((c) => c.id === categoryId);
 
     if (!category) {
-      return Response.json({ error: "分类不存在" }, { status: 404 });
+      return Response.json(
+        {
+          error: "分类不存在",
+          code: "CATEGORY_NOT_FOUND",
+        },
+        { status: 404 }
+      );
     }
 
     return Response.json(category);
   } catch {
-    return Response.json({ error: "获取分类失败" }, { status: 500 });
+    return Response.json(
+      {
+        error: "获取分类失败",
+        code: "CATEGORY_GET_FAILED",
+      },
+      { status: 500 }
+    );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  context: { params: { categoryId: string } }
 ) {
+  const { categoryId } = await context.params;
   try {
     const body = await request.json();
     const validatedData = categoryUpdateSchema.parse(body);
 
     const data = readData();
-    const categoryIndex = data.findIndex((c) => c.id === params.categoryId);
+    const categoryIndex = data.findIndex((c) => c.id === categoryId);
 
     if (categoryIndex === -1) {
-      return Response.json({ error: "分类不存在" }, { status: 404 });
+      return Response.json(
+        {
+          error: "分类不存在",
+          code: "CATEGORY_NOT_FOUND",
+        },
+        { status: 404 }
+      );
     }
 
     data[categoryIndex] = {
@@ -54,29 +74,51 @@ export async function PATCH(
     };
 
     writeData(data);
-    return Response.json(data[categoryIndex]);
+    return Response.json({
+      message: "更新成功",
+      data: data[categoryIndex],
+    });
   } catch {
-    return Response.json({ error: "更新分类失败" }, { status: 400 });
+    return Response.json(
+      {
+        error: "更新分类失败",
+        code: "CATEGORY_UPDATE_FAILED",
+      },
+      { status: 400 }
+    );
   }
 }
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  context: { params: { categoryId: string } }
 ) {
+  const { categoryId } = await context.params;
   try {
     const data = readData();
-    const categoryIndex = data.findIndex((c) => c.id === params.categoryId);
+    const categoryIndex = data.findIndex((c) => c.id === categoryId);
 
     if (categoryIndex === -1) {
-      return Response.json({ error: "分类不存在" }, { status: 404 });
+      return Response.json(
+        {
+          error: "分类不存在",
+          code: "CATEGORY_NOT_FOUND",
+        },
+        { status: 404 }
+      );
     }
 
     data.splice(categoryIndex, 1);
     writeData(data);
 
-    return Response.json({ message: "删除成功" });
+    return new Response(null, { status: 204 });
   } catch {
-    return Response.json({ error: "删除分类失败" }, { status: 500 });
+    return Response.json(
+      {
+        error: "删除分类失败",
+        code: "CATEGORY_DELETE_FAILED",
+      },
+      { status: 500 }
+    );
   }
 }
