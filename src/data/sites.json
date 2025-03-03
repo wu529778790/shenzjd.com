@@ -1,6 +1,6 @@
 [
   {
-    "categoryId": "1",
+    "id": "1",
     "name": "默认",
     "icon": "home",
     "sites": []
