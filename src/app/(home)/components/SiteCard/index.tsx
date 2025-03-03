@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { EditSiteDialog } from "./EditSiteDialog";
 import {
   ContextMenu,
@@ -40,26 +40,30 @@ export function SiteCard({
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
+  useEffect(() => {
+    setEditedTitle(initialTitle);
+  }, [initialTitle]);
+
   const handleEdit = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/categories/${categoryId}/sites`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          siteId: id,
-          site: {
-            title: editedTitle,
-            url,
-            favicon,
+      const response = await fetch(
+        `/api/categories/${categoryId}/sites/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            title: editedTitle,
+          }),
+        }
+      );
+
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error("更新站点失败");
+        throw new Error(result.error || "更新站点失败");
       }
 
       setIsEditDialogOpen(false);
@@ -106,6 +110,7 @@ export function SiteCard({
       <ContextMenu>
         <ContextMenuTrigger>
           <div
+            key={id}
             onClick={handleCardClick}
             className="flex flex-col items-center gap-2 cursor-pointer group w-[80px]">
             <div className="w-12 h-12 relative flex items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-200">
