@@ -47,20 +47,38 @@ export async function POST(
     const categoryIndex = data.findIndex((c) => c.id === categoryId);
 
     if (categoryIndex === -1) {
-      return Response.json({ error: "分类不存在" }, { status: 404 });
+      return Response.json(
+        {
+          error: "分类不存在",
+          code: "CATEGORY_NOT_FOUND",
+        },
+        { status: 404 }
+      );
     }
 
     const newSite = {
       ...validatedData,
-      id: crypto.randomUUID(),
+      id: Date.now().toString(),
     };
 
     data[categoryIndex].sites.push(newSite);
     writeData(data);
 
-    return Response.json(newSite, { status: 201 });
+    return Response.json(
+      {
+        message: "创建站点成功",
+        data: newSite,
+      },
+      { status: 201 }
+    );
   } catch {
-    return Response.json({ error: "创建站点失败" }, { status: 400 });
+    return Response.json(
+      {
+        error: "创建站点失败",
+        code: "SITE_CREATE_FAILED",
+      },
+      { status: 400 }
+    );
   }
 }
 

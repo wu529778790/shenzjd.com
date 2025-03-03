@@ -74,6 +74,7 @@ export function AddSiteDialog({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id: Date.now().toString(),
           title: editedTitle || siteInfo.title,
           favicon: siteInfo.favicon,
           url: siteInfo.url,
