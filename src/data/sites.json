@@ -11,5 +11,13 @@
         "url": "https://react.dev/"
       }
     ]
+  },
+  {
+    "category": {
+      "id": "1741008892372",
+      "name": "默认分类",
+      "icon": "globe",
+      "sites": []
+    }
   }
 ]
