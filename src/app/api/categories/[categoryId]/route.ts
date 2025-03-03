@@ -68,17 +68,21 @@ export async function PATCH(
       );
     }
 
-    data[categoryIndex] = {
+    // 更新分类
+    const updatedCategory = {
       ...data[categoryIndex],
       ...validatedData,
     };
-
+    data[categoryIndex] = updatedCategory;
     writeData(data);
+
+    // 返回更新后的数据
     return Response.json({
       message: "更新成功",
-      data: data[categoryIndex],
+      data: updatedCategory,
     });
-  } catch {
+  } catch (error) {
+    console.error("更新分类失败:", error);
     return Response.json(
       {
         error: "更新分类失败",

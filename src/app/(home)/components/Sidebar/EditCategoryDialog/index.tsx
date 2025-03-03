@@ -46,7 +46,7 @@ export function EditCategoryDialog({
       setError("");
 
       const response = await fetch(`/api/categories/${category.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -56,11 +56,14 @@ export function EditCategoryDialog({
         }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "更新分类失败");
+        throw new Error(result.error || "更新分类失败");
       }
 
+      setName("");
+      setSelectedIcon("");
       setIsDialogOpen(false);
       onSuccess?.();
     } catch (err) {

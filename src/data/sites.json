@@ -2,25 +2,7 @@
   {
     "id": "default",
     "name": "默认分类",
-    "icon": "bookmark",
-    "sites": []
-  },
-  {
-    "name": "士大夫",
-    "icon": "globe",
-    "id": "218921bc-9277-49fe-8e3e-782119890124",
-    "sites": []
-  },
-  {
-    "id": "1740989408534",
-    "name": "公司",
-    "icon": "folder",
-    "sites": []
-  },
-  {
-    "id": "1740989519822",
-    "name": "放大舒服",
-    "icon": "heart",
+    "icon": "home",
     "sites": []
   }
 ]
