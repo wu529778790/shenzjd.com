@@ -229,3 +229,9 @@ POST /api/parse-url
 3. 更新操作需要提供完整的对象数据
 4. 删除操作会级联删除分类下的所有站点
 5. URL 解析 API 需要提供有效的 URL 地址
+
+## 参考网站
+
+- <https://octokit.github.io/rest.js/>
+- <https://www.shadcn-ui.cn/>
+- <https://nextjs.org/>
