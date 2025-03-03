@@ -11,5 +11,18 @@
         "url": "https://react.dev/"
       }
     ]
+  },
+  {
+    "id": "1741009999537",
+    "name": "1",
+    "icon": "globe",
+    "sites": [
+      {
+        "title": "shenzjd.com/src/data/sites.json at main · wu529778790/shenzjd.com · GitHub",
+        "favicon": "https://github.githubassets.com/favicons/favicon.svg",
+        "url": "https://github.com/wu529778790/shenzjd.com/blob/main/src/data/sites.json",
+        "id": "1741010022519"
+      }
+    ]
   }
 ]
