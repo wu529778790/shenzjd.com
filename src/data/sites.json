@@ -9,6 +9,12 @@
         "favicon": "https://www.shadcn-ui.cn/favicon.ico",
         "url": "https://www.shadcn-ui.cn/docs/components/sidebar",
         "id": "site_1740968803079_e7tl5x3fw"
+      },
+      {
+        "title": "快速入门 – React 中文文档",
+        "favicon": "https://zh-hans.react.dev/favicon-32x32.png",
+        "url": "https://zh-hans.react.dev/learn",
+        "id": "site_1740970086828_yx77bef1s"
       }
     ]
   }
