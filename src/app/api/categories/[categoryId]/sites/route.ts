@@ -16,8 +16,8 @@ export async function PUT(
   }
 
   try {
-    const { oldUrl, site } = await request.json();
-    await updateSiteInCategory(categoryId, oldUrl, site);
+    const { siteId, site } = await request.json();
+    await updateSiteInCategory(categoryId, siteId, site);
     return NextResponse.json({ message: "站点更新成功" });
   } catch (error) {
     console.error("更新站点失败:", error);
@@ -39,8 +39,8 @@ export async function DELETE(
   }
 
   try {
-    const { url } = await request.json();
-    await removeSiteFromCategory(categoryId, url);
+    const { siteId } = await request.json();
+    await removeSiteFromCategory(categoryId, siteId);
     return NextResponse.json({ message: "站点删除成功" });
   } catch (error) {
     console.error("删除站点失败:", error);

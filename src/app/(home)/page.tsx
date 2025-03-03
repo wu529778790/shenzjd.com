@@ -86,9 +86,10 @@ export default function Home() {
               {categories.map((category) => (
                 <div key={category.id} className="container mx-auto p-4">
                   <div className="flex flex-wrap gap-4 justify-start items-start">
-                    {getFilteredSites(category).map((site, index) => (
+                    {getFilteredSites(category).map((site) => (
                       <SiteCard
-                        key={index}
+                        key={site.id}
+                        id={site.id}
                         title={site.title}
                         url={site.url}
                         favicon={site.favicon}

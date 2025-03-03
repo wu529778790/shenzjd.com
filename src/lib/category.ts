@@ -71,12 +71,12 @@ export async function addSiteToCategory(
 // 从分类中删除站点
 export async function removeSiteFromCategory(
   categoryId: string,
-  siteUrl: string
+  siteId: string
 ): Promise<void> {
   const categories = await readCategories();
   const category = categories.find((c) => c.id === categoryId);
   if (category) {
-    category.sites = category.sites.filter((site) => site.url !== siteUrl);
+    category.sites = category.sites.filter((site) => site.id !== siteId);
     await writeCategories(categories);
   }
 }
@@ -84,15 +84,15 @@ export async function removeSiteFromCategory(
 // 更新分类中的站点
 export async function updateSiteInCategory(
   categoryId: string,
-  oldUrl: string,
+  siteId: string,
   site: Site
 ): Promise<void> {
   const categories = await readCategories();
   const category = categories.find((c) => c.id === categoryId);
   if (category) {
-    const siteIndex = category.sites.findIndex((s) => s.url === oldUrl);
+    const siteIndex = category.sites.findIndex((s) => s.id === siteId);
     if (siteIndex !== -1) {
-      category.sites[siteIndex] = site;
+      category.sites[siteIndex] = { ...site, id: siteId };
       await writeCategories(categories);
     }
   }

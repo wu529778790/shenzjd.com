@@ -78,6 +78,9 @@ export function AddDialog({
           sites: [
             {
               ...siteInfo,
+              id: `site_${Date.now()}_${Math.random()
+                .toString(36)
+                .substr(2, 9)}`,
               title: editedTitle || siteInfo.title,
             },
           ],

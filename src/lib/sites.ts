@@ -3,6 +3,7 @@ import { config } from "@/config";
 
 // 定义站点数据的 Schema
 const SiteSchema = z.object({
+  id: z.string(),
   title: z.string(),
   url: z.string().url(),
   favicon: z.string().url(),

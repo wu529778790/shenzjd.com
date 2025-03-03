@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/context-menu";
 
 interface SiteCardProps {
+  id: string;
   title: string;
   url: string;
   favicon?: string;
@@ -17,6 +18,7 @@ interface SiteCardProps {
 }
 
 export function SiteCard({
+  id,
   title: initialTitle,
   url,
   favicon,
@@ -36,7 +38,7 @@ export function SiteCard({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          oldUrl: url,
+          siteId: id,
           site: {
             title: editedTitle,
             url,
@@ -67,7 +69,7 @@ export function SiteCard({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          url,
+          siteId: id,
         }),
       });
 
