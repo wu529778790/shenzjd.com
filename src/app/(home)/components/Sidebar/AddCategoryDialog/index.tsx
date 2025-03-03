@@ -36,12 +36,14 @@ export function AddCategoryDialog({
       setLoading(true);
       setError("");
 
-      await addCategory({
+      const newCategory = {
         id: Date.now().toString(),
         name,
         icon: selectedIcon,
         sites: [],
-      });
+      };
+
+      await addCategory(newCategory);
 
       setName("");
       setSelectedIcon("");

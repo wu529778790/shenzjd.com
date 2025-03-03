@@ -106,7 +106,10 @@ export function useSites(): UseSitesReturn {
       const response = await fetch("/api/sites", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, data }),
+        body: JSON.stringify({
+          type,
+          data: type === "addCategory" ? data.category : data,
+        }),
       });
 
       if (!response.ok) {

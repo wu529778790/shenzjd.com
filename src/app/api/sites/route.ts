@@ -10,6 +10,19 @@ import {
   type Site,
   type SiteCategory,
 } from "@/lib/sites";
+import { categorySchema, siteSchema } from "@/lib/validations/site";
+import { z } from "zod";
+
+const postRequestSchema = z.object({
+  type: z.enum(["addSite", "addCategory"]),
+  data: z.union([
+    z.object({
+      categoryId: z.string(),
+      site: siteSchema,
+    }),
+    categorySchema,
+  ]),
+});
 
 export async function GET() {
   try {
@@ -24,16 +37,19 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { type, data } = body;
+    const validatedData = postRequestSchema.parse(body);
+    const { type, data } = validatedData;
 
     switch (type) {
       case "addSite": {
-        const { categoryId, site } = data;
-        await addSite(categoryId, site as Site);
+        const siteData = data as { categoryId: string; site: Site };
+        const { categoryId, site } = siteData;
+        await addSite(categoryId, site);
         break;
       }
       case "addCategory": {
-        await addCategory(data as SiteCategory);
+        const category = data as SiteCategory;
+        await addCategory(category);
         break;
       }
       default:
