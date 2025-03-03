@@ -7,6 +7,16 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SiteCardProps {
   id: string;
@@ -28,6 +38,7 @@ export function SiteCard({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editedTitle, setEditedTitle] = useState(initialTitle);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
   const handleEdit = async () => {
     try {
@@ -82,6 +93,7 @@ export function SiteCard({
       console.error("删除站点失败:", error);
     } finally {
       setIsLoading(false);
+      setIsDeleteAlertOpen(false);
     }
   };
 
@@ -121,7 +133,9 @@ export function SiteCard({
           <ContextMenuItem onClick={() => setIsEditDialogOpen(true)}>
             编辑
           </ContextMenuItem>
-          <ContextMenuItem onClick={handleDelete}>删除</ContextMenuItem>
+          <ContextMenuItem onClick={() => setIsDeleteAlertOpen(true)}>
+            删除
+          </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
 
@@ -134,6 +148,23 @@ export function SiteCard({
         onSave={handleEdit}
         isLoading={isLoading}
       />
+
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定要删除吗？此操作无法撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
+              {isLoading ? "删除中..." : "删除"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
