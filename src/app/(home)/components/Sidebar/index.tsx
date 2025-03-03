@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
 import { AddCategoryDialog } from "./AddCategoryDialog/index";
-import { RightButton } from "./ContextMenu";
+import { CategoryContextMenu } from "./CategoryContextMenu";
 import { ModeToggle } from "./modeToggle";
 
 interface SidebarProps {
@@ -42,7 +42,7 @@ export default function Sidebar({
         const IconComponent = getIconComponent(category.icon);
 
         return (
-          <RightButton
+          <CategoryContextMenu
             key={category.id}
             category={category}
             onSuccess={onCategoriesChange}>
@@ -58,7 +58,7 @@ export default function Sidebar({
               onClick={() => onSelectCategory(category.id)}>
               <IconComponent className="h-5 w-5" />
             </Button>
-          </RightButton>
+          </CategoryContextMenu>
         );
       })}
 

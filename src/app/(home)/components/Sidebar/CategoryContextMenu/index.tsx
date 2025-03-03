@@ -18,7 +18,7 @@ interface EditCategoryDialogProps {
   children: React.ReactNode;
 }
 
-export function RightButton({
+export function CategoryContextMenu({
   category,
   onSuccess,
   children,
