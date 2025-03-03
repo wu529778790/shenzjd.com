@@ -8,6 +8,7 @@ import Sidebar from "./components/Sidebar/index";
 import { FullPageScroll } from "@/components/FullPageScroll";
 import { PageContextMenu } from "./components/PageContextMenu";
 import { useSites } from "@/hooks/useSites";
+import { AddSiteCard } from "./components/AddSiteCard";
 
 export default function Home() {
   const { sites: categories, loading, error, refreshSites } = useSites();
@@ -85,6 +86,10 @@ export default function Home() {
                         onSiteChange={refreshSites}
                       />
                     ))}
+                    <AddSiteCard
+                      activeCategory={category.id}
+                      onSuccess={refreshSites}
+                    />
                   </div>
                 </div>
               ))}
