@@ -1,0 +1,47 @@
+[
+  {
+    "id": "default",
+    "name": "默认",
+    "icon": "Home",
+    "sites": [
+      {
+        "title": "Lucide",
+        "url": "https://lucide.dev/icons/",
+        "favicon": "https://lucide.dev/favicon.ico"
+      },
+      {
+        "title": "WeTab ",
+        "url": "https://web.wetab.link/",
+        "favicon": "https://web.wetab.link/icon_zh_48.png"
+      },
+      {
+        "title": "Select - shadcn/ui中文文档 | shadcn/ui中文网",
+        "favicon": "https://www.shadcn-ui.cn/favicon.ico",
+        "url": "https://www.shadcn-ui.cn/docs/components/select"
+      },
+      {
+        "title": "小红书创作服务平台",
+        "favicon": "https://www.xiaohongshu.com/favicon.ico",
+        "url": "https://creator.xiaohongshu.com/creator/home"
+      }
+    ]
+  },
+  {
+    "id": "1740754261376",
+    "name": "工具",
+    "icon": "briefcase",
+    "sites": [
+      {
+        "title": "帮小忙，腾讯QQ浏览器在线工具箱平台",
+        "favicon": "https://tool.browser.qq.com/favicon.ico",
+        "url": "https://tool.browser.qq.com/"
+      }
+    ]
+  },
+  {
+    "id": "1740921207271",
+    "name": "发",
+    "icon": "folder",
+    "sites": []
+  }
+]

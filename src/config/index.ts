@@ -3,7 +3,7 @@ export const config = {
   github: {
     owner: "wu529778790",
     repo: "shenzjd.com",
-    branch: "data", // 使用 data 分支存储数据
-    path: "sites.json",
+    branch: "main", // 使用 main 分支存储数据
+    path: "src/data/sites.json",
   },
 } as const;
