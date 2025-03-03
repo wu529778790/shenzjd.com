@@ -3,7 +3,7 @@
 import { SiteCard } from "./components/SiteCard";
 import { SearchBar } from "./components/SearchBar";
 import { useEffect, useState } from "react";
-import { Category } from "@/types/category";
+import { Category } from "@/types";
 import Sidebar from "./components/Sidebar/index";
 import { FullPageScroll } from "@/components/FullPageScroll";
 import { PageContextMenu } from "./components/PageContextMenu";

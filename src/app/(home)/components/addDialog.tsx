@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
-import { Site } from "@/types/site";
+import { Site } from "@/types";
 
 // URL schema 验证
 const urlSchema = z.string().url("请输入有效的URL");

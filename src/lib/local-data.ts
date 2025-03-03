@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { Category } from "@/types/category";
+import { Category } from "@/types";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "src/data/sites.json");
 

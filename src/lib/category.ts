@@ -1,5 +1,5 @@
-import { Category } from "@/types/category";
-import { Site } from "@/types/site";
+import { Category } from "@/types";
+import { Site } from "@/types";
 import { readLocalData, writeLocalData } from "./local-data";
 
 // 读取所有分类数据

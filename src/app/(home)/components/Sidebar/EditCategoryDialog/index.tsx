@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Pencil } from "lucide-react";
-import { Category } from "@/types/category";
+import { Category } from "@/types";
 import { IconPicker } from "../components/IconPicker";
 import { DeleteCategoryDialog } from "./DeleteCategoryDialog";
 
