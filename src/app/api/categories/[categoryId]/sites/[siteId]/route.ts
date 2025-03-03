@@ -1,5 +1,5 @@
-import type { NextRequest } from "next/server";
-import { siteCreateSchema } from "@/lib/validations/site";
+import { NextRequest } from "next/server";
+import { siteUpdateSchema } from "@/lib/validations/site";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { Category } from "@/types";
@@ -16,8 +16,8 @@ function writeData(data: Category[]) {
 }
 
 export async function GET(
-  _request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  request: NextRequest,
+  { params }: { params: { categoryId: string; siteId: string } }
 ) {
   try {
     const data = readData();
@@ -27,47 +27,25 @@ export async function GET(
       return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    return Response.json(category.sites);
+    const site = category.sites.find((s) => s.id === params.siteId);
+
+    if (!site) {
+      return Response.json({ error: "站点不存在" }, { status: 404 });
+    }
+
+    return Response.json(site);
   } catch {
-    return Response.json({ error: "获取站点列表失败" }, { status: 500 });
+    return Response.json({ error: "获取站点失败" }, { status: 500 });
   }
 }
 
-export async function POST(
+export async function PATCH(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: { categoryId: string; siteId: string } }
 ) {
   try {
     const body = await request.json();
-    const validatedData = siteCreateSchema.parse(body);
-
-    const data = readData();
-    const categoryIndex = data.findIndex((c) => c.id === params.categoryId);
-
-    if (categoryIndex === -1) {
-      return Response.json({ error: "分类不存在" }, { status: 404 });
-    }
-
-    const newSite = {
-      ...validatedData,
-      id: crypto.randomUUID(),
-    };
-
-    data[categoryIndex].sites.push(newSite);
-    writeData(data);
-
-    return Response.json(newSite, { status: 201 });
-  } catch {
-    return Response.json({ error: "创建站点失败" }, { status: 400 });
-  }
-}
-
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { categoryId: string } }
-) {
-  try {
-    const { siteId, ...updateData } = await request.json();
+    const validatedData = siteUpdateSchema.parse(body);
 
     const data = readData();
     const category = data.find((c) => c.id === params.categoryId);
@@ -76,7 +54,7 @@ export async function PUT(
       return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    const siteIndex = category.sites.findIndex((s) => s.id === siteId);
+    const siteIndex = category.sites.findIndex((s) => s.id === params.siteId);
 
     if (siteIndex === -1) {
       return Response.json({ error: "站点不存在" }, { status: 404 });
@@ -84,7 +62,7 @@ export async function PUT(
 
     category.sites[siteIndex] = {
       ...category.sites[siteIndex],
-      ...updateData,
+      ...validatedData,
     };
 
     writeData(data);
@@ -96,11 +74,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: { categoryId: string; siteId: string } }
 ) {
   try {
-    const { siteId } = await request.json();
-
     const data = readData();
     const category = data.find((c) => c.id === params.categoryId);
 
@@ -108,7 +84,7 @@ export async function DELETE(
       return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    const siteIndex = category.sites.findIndex((s) => s.id === siteId);
+    const siteIndex = category.sites.findIndex((s) => s.id === params.siteId);
 
     if (siteIndex === -1) {
       return Response.json({ error: "站点不存在" }, { status: 404 });

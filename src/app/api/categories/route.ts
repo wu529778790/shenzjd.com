@@ -1,124 +1,85 @@
-import { NextResponse } from "next/server";
-import { readLocalData, writeLocalData } from "@/lib/local-data";
-import { Category } from "@/types/category";
+import { NextRequest } from "next/server";
+import { categoryCreateSchema } from "@/lib/validations/site";
+import { readFileSync, writeFileSync } from "fs";
+import { join } from "path";
+import { Category } from "@/types";
 
-// GET 请求处理
+const DATA_FILE = join(process.cwd(), "src/data/sites.json");
+
+function readData(): Category[] {
+  const data = readFileSync(DATA_FILE, "utf-8");
+  return JSON.parse(data);
+}
+
+function writeData(data: Category[]) {
+  writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
 export async function GET() {
   try {
-    const categories = await readLocalData();
-    return NextResponse.json(categories);
-  } catch (error) {
-    console.error("获取分类失败:", error);
-    return NextResponse.json({ error: "获取分类失败" }, { status: 500 });
+    const data = readData();
+    return Response.json(data);
+  } catch {
+    return Response.json({ error: "获取分类列表失败" }, { status: 500 });
   }
 }
 
-// POST 请求处理
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
-    const categories = await readLocalData();
+    const body = await request.json();
+    const validatedData = categoryCreateSchema.parse(body);
 
-    // 判断是添加分类还是添加站点
-    if ("categoryId" in data) {
-      // 添加站点
-      const { categoryId, sites } = data;
-      const categoryIndex = categories.findIndex(
-        (category) => category.id === categoryId
-      );
+    const data = readData();
+    const newCategory = {
+      ...validatedData,
+      id: crypto.randomUUID(),
+      sites: [],
+    };
 
-      if (categoryIndex === -1) {
-        return NextResponse.json({ error: "分类不存在" }, { status: 404 });
-      }
+    data.push(newCategory);
+    writeData(data);
 
-      // 添加新站点到分类
-      categories[categoryIndex].sites.push(...sites);
-      const success = await writeLocalData(categories);
-
-      if (!success) {
-        return NextResponse.json({ error: "更新数据失败" }, { status: 500 });
-      }
-
-      return NextResponse.json({
-        message: "添加站点成功",
-        category: categories[categoryIndex],
-      });
-    } else {
-      // 添加新分类
-      const newCategory = data as Category;
-
-      // 验证必要字段
-      if (!newCategory.id || !newCategory.name || !newCategory.icon) {
-        return NextResponse.json({ error: "缺少必要字段" }, { status: 400 });
-      }
-
-      // 检查 ID 是否已存在
-      if (categories.some((category) => category.id === newCategory.id)) {
-        return NextResponse.json({ error: "分类ID已存在" }, { status: 400 });
-      }
-
-      // 确保有 sites 数组
-      newCategory.sites = newCategory.sites || [];
-
-      // 添加新分类
-      categories.push(newCategory);
-      const success = await writeLocalData(categories);
-
-      if (!success) {
-        return NextResponse.json({ error: "更新数据失败" }, { status: 500 });
-      }
-
-      return NextResponse.json({
-        message: "添加分类成功",
-        category: newCategory,
-      });
-    }
-  } catch (error) {
-    console.error("操作失败:", error);
-    return NextResponse.json({ error: "操作失败" }, { status: 500 });
+    return Response.json(newCategory, { status: 201 });
+  } catch {
+    return Response.json({ error: "创建分类失败" }, { status: 400 });
   }
 }
 
-// 更新分类
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     const { id, ...updateData } = await request.json();
-    const categories = await readLocalData();
-    const categoryIndex = categories.findIndex(
-      (category) => category.id === id
+    const data = readData();
+    const categoryIndex = data.findIndex(
+      (category: Category) => category.id === id
     );
 
     if (categoryIndex === -1) {
-      return NextResponse.json({ error: "分类不存在" }, { status: 404 });
+      return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    categories[categoryIndex] = {
-      ...categories[categoryIndex],
+    data[categoryIndex] = {
+      ...data[categoryIndex],
       ...updateData,
     };
 
-    await writeLocalData(categories);
-    return NextResponse.json({ message: "更新成功" });
-  } catch (error) {
-    console.error("更新分类失败:", error);
-    return NextResponse.json({ error: "更新分类失败" }, { status: 500 });
+    writeData(data);
+    return Response.json({ message: "更新成功" });
+  } catch {
+    return Response.json({ error: "更新分类失败" }, { status: 500 });
   }
 }
 
-// 删除分类
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
     const { id } = await request.json();
-    const categories = await readLocalData();
-
-    const filteredCategories = categories.filter(
-      (category) => category.id !== id
+    const data = readData();
+    const filteredData = data.filter(
+      (category: Category) => category.id !== id
     );
 
-    await writeLocalData(filteredCategories);
-    return NextResponse.json({ message: "删除成功" });
-  } catch (error) {
-    console.error("删除分类失败:", error);
-    return NextResponse.json({ error: "删除分类失败" }, { status: 500 });
+    writeData(filteredData);
+    return Response.json({ message: "删除成功" });
+  } catch {
+    return Response.json({ error: "删除分类失败" }, { status: 500 });
   }
 }

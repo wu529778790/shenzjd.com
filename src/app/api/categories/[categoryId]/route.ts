@@ -1,60 +1,82 @@
-import { NextResponse } from "next/server";
-import { readCategories, writeCategories } from "@/lib/category";
-import { Category } from "@/types/category";
+import type { NextRequest } from "next/server";
+import { categoryUpdateSchema } from "@/lib/validations/site";
+import { readFileSync, writeFileSync } from "fs";
+import { join } from "path";
+import { Category } from "@/types";
 
-// PUT 请求处理更新分类
-export async function PUT(request: Request) {
+const DATA_FILE = join(process.cwd(), "src/data/sites.json");
+
+function readData(): Category[] {
+  const data = readFileSync(DATA_FILE, "utf-8");
+  return JSON.parse(data);
+}
+
+function writeData(data: Category[]) {
+  writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: { categoryId: string } }
+) {
   try {
-    const categoryId = new URL(request.url).pathname.split("/").pop();
-    const { name, icon } = await request.json();
-    const categories = await readCategories();
-    const categoryIndex = categories.findIndex(
-      (category: Category) => category.id === categoryId
-    );
+    const data = readData();
+    const category = data.find((c) => c.id === params.categoryId);
 
-    if (categoryIndex === -1) {
-      return NextResponse.json({ error: "分类不存在" }, { status: 404 });
+    if (!category) {
+      return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    // 更新分类信息
-    categories[categoryIndex] = {
-      ...categories[categoryIndex],
-      name,
-      icon,
-    };
-
-    await writeCategories(categories);
-
-    return NextResponse.json({
-      message: "更新分类成功",
-      category: categories[categoryIndex],
-    });
-  } catch (error) {
-    console.error("更新分类失败:", error);
-    return NextResponse.json({ error: "更新分类失败" }, { status: 500 });
+    return Response.json(category);
+  } catch {
+    return Response.json({ error: "获取分类失败" }, { status: 500 });
   }
 }
 
-// DELETE 请求处理删除分类
-export async function DELETE(request: Request) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { categoryId: string } }
+) {
   try {
-    const categoryId = new URL(request.url).pathname.split("/").pop();
-    const categories = await readCategories();
-    const categoryIndex = categories.findIndex(
-      (category: Category) => category.id === categoryId
-    );
+    const body = await request.json();
+    const validatedData = categoryUpdateSchema.parse(body);
+
+    const data = readData();
+    const categoryIndex = data.findIndex((c) => c.id === params.categoryId);
 
     if (categoryIndex === -1) {
-      return NextResponse.json({ error: "分类不存在" }, { status: 404 });
+      return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    // 删除分类
-    categories.splice(categoryIndex, 1);
-    await writeCategories(categories);
+    data[categoryIndex] = {
+      ...data[categoryIndex],
+      ...validatedData,
+    };
 
-    return NextResponse.json({ message: "删除分类成功" });
-  } catch (error) {
-    console.error("删除分类失败:", error);
-    return NextResponse.json({ error: "删除分类失败" }, { status: 500 });
+    writeData(data);
+    return Response.json(data[categoryIndex]);
+  } catch {
+    return Response.json({ error: "更新分类失败" }, { status: 400 });
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { categoryId: string } }
+) {
+  try {
+    const data = readData();
+    const categoryIndex = data.findIndex((c) => c.id === params.categoryId);
+
+    if (categoryIndex === -1) {
+      return Response.json({ error: "分类不存在" }, { status: 404 });
+    }
+
+    data.splice(categoryIndex, 1);
+    writeData(data);
+
+    return Response.json({ message: "删除成功" });
+  } catch {
+    return Response.json({ error: "删除分类失败" }, { status: 500 });
   }
 }
