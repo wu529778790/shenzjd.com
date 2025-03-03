@@ -3,6 +3,13 @@
     "id": "default",
     "name": "默认分类",
     "icon": "home",
-    "sites": []
+    "sites": [
+      {
+        "id": "1740995559618",
+        "title": "快速入门 – React 中文文档",
+        "favicon": "https://zh-hans.react.dev/favicon-32x32.png",
+        "url": "https://zh-hans.react.dev/learn"
+      }
+    ]
   }
 ]
