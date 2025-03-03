@@ -84,13 +84,32 @@ export async function DELETE(request: NextRequest) {
   try {
     const { id } = await request.json();
     const data = readData();
-    const filteredData = data.filter(
-      (category: Category) => category.id !== id
-    );
 
-    writeData(filteredData);
-    return Response.json({ message: "删除成功" });
+    // 先检查分类是否存在
+    const categoryIndex = data.findIndex((category) => category.id === id);
+    if (categoryIndex === -1) {
+      return Response.json(
+        {
+          error: "分类不存在",
+          code: "CATEGORY_NOT_FOUND",
+        },
+        { status: 404 }
+      );
+    }
+
+    // 删除分类
+    data.splice(categoryIndex, 1);
+    writeData(data);
+
+    // 返回 204 No Content，表示删除成功
+    return new Response(null, { status: 204 });
   } catch {
-    return Response.json({ error: "删除分类失败" }, { status: 500 });
+    return Response.json(
+      {
+        error: "删除分类失败",
+        code: "CATEGORY_DELETE_FAILED",
+      },
+      { status: 500 }
+    );
   }
 }
