@@ -16,6 +16,13 @@
     "id": "1740996219312",
     "name": "2",
     "icon": "globe",
-    "sites": []
+    "sites": [
+      {
+        "id": "1740996601976",
+        "title": "标签（Label） - shadcn/ui中文文档 | shadcn/ui中文网",
+        "favicon": "https://www.shadcn-ui.cn/favicon.ico",
+        "url": "https://www.shadcn-ui.cn/docs/components/label"
+      }
+    ]
   }
 ]
