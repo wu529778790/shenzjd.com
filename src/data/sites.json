@@ -3,6 +3,13 @@
     "id": "default",
     "name": "默认分类",
     "icon": "home",
-    "sites": []
+    "sites": [
+      {
+        "id": "1741007885365",
+        "title": "React",
+        "favicon": "https://react.dev/favicon-32x32.png",
+        "url": "https://react.dev/"
+      }
+    ]
   }
 ]
