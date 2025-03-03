@@ -71,7 +71,7 @@ export function IconPicker({ selectedIcon, onSelect }: IconPickerProps) {
             variant="ghost"
             size="icon"
             className={cn(
-              "p-2 hover:bg-transparent",
+              "p-2 hover:bg-transparent cursor-pointer",
               selectedIcon === iconName
                 ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
                 : "hover:bg-transparent"

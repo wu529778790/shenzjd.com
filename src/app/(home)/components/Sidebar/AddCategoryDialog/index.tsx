@@ -24,8 +24,8 @@ export function AddCategoryDialog({
 }: AddCategoryDialogProps) {
   const { addCategory } = useSites();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedIcon, setSelectedIcon] = useState<string>("");
-  const [name, setName] = useState("");
+  const [selectedIcon, setSelectedIcon] = useState<string>("home");
+  const [name, setName] = useState("默认分类");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -78,6 +78,7 @@ export function AddCategoryDialog({
               <label className="text-sm font-medium">分类名称</label>
               <Input
                 value={name}
+                autoFocus
                 onChange={(e) => setName(e.target.value)}
                 placeholder="输入分类名称"
               />

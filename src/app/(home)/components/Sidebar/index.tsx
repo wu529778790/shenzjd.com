@@ -66,7 +66,7 @@ export default function Sidebar({
         <Button
           variant="ghost"
           size="icon"
-          className="mb-2 transition-colors duration-200 hover:bg-accent">
+          className="mb-2 cursor-pointer transition-colors duration-200 hover:bg-accent">
           <LucideIcons.Plus className="h-5 w-5" />
         </Button>
       </AddCategoryDialog>
