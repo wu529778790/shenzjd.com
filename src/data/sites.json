@@ -5,10 +5,10 @@
     "icon": "home",
     "sites": [
       {
-        "id": "1740995969513",
-        "title": "2",
-        "url": "https://zh-hans.react.dev/learn",
-        "favicon": "https://zh-hans.react.dev/favicon-32x32.png"
+        "id": "1741007885365",
+        "title": "React",
+        "favicon": "https://react.dev/favicon-32x32.png",
+        "url": "https://react.dev/"
       }
     ]
   }
