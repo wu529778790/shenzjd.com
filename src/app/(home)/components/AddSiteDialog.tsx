@@ -24,7 +24,7 @@ interface AddDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function AddDialog({
+export function AddSiteDialog({
   activeCategory,
   onSuccess,
   open,

@@ -4,7 +4,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { AddDialog } from "./addDialog";
+import { AddSiteDialog } from "./AddSiteDialog";
 import { useState } from "react";
 
 interface PageContextMenuProps {
@@ -31,7 +31,7 @@ export function PageContextMenu({
         </ContextMenuContent>
       </ContextMenu>
 
-      <AddDialog
+      <AddSiteDialog
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}
         activeCategory={activeCategory}
