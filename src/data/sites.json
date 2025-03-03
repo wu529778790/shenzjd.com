@@ -3,6 +3,13 @@
     "id": "1",
     "name": "默认",
     "icon": "home",
-    "sites": []
+    "sites": [
+      {
+        "title": "Sidebar - shadcn/ui中文文档 | shadcn/ui中文网",
+        "favicon": "https://www.shadcn-ui.cn/favicon.ico",
+        "url": "https://www.shadcn-ui.cn/docs/components/sidebar",
+        "id": "site_1740968803079_e7tl5x3fw"
+      }
+    ]
   }
 ]
