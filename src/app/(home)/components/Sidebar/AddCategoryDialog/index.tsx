@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { IconPicker } from "../components/IconPicker";
+import { useSites } from "@/hooks/useSites";
 
 interface AddCategoryDialogProps {
   onSuccess?: () => void;
@@ -21,6 +22,7 @@ export function AddCategoryDialog({
   onSuccess,
   children,
 }: AddCategoryDialogProps) {
+  const { addCategory } = useSites();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string>("");
   const [name, setName] = useState("");
@@ -34,27 +36,12 @@ export function AddCategoryDialog({
       setLoading(true);
       setError("");
 
-      const response = await fetch("/api/sites", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "addCategory",
-          data: {
-            id: Date.now().toString(),
-            name,
-            icon: selectedIcon,
-            sites: [],
-          },
-        }),
+      await addCategory({
+        id: Date.now().toString(),
+        name,
+        icon: selectedIcon,
+        sites: [],
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "添加分类失败");
-      }
 
       setName("");
       setSelectedIcon("");

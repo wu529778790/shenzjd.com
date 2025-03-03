@@ -11,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useSites } from "@/hooks/useSites";
 
 interface DeleteCategoryDialogProps {
   categoryId: string;
@@ -25,6 +26,7 @@ export function DeleteCategoryDialog({
   onOpenChange,
   onSuccess,
 }: DeleteCategoryDialogProps) {
+  const { deleteCategory } = useSites();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,20 +35,7 @@ export function DeleteCategoryDialog({
       setLoading(true);
       setError("");
 
-      const response = await fetch(`/api/sites`, {
-        method: "DELETE",
-        body: JSON.stringify({
-          type: "deleteCategory",
-          data: {
-            categoryId,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "删除分类失败");
-      }
+      await deleteCategory(categoryId);
 
       onOpenChange(false);
       onSuccess?.();

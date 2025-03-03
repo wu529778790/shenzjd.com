@@ -13,6 +13,7 @@ import { useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
 import { Site } from "@/types";
+import { useSites } from "@/hooks/useSites";
 
 // URL schema 验证
 const urlSchema = z.string().url("请输入有效的URL");
@@ -30,6 +31,7 @@ export function AddSiteDialog({
   open,
   onOpenChange,
 }: AddDialogProps) {
+  const { addSite } = useSites();
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -68,28 +70,12 @@ export function AddSiteDialog({
     if (!siteInfo) return;
 
     try {
-      const response = await fetch(`/api/sites`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "addSite",
-          data: {
-            categoryId: activeCategory,
-            site: {
-              id: Date.now().toString(),
-              title: editedTitle || siteInfo.title,
-              favicon: siteInfo.favicon,
-              url: siteInfo.url,
-            },
-          },
-        }),
+      await addSite(activeCategory, {
+        id: Date.now().toString(),
+        title: editedTitle || siteInfo.title,
+        favicon: siteInfo.favicon,
+        url: siteInfo.url,
       });
-
-      if (!response.ok) {
-        throw new Error("添加站点失败");
-      }
 
       // 重置状态
       setLink("");

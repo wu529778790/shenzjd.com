@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { IconPicker } from "../components/IconPicker";
 import { Category } from "@/types";
+import { useSites } from "@/hooks/useSites";
 
 interface EditDialogProps {
   category: Category;
@@ -23,6 +24,7 @@ export function EditCategoryDialog({
   onOpenChange,
   onSuccess,
 }: EditDialogProps) {
+  const { updateCategory } = useSites();
   const [selectedIcon, setSelectedIcon] = useState(category.icon);
   const [name, setName] = useState(category.name);
   const [loading, setLoading] = useState(false);
@@ -35,29 +37,11 @@ export function EditCategoryDialog({
       setLoading(true);
       setError("");
 
-      const response = await fetch(`/api/sites`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "updateCategory",
-          data: {
-            categoryId: category.id,
-            category: {
-              ...category,
-              name,
-              icon: selectedIcon,
-            },
-          },
-        }),
+      await updateCategory(category.id, {
+        ...category,
+        name,
+        icon: selectedIcon,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "更新分类失败");
-      }
 
       setName("");
       setSelectedIcon("");

@@ -2,36 +2,18 @@
 
 import { SiteCard } from "./components/SiteCard";
 import { SearchBar } from "./components/SearchBar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Category } from "@/types";
 import Sidebar from "./components/Sidebar/index";
 import { FullPageScroll } from "@/components/FullPageScroll";
 import { PageContextMenu } from "./components/PageContextMenu";
+import { useSites } from "@/hooks/useSites";
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { sites: categories, loading, error, refreshSites } = useSites();
+
   const [activeCategory, setActiveCategory] = useState<string>("default");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // 获取所有站点数据
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("/api/sites");
-      if (!response.ok) throw new Error("获取数据失败");
-      const data = await response.json();
-      setCategories(data);
-    } catch (error) {
-      console.error("获取站点数据失败:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 初始加载
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
   // 处理页面切换
   const handlePageChange = (pageIndex: number) => {
@@ -62,13 +44,19 @@ export default function Home() {
     return <div className="container mx-auto p-4">加载中...</div>;
   }
 
+  if (error) {
+    return (
+      <div className="container mx-auto p-4 text-red-500">错误: {error}</div>
+    );
+  }
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
         categories={categories}
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
-        onCategoriesChange={fetchCategories}
+        onCategoriesChange={refreshSites}
       />
 
       <main className="flex-1 pl-16">
@@ -78,7 +66,7 @@ export default function Home() {
 
         <PageContextMenu
           activeCategory={activeCategory}
-          onSuccess={fetchCategories}>
+          onSuccess={refreshSites}>
           <div className="h-[calc(100vh-5rem)]">
             <FullPageScroll
               onPageChange={handlePageChange}
@@ -94,7 +82,7 @@ export default function Home() {
                         url={site.url}
                         favicon={site.favicon}
                         categoryId={category.id}
-                        onSiteChange={fetchCategories}
+                        onSiteChange={refreshSites}
                       />
                     ))}
                   </div>

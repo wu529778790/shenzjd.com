@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useSites } from "@/hooks/useSites";
 
 interface SiteCardProps {
   id: string;
@@ -31,10 +32,11 @@ export function SiteCard({
   id,
   title: initialTitle,
   url,
-  favicon,
+  favicon = "",
   categoryId,
   onSiteChange,
 }: SiteCardProps) {
+  const { updateSite, deleteSite } = useSites();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editedTitle, setEditedTitle] = useState(initialTitle);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,32 +49,12 @@ export function SiteCard({
   const handleEdit = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/sites`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "updateSite",
-          data: {
-            categoryId: categoryId,
-            siteId: id,
-            site: {
-              id: id,
-              title: editedTitle,
-              url: url,
-              favicon: favicon,
-            },
-          },
-        }),
+      await updateSite(categoryId, id, {
+        id,
+        title: editedTitle,
+        url,
+        favicon,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "更新站点失败");
-      }
-
       setIsEditDialogOpen(false);
       onSiteChange?.();
     } catch (error) {
@@ -85,24 +67,7 @@ export function SiteCard({
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/sites`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "deleteSite",
-          data: {
-            categoryId: categoryId,
-            siteId: id,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("删除站点失败");
-      }
-
+      await deleteSite(categoryId, id);
       onSiteChange?.();
     } catch (error) {
       console.error("删除站点失败:", error);
