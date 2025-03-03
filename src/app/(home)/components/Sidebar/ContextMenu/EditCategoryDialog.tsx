@@ -17,7 +17,7 @@ interface EditDialogProps {
   onSuccess?: () => void;
 }
 
-export function EditDialog({
+export function EditCategoryDialog({
   category,
   open,
   onOpenChange,

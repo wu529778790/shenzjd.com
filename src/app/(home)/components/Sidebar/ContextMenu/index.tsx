@@ -10,7 +10,7 @@ import {
 import { Trash2, Pencil } from "lucide-react";
 import { Category } from "@/types";
 import { DeleteCategoryDialog } from "./DeleteCategoryDialog";
-import { EditDialog } from "./EditDialog";
+import { EditCategoryDialog } from "./EditCategoryDialog";
 
 interface EditCategoryDialogProps {
   category: Category;
@@ -18,7 +18,7 @@ interface EditCategoryDialogProps {
   children: React.ReactNode;
 }
 
-export function EditCategoryDialog({
+export function RightButton({
   category,
   onSuccess,
   children,
@@ -44,7 +44,7 @@ export function EditCategoryDialog({
         </ContextMenuContent>
       </ContextMenu>
 
-      <EditDialog
+      <EditCategoryDialog
         category={category}
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
