@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { AddSiteDialog } from "../AddSiteDialog";
+import { AddSiteDialog } from "./AddSiteDialog";
 
 interface AddSiteCardProps {
   activeCategory: string;

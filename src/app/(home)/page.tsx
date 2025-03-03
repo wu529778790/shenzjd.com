@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Category } from "@/types";
 import Sidebar from "./components/Sidebar/index";
 import { FullPageScroll } from "@/components/FullPageScroll";
-import { PageContextMenu } from "./components/PageContextMenu";
 import { useSites } from "@/hooks/useSites";
 import { AddSiteCard } from "./components/AddSiteCard";
 
@@ -65,37 +64,33 @@ export default function Home() {
           <SearchBar onSearch={handleSearch} />
         </div>
 
-        <PageContextMenu
-          activeCategory={activeCategory}
-          onSuccess={refreshSites}>
-          <div className="h-[calc(100vh-5rem)]">
-            <FullPageScroll
-              onPageChange={handlePageChange}
-              initialPage={getCurrentPageIndex()}>
-              {categories.map((category) => (
-                <div key={category.id} className="container mx-auto p-4">
-                  <div className="flex flex-wrap gap-4 justify-start items-start">
-                    {getFilteredSites(category).map((site) => (
-                      <SiteCard
-                        key={site.id}
-                        id={site.id}
-                        title={site.title}
-                        url={site.url}
-                        favicon={site.favicon}
-                        categoryId={category.id}
-                        onSiteChange={refreshSites}
-                      />
-                    ))}
-                    <AddSiteCard
-                      activeCategory={category.id}
-                      onSuccess={refreshSites}
+        <div className="h-[calc(100vh-5rem)]">
+          <FullPageScroll
+            onPageChange={handlePageChange}
+            initialPage={getCurrentPageIndex()}>
+            {categories.map((category) => (
+              <div key={category.id} className="container mx-auto p-4">
+                <div className="flex flex-wrap gap-4 justify-start items-start">
+                  {getFilteredSites(category).map((site) => (
+                    <SiteCard
+                      key={site.id}
+                      id={site.id}
+                      title={site.title}
+                      url={site.url}
+                      favicon={site.favicon}
+                      categoryId={category.id}
+                      onSiteChange={refreshSites}
                     />
-                  </div>
+                  ))}
+                  <AddSiteCard
+                    activeCategory={category.id}
+                    onSuccess={refreshSites}
+                  />
                 </div>
-              ))}
-            </FullPageScroll>
-          </div>
-        </PageContextMenu>
+              </div>
+            ))}
+          </FullPageScroll>
+        </div>
       </main>
     </div>
   );
