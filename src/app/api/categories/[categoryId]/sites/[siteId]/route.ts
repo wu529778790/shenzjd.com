@@ -17,17 +17,19 @@ function writeData(data: Category[]) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { categoryId: string; siteId: string } }
+  context: { params: { categoryId: string; siteId: string } }
 ) {
   try {
+    const params = await context.params;
+    const { categoryId, siteId } = params;
     const data = readData();
-    const category = data.find((c) => c.id === params.categoryId);
+    const category = data.find((c) => c.id === categoryId);
 
     if (!category) {
       return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    const site = category.sites.find((s) => s.id === params.siteId);
+    const site = category.sites.find((s) => s.id === siteId);
 
     if (!site) {
       return Response.json({ error: "站点不存在" }, { status: 404 });
@@ -41,20 +43,22 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { categoryId: string; siteId: string } }
+  context: { params: { categoryId: string; siteId: string } }
 ) {
   try {
+    const params = await context.params;
+    const { categoryId, siteId } = params;
     const body = await request.json();
     const validatedData = siteUpdateSchema.parse(body);
 
     const data = readData();
-    const category = data.find((c) => c.id === params.categoryId);
+    const category = data.find((c) => c.id === categoryId);
 
     if (!category) {
       return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    const siteIndex = category.sites.findIndex((s) => s.id === params.siteId);
+    const siteIndex = category.sites.findIndex((s) => s.id === siteId);
 
     if (siteIndex === -1) {
       return Response.json({ error: "站点不存在" }, { status: 404 });
@@ -74,17 +78,19 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { categoryId: string; siteId: string } }
+  context: { params: { categoryId: string; siteId: string } }
 ) {
   try {
+    const params = await context.params;
+    const { categoryId, siteId } = params;
     const data = readData();
-    const category = data.find((c) => c.id === params.categoryId);
+    const category = data.find((c) => c.id === categoryId);
 
     if (!category) {
       return Response.json({ error: "分类不存在" }, { status: 404 });
     }
 
-    const siteIndex = category.sites.findIndex((s) => s.id === params.siteId);
+    const siteIndex = category.sites.findIndex((s) => s.id === siteId);
 
     if (siteIndex === -1) {
       return Response.json({ error: "站点不存在" }, { status: 404 });
