@@ -1,46 +1,11 @@
-[
-  {
-    "id": "default",
-    "name": "默认",
-    "icon": "home",
-    "sites": [
-      {
-        "title": "Sidebar - shadcn/ui中文文档 | shadcn/ui中文网",
-        "favicon": "https://www.shadcn-ui.cn/favicon.ico",
-        "url": "https://www.shadcn-ui.cn/docs/components/sidebar",
-        "id": "site_1740968803079_e7tl5x3fw"
-      },
-      {
-        "title": "快速入门 – React 中文文档",
-        "favicon": "https://zh-hans.react.dev/favicon-32x32.png",
-        "url": "https://zh-hans.react.dev/learn",
-        "id": "site_1740970086828_yx77bef1s"
-      },
-      {
-        "title": "shenzjd.com/src/data/sites.json at main · wu529778790/shenzjd.com · GitHub",
-        "favicon": "https://github.githubassets.com/favicons/favicon.svg",
-        "url": "https://github.com/wu529778790/shenzjd.com/blob/main/src/data/sites.json",
-        "id": "1740980609495"
-      }
-    ]
-  },
-  {
-    "id": "1740971253810",
-    "name": "工具",
-    "icon": "folder",
-    "sites": [
-      {
-        "title": "WeTab 新标签页",
-        "favicon": "https://web.wetab.link/icon_zh_48.png",
-        "url": "https://web.wetab.link/",
-        "id": "site_1740971746337_tdw9mp8f6"
-      },
-      {
-        "title": "Monica - 万能的助手，懂你的伙伴",
-        "favicon": "https://monica.cn/logo.png",
-        "url": "https://monica.cn/home",
-        "id": "site_1740972002969_1dnsg7ir5"
-      }
-    ]
-  }
-]
+{
+  "categoryId": "default",
+  "sites": [
+    {
+      "title": "GitHub - octokit/rest.js: GitHub REST API client for JavaScript",
+      "favicon": "https://github.githubassets.com/favicons/favicon.svg",
+      "url": "https://github.com/octokit/rest.js/",
+      "id": "1740982265332"
+    }
+  ]
+}
