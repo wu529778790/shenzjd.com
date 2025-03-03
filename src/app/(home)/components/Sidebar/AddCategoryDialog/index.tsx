@@ -34,15 +34,19 @@ export function AddCategoryDialog({
       setLoading(true);
       setError("");
 
-      const response = await fetch("/api/categories", {
+      const response = await fetch("/api/sites", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: Date.now().toString(),
-          name,
-          icon: selectedIcon,
+          type: "addCategory",
+          data: {
+            id: Date.now().toString(),
+            name,
+            icon: selectedIcon,
+            sites: [],
+          },
         }),
       });
 

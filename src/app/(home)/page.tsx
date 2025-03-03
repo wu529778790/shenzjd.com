@@ -17,7 +17,7 @@ export default function Home() {
   // 获取所有站点数据
   const fetchCategories = async () => {
     try {
-      const response = await fetch("/api/categories");
+      const response = await fetch("/api/sites");
       if (!response.ok) throw new Error("获取数据失败");
       const data = await response.json();
       setCategories(data);

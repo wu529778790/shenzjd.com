@@ -33,8 +33,14 @@ export function DeleteCategoryDialog({
       setLoading(true);
       setError("");
 
-      const response = await fetch(`/api/categories/${categoryId}`, {
+      const response = await fetch(`/api/sites`, {
         method: "DELETE",
+        body: JSON.stringify({
+          type: "deleteCategory",
+          data: {
+            categoryId,
+          },
+        }),
       });
 
       if (!response.ok) {

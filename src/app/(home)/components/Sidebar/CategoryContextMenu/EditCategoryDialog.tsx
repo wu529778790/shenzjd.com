@@ -35,14 +35,21 @@ export function EditCategoryDialog({
       setLoading(true);
       setError("");
 
-      const response = await fetch(`/api/categories/${category.id}`, {
-        method: "PATCH",
+      const response = await fetch(`/api/sites`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          icon: selectedIcon,
+          type: "updateCategory",
+          data: {
+            categoryId: category.id,
+            category: {
+              ...category,
+              name,
+              icon: selectedIcon,
+            },
+          },
         }),
       });
 

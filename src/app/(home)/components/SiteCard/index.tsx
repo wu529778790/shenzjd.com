@@ -47,18 +47,25 @@ export function SiteCard({
   const handleEdit = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `/api/categories/${categoryId}/sites/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
+      const response = await fetch(`/api/sites`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "updateSite",
+          data: {
+            categoryId: categoryId,
+            siteId: id,
+            site: {
+              id: id,
+              title: editedTitle,
+              url: url,
+              favicon: favicon,
+            },
           },
-          body: JSON.stringify({
-            title: editedTitle,
-          }),
-        }
-      );
+        }),
+      });
 
       const result = await response.json();
 
@@ -78,13 +85,17 @@ export function SiteCard({
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/categories/${categoryId}/sites`, {
+      const response = await fetch(`/api/sites`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          siteId: id,
+          type: "deleteSite",
+          data: {
+            categoryId: categoryId,
+            siteId: id,
+          },
         }),
       });
 

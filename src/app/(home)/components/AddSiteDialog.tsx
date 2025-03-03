@@ -68,16 +68,22 @@ export function AddSiteDialog({
     if (!siteInfo) return;
 
     try {
-      const response = await fetch(`/api/categories/${activeCategory}/sites`, {
+      const response = await fetch(`/api/sites`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: Date.now().toString(),
-          title: editedTitle || siteInfo.title,
-          favicon: siteInfo.favicon,
-          url: siteInfo.url,
+          type: "addSite",
+          data: {
+            categoryId: activeCategory,
+            site: {
+              id: Date.now().toString(),
+              title: editedTitle || siteInfo.title,
+              favicon: siteInfo.favicon,
+              url: siteInfo.url,
+            },
+          },
         }),
       });
 
