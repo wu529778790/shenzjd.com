@@ -15,9 +15,6 @@ export async function getGitHubFileContent(): Promise<Category[]> {
         Accept: "application/vnd.github.v3.raw",
         Authorization: `token ${process.env.GITHUB_TOKEN}`,
       },
-      next: {
-        revalidate: 3600, // 缓存1小时
-      },
     });
 
     if (!response.ok) {

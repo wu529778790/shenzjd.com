@@ -24,11 +24,7 @@ const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${owner}/${repo}/${bra
 
 export async function getSites(): Promise<SiteCategory[]> {
   try {
-    const response = await fetch(GITHUB_RAW_URL, {
-      next: {
-        revalidate: 3600, // 缓存1小时
-      },
-    });
+    const response = await fetch(GITHUB_RAW_URL);
 
     if (!response.ok) {
       throw new Error("Failed to fetch sites data");
