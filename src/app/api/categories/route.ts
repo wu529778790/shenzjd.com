@@ -32,16 +32,27 @@ export async function POST(request: NextRequest) {
     const data = readData();
     const newCategory = {
       ...validatedData,
-      id: crypto.randomUUID(),
       sites: [],
     };
 
     data.push(newCategory);
     writeData(data);
 
-    return Response.json(newCategory, { status: 201 });
+    return Response.json(
+      {
+        message: "创建分类成功",
+        data: newCategory,
+      },
+      { status: 201 }
+    );
   } catch {
-    return Response.json({ error: "创建分类失败" }, { status: 400 });
+    return Response.json(
+      {
+        error: "创建分类失败",
+        code: "CATEGORY_CREATE_FAILED",
+      },
+      { status: 400 }
+    );
   }
 }
 

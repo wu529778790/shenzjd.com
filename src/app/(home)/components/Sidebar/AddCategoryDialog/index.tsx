@@ -43,13 +43,13 @@ export function AddCategoryDialog({
           id: Date.now().toString(),
           name,
           icon: selectedIcon,
-          sites: [],
         }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "添加分类失败");
+        throw new Error(result.error || "添加分类失败");
       }
 
       setName("");

@@ -3,19 +3,24 @@
     "id": "default",
     "name": "默认分类",
     "icon": "bookmark",
-    "sites": [
-      {
-        "title": "快速入门 – React 中文文档",
-        "favicon": "https://zh-hans.react.dev/favicon-32x32.png",
-        "url": "https://zh-hans.react.dev/learn",
-        "id": "1740985594350"
-      },
-      {
-        "title": "shenzjd.com/src/data/sites.json at main · wu529778790/shenzjd.com · GitHub",
-        "favicon": "https://github.githubassets.com/favicons/favicon.svg",
-        "url": "https://github.com/wu529778790/shenzjd.com/blob/main/src/data/sites.json",
-        "id": "e8d204d6-2c5a-492e-893c-69ce782411c9"
-      }
-    ]
+    "sites": []
+  },
+  {
+    "name": "士大夫",
+    "icon": "globe",
+    "id": "218921bc-9277-49fe-8e3e-782119890124",
+    "sites": []
+  },
+  {
+    "id": "1740989408534",
+    "name": "公司",
+    "icon": "folder",
+    "sites": []
+  },
+  {
+    "id": "1740989519822",
+    "name": "放大舒服",
+    "icon": "heart",
+    "sites": []
   }
 ]

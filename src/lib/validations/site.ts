@@ -18,6 +18,7 @@ export const categorySchema = z.object({
 });
 
 export const categoryCreateSchema = z.object({
+  id: z.string(),
   name: z.string().min(1, "分类名称不能为空"),
   icon: z.string().min(1, "图标不能为空"),
 });
