@@ -169,6 +169,42 @@ DELETE /api/sites
 }
 ```
 
+### URL 解析 API
+
+#### 解析 URL
+
+```http
+POST /api/parse-url
+```
+
+解析 URL 获取网站标题和图标。
+
+**请求体：**
+
+```json
+{
+  "url": "https://example.com"
+}
+```
+
+**响应示例：**
+
+```json
+{
+  "title": "示例网站",
+  "favicon": "https://example.com/favicon.ico",
+  "url": "https://example.com"
+}
+```
+
+**错误响应：**
+
+```json
+{
+  "error": "无法解析 URL"
+}
+```
+
 ### 错误处理
 
 所有 API 在发生错误时会返回以下格式：
@@ -192,3 +228,4 @@ DELETE /api/sites
 2. 站点 ID 和分类 ID 都是唯一的字符串
 3. 更新操作需要提供完整的对象数据
 4. 删除操作会级联删除分类下的所有站点
+5. URL 解析 API 需要提供有效的 URL 地址
