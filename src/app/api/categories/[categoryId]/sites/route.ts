@@ -17,11 +17,12 @@ function writeData(data: Category[]) {
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  context: { params: { categoryId: string } }
 ) {
+  const { categoryId } = await context.params;
   try {
     const data = readData();
-    const category = data.find((c) => c.id === params.categoryId);
+    const category = data.find((c) => c.id === categoryId);
 
     if (!category) {
       return Response.json({ error: "分类不存在" }, { status: 404 });
@@ -35,14 +36,15 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  context: { params: { categoryId: string } }
 ) {
+  const { categoryId } = await context.params;
   try {
     const body = await request.json();
     const validatedData = siteCreateSchema.parse(body);
 
     const data = readData();
-    const categoryIndex = data.findIndex((c) => c.id === params.categoryId);
+    const categoryIndex = data.findIndex((c) => c.id === categoryId);
 
     if (categoryIndex === -1) {
       return Response.json({ error: "分类不存在" }, { status: 404 });
@@ -64,13 +66,14 @@ export async function POST(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  context: { params: { categoryId: string } }
 ) {
+  const { categoryId } = await context.params;
   try {
     const { siteId, ...updateData } = await request.json();
 
     const data = readData();
-    const category = data.find((c) => c.id === params.categoryId);
+    const category = data.find((c) => c.id === categoryId);
 
     if (!category) {
       return Response.json({ error: "分类不存在" }, { status: 404 });
@@ -96,13 +99,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  context: { params: { categoryId: string } }
 ) {
+  const { categoryId } = await context.params;
   try {
     const { siteId } = await request.json();
-
     const data = readData();
-    const category = data.find((c) => c.id === params.categoryId);
+    const category = data.find((c) => c.id === categoryId);
 
     if (!category) {
       return Response.json({ error: "分类不存在" }, { status: 404 });
