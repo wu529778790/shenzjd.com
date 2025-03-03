@@ -3,12 +3,6 @@
     "id": "default",
     "name": "默认分类",
     "icon": "home",
-    "sites": [
-      {
-        "title": "2",
-        "url": "https://zh-hans.react.dev/learn",
-        "favicon": "https://zh-hans.react.dev/favicon-32x32.png"
-      }
-    ]
+    "sites": []
   }
 ]
