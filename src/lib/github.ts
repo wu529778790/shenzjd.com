@@ -21,9 +21,20 @@ export async function getGitHubFileContent(): Promise<Category[]> {
     });
 
     if (!response.ok) {
-      console.error("Failed to fetch data:", await response.text());
+      const errorText = await response.text();
+      console.error(`GitHub API 错误 (${response.status}):`, errorText);
+      console.error(`请求URL: ${url}`);
+
+      if (response.status === 404) {
+        throw new Error(`文件不存在: ${path}`);
+      } else if (response.status === 401) {
+        throw new Error("GitHub Token无效或已过期");
+      } else if (response.status === 403) {
+        throw new Error("GitHub Token权限不足");
+      }
+
       throw new Error(
-        `Failed to fetch data from GitHub: ${response.statusText}`
+        `GitHub API请求失败: ${response.status} ${response.statusText}`
       );
     }
 
