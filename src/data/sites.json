@@ -3,18 +3,6 @@
     "id": "default",
     "name": "默认分类",
     "icon": "home",
-    "sites": [
-      {
-        "title": "Separator - shadcn/ui中文文档 | shadcn/ui中文网",
-        "favicon": "https://www.shadcn-ui.cn/favicon.ico",
-        "url": "https://www.shadcn-ui.cn/docs/components/separator",
-        "id": "1740990890604",
-        "site": {
-          "title": "shadcn",
-          "url": "https://www.shadcn-ui.cn/docs/components/separator",
-          "favicon": "https://www.shadcn-ui.cn/favicon.ico"
-        }
-      }
-    ]
+    "sites": []
   }
 ]
