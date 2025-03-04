@@ -80,12 +80,19 @@ export default function Sidebar({
       </TooltipProvider>
 
       <AddCategoryDialog onSuccess={onCategoriesChange}>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="mb-2 cursor-pointer transition-colors duration-200 hover:bg-accent">
-          <LucideIcons.Plus className="h-5 w-5" />
-        </Button>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="mb-2 cursor-pointer transition-colors duration-200 hover:bg-accent">
+              <LucideIcons.Plus className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" align="center">
+            添加分类
+          </TooltipContent>
+        </Tooltip>
       </AddCategoryDialog>
 
       <div className="mt-auto space-y-2 flex flex-col items-center w-full px-2">
