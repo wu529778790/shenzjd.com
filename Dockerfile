@@ -13,8 +13,7 @@ RUN npm install -g pnpm
 # 安装依赖
 RUN pnpm install --frozen-lockfile
 
-# 复制源代码和public目录
-COPY public ./public
+# 复制源代码
 COPY . .
 
 # 构建应用
@@ -43,7 +42,6 @@ ENV GITHUB_SECRET=$GITHUB_SECRET
 ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
 
 # 从构建阶段复制必要文件
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
