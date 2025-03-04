@@ -51,7 +51,7 @@ export default function Sidebar({
               variant="ghost"
               size="icon"
               className={cn(
-                "mb-2 transition-colors duration-200",
+                "mb-2 transition-colors duration-200 cursor-pointer",
                 activeCategory === category.id
                   ? "bg-primary/10 text-primary border-primary hover:bg-primary/20"
                   : "hover:bg-accent"
@@ -73,7 +73,7 @@ export default function Sidebar({
       </AddCategoryDialog>
 
       <div className="mt-auto space-y-2 flex flex-col items-center w-full px-2">
-        <ForceRefresh />
+        <ForceRefresh onRefresh={onCategoriesChange} />
         <ModeToggle />
       </div>
     </div>

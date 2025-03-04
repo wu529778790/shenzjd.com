@@ -109,7 +109,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         </div>
         <button
           onClick={performSearch}
-          className="px-4 h-10 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+          className="px-4 h-10 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
           搜索
         </button>
       </div>

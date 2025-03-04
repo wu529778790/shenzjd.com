@@ -9,13 +9,30 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { useSites } from "@/hooks/useSites";
 
-export function ForceRefresh() {
-  const handleRefresh = () => {
-    // 清除localStorage
-    localStorage.clear();
-    // 刷新页面
-    window.location.reload();
+interface ForceRefreshProps {
+  onRefresh?: () => void;
+}
+
+export function ForceRefresh({ onRefresh }: ForceRefreshProps) {
+  const { refreshSites } = useSites();
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // 清除localStorage
+      localStorage.clear();
+      // 强制刷新数据
+      await refreshSites();
+      // 调用父组件的刷新回调
+      onRefresh?.();
+    } finally {
+      // 短暂延迟后重置状态，让用户看到加载动画
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
   };
 
   return (
@@ -25,9 +42,16 @@ export function ForceRefresh() {
           <Button
             variant="outline"
             size="icon"
+            className="cursor-pointer"
             onClick={handleRefresh}
+            disabled={isRefreshing}
             aria-label="强制刷新">
-            <RefreshCw className="h-[1.2rem] w-[1.2rem]" />
+            <RefreshCw
+              className={cn(
+                "h-[1.2rem] w-[1.2rem]",
+                isRefreshing && "animate-spin"
+              )}
+            />
           </Button>
         </TooltipTrigger>
         <TooltipContent>
