@@ -1,0 +1,58 @@
+# 依赖目录
+node_modules
+.pnpm-store
+.npm
+.yarn
+
+# Next.js 构建输出
+.next
+out
+
+# 开发工具和配置文件
+.git
+.github
+.vscode
+.idea
+*.log
+.env*.local
+
+# 测试文件
+__tests__
+test
+tests
+coverage
+
+# 文档和其他资源
+README.md
+*.md
+docs
+.gitignore
+.eslintrc*
+.prettier*
+.editorconfig
+
+# 调试文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Docker 相关
+Dockerfile*
+docker-compose*
+.docker
+
+# 开发环境配置
+.env.development
+.env.test
+tsconfig.tsbuildinfo
+
+# 缓存目录
+.cache
+.temp
+dist
+build 
