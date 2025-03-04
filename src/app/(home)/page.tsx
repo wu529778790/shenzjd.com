@@ -40,16 +40,6 @@ export default function Home() {
     );
   };
 
-  if (loading) {
-    return <div className="container mx-auto p-4">加载中...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto p-4 text-red-500">错误: {error}</div>
-    );
-  }
-
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
@@ -68,27 +58,51 @@ export default function Home() {
           <FullPageScroll
             onPageChange={handlePageChange}
             initialPage={getCurrentPageIndex()}>
-            {categories.map((category) => (
-              <div key={category.id} className="container mx-auto p-4">
-                <div className="flex flex-wrap gap-4 justify-start items-start">
-                  {getFilteredSites(category).map((site) => (
-                    <SiteCard
-                      key={site.id}
-                      id={site.id}
-                      title={site.title}
-                      url={site.url}
-                      favicon={site.favicon}
-                      categoryId={category.id}
-                      onSiteChange={refreshSites}
-                    />
-                  ))}
-                  <AddSiteCard
-                    activeCategory={category.id}
-                    onSuccess={refreshSites}
-                  />
-                </div>
-              </div>
-            ))}
+            {loading
+              ? [
+                  // 加载状态下显示骨架屏
+                  <div key="loading" className="container mx-auto p-4">
+                    <div className="flex flex-wrap gap-4 justify-start items-start">
+                      {[...Array(8)].map((_, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-col items-center gap-2 w-[80px] animate-pulse">
+                          <div className="w-12 h-12 bg-muted rounded-xl" />
+                          <div className="w-16 h-3 bg-muted rounded" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>,
+                ]
+              : error
+              ? [
+                  <div key="error" className="container mx-auto p-4">
+                    <div className="flex items-center justify-center h-32 text-red-500">
+                      {error}
+                    </div>
+                  </div>,
+                ]
+              : categories.map((category) => (
+                  <div key={category.id} className="container mx-auto p-4">
+                    <div className="flex flex-wrap gap-4 justify-start items-start">
+                      {getFilteredSites(category).map((site) => (
+                        <SiteCard
+                          key={site.id}
+                          id={site.id}
+                          title={site.title}
+                          url={site.url}
+                          favicon={site.favicon}
+                          categoryId={category.id}
+                          onSiteChange={refreshSites}
+                        />
+                      ))}
+                      <AddSiteCard
+                        activeCategory={category.id}
+                        onSuccess={refreshSites}
+                      />
+                    </div>
+                  </div>
+                ))}
           </FullPageScroll>
         </div>
       </main>
