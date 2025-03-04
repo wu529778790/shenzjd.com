@@ -4,17 +4,20 @@ FROM node:20-alpine AS builder
 # 设置工作目录
 WORKDIR /app
 
-# 复制package.json和package-lock.json
-COPY package*.json ./
+# 安装pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# 复制package.json和pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
 
 # 安装依赖
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 # 复制源代码
 COPY . .
 
 # 构建应用
-RUN npm run build
+RUN pnpm build
 
 # 生产阶段
 FROM node:20-alpine AS runner
@@ -43,8 +46,8 @@ USER nextjs
 EXPOSE 3000
 
 # 设置环境变量
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
 # 启动应用
 CMD ["node", "server.js"] 
