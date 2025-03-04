@@ -39,6 +39,12 @@
         "favicon": "https://www.coze.com//sf-coze-web-cdn.coze.com/obj/coze-web-sg/obric/coze/favicon.1970.png",
         "url": "https://www.coze.com/",
         "id": "1741093185942"
+      },
+      {
+        "title": "Dify",
+        "favicon": "https://cloud.dify.ai/favicon.ico",
+        "url": "https://cloud.dify.ai/apps",
+        "id": "1741093198782"
       }
     ]
   },
