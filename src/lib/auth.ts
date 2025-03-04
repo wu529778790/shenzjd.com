@@ -21,9 +21,10 @@ export const {
   // debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
       if (account) {
         token.accessToken = account.access_token;
+        token.login = profile?.login;
       }
       return token;
     },
@@ -33,6 +34,7 @@ export const {
         session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.image = token.picture as string;
+        session.user.login = token.login as string;
         session.accessToken = token.accessToken as string;
       }
       return session;

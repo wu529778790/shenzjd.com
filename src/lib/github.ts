@@ -31,16 +31,16 @@ export async function ensureForked() {
   }
 
   const octokit = await getOctokit();
-  const username = session.user.name;
+  const login = session.user.login;
 
   try {
-    console.log(`Checking if repository is forked for user: ${username}`);
+    console.log(`Checking if repository is forked for user: ${login}`);
     // 检查是否已经 fork
     await octokit.repos.get({
-      owner: username,
+      owner: login,
       repo: ORIGINAL_REPO,
     });
-    console.log(`Repository already forked for user: ${username}`);
+    console.log(`Repository already forked for user: ${login}`);
     return true;
   } catch (error: unknown) {
     if (
@@ -49,14 +49,14 @@ export async function ensureForked() {
       "status" in error &&
       error.status === 404
     ) {
-      console.log(`Forking repository for user: ${username}`);
+      console.log(`Forking repository for user: ${login}`);
       try {
         // 如果没有 fork，则创建 fork
         await octokit.repos.createFork({
           owner: ORIGINAL_OWNER,
           repo: ORIGINAL_REPO,
         });
-        console.log(`Successfully forked repository for user: ${username}`);
+        console.log(`Successfully forked repository for user: ${login}`);
         return true;
       } catch (forkError: unknown) {
         // 如果仓库正在 fork 中，等待一段时间后重试
@@ -75,7 +75,7 @@ export async function ensureForked() {
           // 重新检查是否已经 fork
           try {
             await octokit.repos.get({
-              owner: username,
+              owner: login,
               repo: ORIGINAL_REPO,
             });
             console.log(`Repository successfully forked after waiting`);
@@ -85,13 +85,13 @@ export async function ensureForked() {
           }
         }
         console.error(
-          `Failed to fork repository for user ${username}:`,
+          `Failed to fork repository for user ${login}:`,
           forkError
         );
         throw new Error("Failed to fork repository");
       }
     }
-    console.error(`Error checking repository for user ${username}:`, error);
+    console.error(`Error checking repository for user ${login}:`, error);
     throw error;
   }
 }
@@ -102,7 +102,7 @@ export async function getFile(path: string): Promise<FileContent> {
     const session = await auth();
 
     // 如果用户已登录，使用其 fork 的仓库
-    const owner = session?.user ? session.user.name : ORIGINAL_OWNER;
+    const owner = session?.user ? session.user.login : ORIGINAL_OWNER;
     const repo = ORIGINAL_REPO;
 
     const response = await octokit.repos.getContent({
@@ -142,10 +142,10 @@ export async function updateFile(
 
     const octokit = await getOctokit();
     await octokit.repos.createOrUpdateFileContents({
-      owner: session.user.name,
+      owner: session.user.login,
       repo: ORIGINAL_REPO,
       path,
-      message: `Update ${path}`,
+      message: `Update ${path} [skip ci]`,
       content: Buffer.from(content).toString("base64"),
       sha,
     });
@@ -167,7 +167,7 @@ export async function createFile(path: string, content: string): Promise<void> {
 
     const octokit = await getOctokit();
     await octokit.repos.createOrUpdateFileContents({
-      owner: session.user.name,
+      owner: session.user.login,
       repo: ORIGINAL_REPO,
       path,
       message: `Create ${path}`,
@@ -191,7 +191,7 @@ export async function deleteFile(path: string, sha: string): Promise<void> {
 
     const octokit = await getOctokit();
     await octokit.repos.deleteFile({
-      owner: session.user.name,
+      owner: session.user.login,
       repo: ORIGINAL_REPO,
       path,
       message: `Delete ${path}`,

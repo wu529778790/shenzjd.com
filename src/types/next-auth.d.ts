@@ -7,7 +7,14 @@ declare module "next-auth" {
       name: string;
       email: string;
       image: string;
+      login: string;
     };
     accessToken: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    login?: string;
   }
 }
