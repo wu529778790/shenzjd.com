@@ -15,6 +15,12 @@
         "favicon": "https://monica.cn/logo.png",
         "url": "https://monica.cn/home",
         "id": "1741079876169"
+      },
+      {
+        "title": "Llama Coder – AI Code Generator",
+        "favicon": "https://llamacoder.together.ai/favicon.ico",
+        "url": "https://llamacoder.together.ai/",
+        "id": "1741093135726"
       }
     ]
   },
