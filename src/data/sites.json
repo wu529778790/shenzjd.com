@@ -9,6 +9,12 @@
         "title": "React",
         "favicon": "https://react.dev/favicon-32x32.png",
         "url": "https://react.dev/"
+      },
+      {
+        "title": "Monica - 万能的助手，懂你的伙伴",
+        "favicon": "https://monica.cn/logo.png",
+        "url": "https://monica.cn/home",
+        "id": "1741079876169"
       }
     ]
   },
