@@ -22,6 +22,10 @@ RUN pnpm run build
 # 使用多阶段构建，减少最终镜像大小
 FROM node:20-alpine AS runner
 
+# 设置生产环境变量
+ENV NODE_ENV=production
+ENV NEXTAUTH_URL=https://shenzjd.com
+
 # 安装 pnpm
 RUN npm install -g pnpm
 
