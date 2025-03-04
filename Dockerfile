@@ -49,7 +49,7 @@ ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
 # 从构建阶段复制必要文件
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+# COPY --from=builder /app/public ./public
 
 # 暴露端口
 EXPOSE 3000
