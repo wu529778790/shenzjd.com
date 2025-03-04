@@ -46,6 +46,10 @@ ENV GITHUB_ID=$GITHUB_ID
 ENV GITHUB_SECRET=$GITHUB_SECRET
 ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
 
+# 复制package.json和安装pnpm
+COPY package.json ./
+RUN npm install -g pnpm
+
 # 从构建阶段复制必要文件
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
