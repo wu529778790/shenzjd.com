@@ -55,7 +55,7 @@ export function LoginButton() {
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
           <Button variant="ghost" size="icon" onClick={() => signIn("github")}>
-            <Avatar className="h-8 w-8">
+            <Avatar className="h-8 w-8 cursor-pointer">
               <AvatarFallback className="text-xs">登录</AvatarFallback>
             </Avatar>
           </Button>
