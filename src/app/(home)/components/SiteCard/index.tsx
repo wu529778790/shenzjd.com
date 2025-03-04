@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { EditSiteDialog } from "./EditSiteDialog";
 import {
   ContextMenu,
@@ -18,6 +18,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useSites } from "@/hooks/useSites";
+import { useRequireAuth } from "@/hooks/use-require-auth";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface SiteCardProps {
   id: string;
@@ -37,10 +39,11 @@ export function SiteCard({
   onSiteChange,
 }: SiteCardProps) {
   const { updateSite, deleteSite } = useSites();
+  const { checkAuth } = useRequireAuth();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [editedTitle, setEditedTitle] = useState(initialTitle);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
   useEffect(() => {
     setEditedTitle(initialTitle);
@@ -58,7 +61,7 @@ export function SiteCard({
       setIsEditDialogOpen(false);
       onSiteChange?.();
     } catch (error) {
-      console.error("更新站点失败:", error);
+      console.error("Failed to update site:", error);
     } finally {
       setIsLoading(false);
     }
@@ -68,18 +71,18 @@ export function SiteCard({
     try {
       setIsLoading(true);
       await deleteSite(categoryId, id);
+      setIsDeleteAlertOpen(false);
       onSiteChange?.();
     } catch (error) {
-      console.error("删除站点失败:", error);
+      console.error("Failed to delete site:", error);
     } finally {
       setIsLoading(false);
-      setIsDeleteAlertOpen(false);
     }
   };
 
-  const handleCardClick = useCallback(() => {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }, [url]);
+  const handleCardClick = () => {
+    window.open(url, "_blank");
+  };
 
   return (
     <>
@@ -111,10 +114,15 @@ export function SiteCard({
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem onClick={() => setIsEditDialogOpen(true)}>
+          <ContextMenuItem
+            onClick={() => checkAuth(() => setIsEditDialogOpen(true))}>
+            <Pencil className="mr-2 h-4 w-4" />
             编辑
           </ContextMenuItem>
-          <ContextMenuItem onClick={() => setIsDeleteAlertOpen(true)}>
+          <ContextMenuItem
+            onClick={() => checkAuth(() => setIsDeleteAlertOpen(true))}
+            className="text-red-600 focus:text-red-600">
+            <Trash2 className="mr-2 h-4 w-4" />
             删除
           </ContextMenuItem>
         </ContextMenuContent>
@@ -135,7 +143,7 @@ export function SiteCard({
           <AlertDialogHeader>
             <AlertDialogTitle>确认删除</AlertDialogTitle>
             <AlertDialogDescription>
-              确定要删除吗？此操作无法撤销。
+              确定要删除 &ldquo;{initialTitle}&rdquo; 吗？此操作无法撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
