@@ -35,7 +35,7 @@ export function LoginButton() {
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="start" side="right">
           <DropdownMenuItem className="flex flex-col items-start">
             <span className="font-medium">{session.user?.name}</span>
             <span className="text-xs text-muted-foreground">
