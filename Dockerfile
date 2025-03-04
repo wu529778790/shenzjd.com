@@ -4,11 +4,12 @@ FROM node:20-alpine AS builder
 # 设置工作目录
 WORKDIR /app
 
-# 安装pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # 复制package.json和pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
+
+# 安装pnpm
+RUN npm install -g pnpm
 
 # 安装依赖
 RUN pnpm install --frozen-lockfile
@@ -50,4 +51,4 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
 # 启动应用
-CMD ["node", "server.js"] 
+CMD ["pnpm", "start"] 
