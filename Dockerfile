@@ -29,7 +29,7 @@ RUN npm install -g pnpm
 WORKDIR /app
 
 # 从 builder 阶段复制构建好的文件
-COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/next.config.ts ./
 # COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
