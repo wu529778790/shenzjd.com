@@ -8,6 +8,7 @@ import { LucideProps } from "lucide-react";
 import { AddCategoryDialog } from "./AddCategoryDialog/index";
 import { CategoryContextMenu } from "./CategoryContextMenu";
 import { ModeToggle } from "./modeToggle";
+import { ForceRefresh } from "./forceRefresh";
 
 interface SidebarProps {
   categories: Category[];
@@ -71,7 +72,8 @@ export default function Sidebar({
         </Button>
       </AddCategoryDialog>
 
-      <div className="mt-auto">
+      <div className="mt-auto space-y-2 flex flex-col items-center w-full px-2">
+        <ForceRefresh />
         <ModeToggle />
       </div>
     </div>
