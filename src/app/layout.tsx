@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from "@/components/providers/session-provider";
+import { AuthProvider } from "@/components/providers/auth-provider";
 import { useFork } from "@/hooks/useFork";
 
 function ForkWrapper({ children }: { children: React.ReactNode }) {

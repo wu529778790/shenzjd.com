@@ -23,7 +23,7 @@ export function AddCategoryDialog({
   onSuccess,
   children,
 }: AddCategoryDialogProps) {
-  const { checkAuth, LoginAlert } = useRequireAuth();
+  const { checkAuth } = useRequireAuth();
   const { addCategory } = useSites();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string>("home");
@@ -105,8 +105,6 @@ export function AddCategoryDialog({
           </div>
         </DialogContent>
       </Dialog>
-
-      <LoginAlert />
     </>
   );
 }

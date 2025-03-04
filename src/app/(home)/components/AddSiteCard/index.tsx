@@ -11,7 +11,7 @@ interface AddSiteCardProps {
 }
 
 export function AddSiteCard({ activeCategory, onSuccess }: AddSiteCardProps) {
-  const { checkAuth, LoginAlert } = useRequireAuth();
+  const { checkAuth } = useRequireAuth();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   return (
@@ -33,8 +33,6 @@ export function AddSiteCard({ activeCategory, onSuccess }: AddSiteCardProps) {
         activeCategory={activeCategory}
         onSuccess={onSuccess}
       />
-
-      <LoginAlert />
     </>
   );
 }
