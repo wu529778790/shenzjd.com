@@ -33,6 +33,12 @@
         "favicon": "https://www.coze.cn//lf-coze-web-cdn.coze.cn/obj/coze-web-cn/obric/coze/favicon.1970.png",
         "url": "https://www.coze.cn/",
         "id": "1741093171759"
+      },
+      {
+        "title": "Coze",
+        "favicon": "https://www.coze.com//sf-coze-web-cdn.coze.com/obj/coze-web-sg/obric/coze/favicon.1970.png",
+        "url": "https://www.coze.com/",
+        "id": "1741093185942"
       }
     ]
   },
