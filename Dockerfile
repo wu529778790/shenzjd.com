@@ -1,58 +1,47 @@
-# 构建阶段
+# 使用 Node.js 官方镜像作为基础镜像
 FROM node:20-alpine AS builder
+
+# 安装 pnpm
+RUN npm install -g pnpm
 
 # 设置工作目录
 WORKDIR /app
 
-# 禁用 Next.js 遥测数据收集
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# 复制package.json和pnpm-lock.yaml
+# 复制 package.json 和 pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 
-# 安装pnpm
-RUN npm install -g pnpm
-
 # 安装依赖
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
-# 复制源代码
+# 复制项目文件
 COPY . .
 
-# 构建应用
-RUN pnpm build
+# 构建项目
+RUN pnpm run build
 
-# 生产阶段
+# 使用多阶段构建，减少最终镜像大小
 FROM node:20-alpine AS runner
 
+# 安装 pnpm
+RUN npm install -g pnpm
+
+# 设置工作目录
 WORKDIR /app
 
-# 设置环境变量
-ENV NODE_ENV=production
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-# 禁用Next.js 的遥测数据收集
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# 声明构建参数
-ARG GITHUB_TOKEN
-ARG GITHUB_ID
-ARG GITHUB_SECRET
-ARG NEXTAUTH_SECRET
-
-# 设置环境变量
-ENV GITHUB_TOKEN=$GITHUB_TOKEN
-ENV GITHUB_ID=$GITHUB_ID
-ENV GITHUB_SECRET=$GITHUB_SECRET
-ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
-
-# 从构建阶段复制 standalone 目录和静态文件
+# 从 builder 阶段复制构建好的文件
+COPY --from=builder /app/next.config.js ./
+# COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-# COPY --from=builder /app/public ./public
+
+# 复制 package.json 和 pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
+
+# 安装生产依赖
+RUN pnpm install --prod
 
 # 暴露端口
 EXPOSE 3000
 
-# 启动应用
-CMD ["node", "server.js"] 
+# 运行应用
+CMD ["node", "server.js"]
