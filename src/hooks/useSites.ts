@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Site, SiteCategory } from "@/lib/sites";
+import { useSession } from "next-auth/react";
 
 interface UseSitesReturn {
   sites: SiteCategory[];
@@ -61,6 +62,7 @@ export function useSites(): UseSitesReturn {
   const [sites, setSites] = useState<SiteCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
 
   const fetchSites = async (forceRefresh = false) => {
     try {
@@ -102,6 +104,11 @@ export function useSites(): UseSitesReturn {
     data: RequestData
   ) => {
     try {
+      // 检查是否已登录
+      if (!session) {
+        throw new Error("请先登录后再进行操作");
+      }
+
       setError(null);
       const response = await fetch("/api/sites", {
         method,
@@ -113,14 +120,16 @@ export function useSites(): UseSitesReturn {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to perform operation");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "操作失败");
       }
 
       const result = await response.json();
       setSites(result);
       setCachedSites(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorMessage = err instanceof Error ? err.message : "操作失败";
+      setError(errorMessage);
       throw err;
     }
   };
