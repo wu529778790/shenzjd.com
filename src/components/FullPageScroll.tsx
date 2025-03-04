@@ -41,7 +41,7 @@ export function FullPageScroll({
 
       setTimeout(() => {
         isScrolling.current = false;
-      }, 500); // 减少防抖时间到 500ms
+      }, 300); // 将防抖时间调整为与动画持续时间一致
     };
 
     const container = containerRef.current;
@@ -66,7 +66,7 @@ export function FullPageScroll({
       ref={containerRef}
       className={cn("h-screen overflow-hidden", className)}>
       <div
-        className="transition-transform duration-500 ease-in-out h-full"
+        className="transition-transform duration-300 ease-out h-full"
         style={{ transform: `translateY(-${currentPage * 100}%)` }}>
         {React.Children.map(children, (child, index) => (
           <div key={index} className="h-screen">
