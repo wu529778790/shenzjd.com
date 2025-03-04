@@ -10,12 +10,6 @@ import { CategoryContextMenu } from "./CategoryContextMenu";
 import { LoginButton } from "./auth/login-button";
 import { ModeToggle } from "./modeToggle";
 import { ForceRefresh } from "./forceRefresh";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface SidebarProps {
   categories: Category[];
@@ -46,53 +40,37 @@ export default function Sidebar({
 
   return (
     <div className="w-16 bg-card fixed left-0 top-0 h-full flex flex-col items-center py-4 border-r">
-      <TooltipProvider>
-        {categories.map((category) => {
-          const IconComponent = getIconComponent(category.icon);
+      {categories.map((category) => {
+        const IconComponent = getIconComponent(category.icon);
 
-          return (
-            <CategoryContextMenu
-              key={category.id}
-              category={category}
-              onSuccess={onCategoriesChange}>
-              <Tooltip delayDuration={100}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "mb-2 transition-colors duration-200 cursor-pointer",
-                      activeCategory === category.id
-                        ? "bg-primary/10 text-primary border-primary hover:bg-primary/20"
-                        : "hover:bg-accent"
-                    )}
-                    onClick={() => onSelectCategory(category.id)}>
-                    <IconComponent className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" align="center">
-                  {category.name}
-                </TooltipContent>
-              </Tooltip>
-            </CategoryContextMenu>
-          );
-        })}
-      </TooltipProvider>
-
-      <AddCategoryDialog onSuccess={onCategoriesChange}>
-        <Tooltip delayDuration={100}>
-          <TooltipTrigger asChild>
+        return (
+          <CategoryContextMenu
+            key={category.id}
+            category={category}
+            onSuccess={onCategoriesChange}>
             <Button
               variant="ghost"
               size="icon"
-              className="mb-2 cursor-pointer transition-colors duration-200 hover:bg-accent">
-              <LucideIcons.Plus className="h-5 w-5" />
+              className={cn(
+                "mb-2 transition-colors duration-200 cursor-pointer",
+                activeCategory === category.id
+                  ? "bg-primary/10 text-primary border-primary hover:bg-primary/20"
+                  : "hover:bg-accent"
+              )}
+              onClick={() => onSelectCategory(category.id)}>
+              <IconComponent className="h-5 w-5" />
             </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right" align="center">
-            添加分类
-          </TooltipContent>
-        </Tooltip>
+          </CategoryContextMenu>
+        );
+      })}
+
+      <AddCategoryDialog onSuccess={onCategoriesChange}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mb-2 cursor-pointer transition-colors duration-200 hover:bg-accent">
+          <LucideIcons.Plus className="h-5 w-5" />
+        </Button>
       </AddCategoryDialog>
 
       <div className="mt-auto space-y-2 flex flex-col items-center w-full px-2">
