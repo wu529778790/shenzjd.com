@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
@@ -15,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import * as LucideIcons from "lucide-react";
 
 export function LoginButton() {
   const { data: session } = useSession();
@@ -35,14 +37,31 @@ export function LoginButton() {
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" side="right">
-          <DropdownMenuItem className="flex flex-col items-start">
-            <span className="font-medium">{session.user?.name}</span>
-            <span className="text-xs text-muted-foreground">
-              {session.user?.email}
-            </span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuContent align="start" side="right" className="w-72">
+          <div className="flex items-center gap-4 p-3">
+            <Avatar className="h-12 w-12">
+              <AvatarImage
+                src={session.user?.image || ""}
+                alt={session.user?.name || ""}
+              />
+              <AvatarFallback>
+                {session.user?.name?.[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-sm">
+                {session.user?.name}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {session.user?.email}
+              </span>
+            </div>
+          </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => signOut()}
+            className="text-destructive focus:text-destructive focus:bg-destructive/10">
+            <LucideIcons.LogOut className="mr-2 h-4 w-4" />
             退出登录
           </DropdownMenuItem>
         </DropdownMenuContent>
