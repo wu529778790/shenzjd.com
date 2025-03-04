@@ -9,6 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function LoginButton() {
   const { data: session } = useSession();
@@ -45,10 +51,19 @@ export function LoginButton() {
   }
 
   return (
-    <Button variant="ghost" size="icon" onClick={() => signIn("github")}>
-      <Avatar className="h-8 w-8">
-        <AvatarFallback className="text-xs">登录</AvatarFallback>
-      </Avatar>
-    </Button>
+    <TooltipProvider>
+      <Tooltip delayDuration={100}>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" onClick={() => signIn("github")}>
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="text-xs">登录</AvatarFallback>
+            </Avatar>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="max-w-[200px]">
+          <p className="text-sm">登录后即可将您的数据同步到您自己的 GitHub</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
