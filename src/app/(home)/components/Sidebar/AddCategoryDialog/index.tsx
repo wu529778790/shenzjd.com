@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { IconPicker } from "../components/IconPicker";
 import { useSites } from "@/hooks/useSites";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 
 interface AddCategoryDialogProps {
   onSuccess?: () => void;
@@ -22,6 +23,7 @@ export function AddCategoryDialog({
   onSuccess,
   children,
 }: AddCategoryDialogProps) {
+  const { checkAuth, LoginAlert } = useRequireAuth();
   const { addCategory } = useSites();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string>("home");
@@ -56,19 +58,21 @@ export function AddCategoryDialog({
     }
   };
 
+  const trigger = children ? (
+    <div onClick={() => checkAuth(() => setIsDialogOpen(true))}>{children}</div>
+  ) : (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="mt-auto"
+      onClick={() => checkAuth(() => setIsDialogOpen(true))}>
+      <Plus className="h-5 w-5" />
+    </Button>
+  );
+
   return (
     <>
-      {children ? (
-        <div onClick={() => setIsDialogOpen(true)}>{children}</div>
-      ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="mt-auto"
-          onClick={() => setIsDialogOpen(true)}>
-          <Plus className="h-5 w-5" />
-        </Button>
-      )}
+      {trigger}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
@@ -101,6 +105,8 @@ export function AddCategoryDialog({
           </div>
         </DialogContent>
       </Dialog>
+
+      <LoginAlert />
     </>
   );
 }

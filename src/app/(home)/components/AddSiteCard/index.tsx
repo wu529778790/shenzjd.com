@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { AddSiteDialog } from "./AddSiteDialog";
-import { RequireAuth } from "@/components/auth/require-auth";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 
 interface AddSiteCardProps {
   activeCategory: string;
@@ -11,20 +11,21 @@ interface AddSiteCardProps {
 }
 
 export function AddSiteCard({ activeCategory, onSuccess }: AddSiteCardProps) {
+  const { checkAuth, LoginAlert } = useRequireAuth();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   return (
     <>
-      <RequireAuth onAuth={() => setIsAddDialogOpen(true)}>
-        <div className="flex flex-col items-center gap-2 cursor-pointer group w-[80px]">
-          <div className="w-12 h-12 relative flex items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-200">
-            <Plus className="w-6 h-6 text-gray-400 group-hover:text-gray-600 transition-colors" />
-          </div>
-          <span className="text-xs text-center text-gray-600 truncate w-full">
-            添加网站
-          </span>
+      <div
+        onClick={() => checkAuth(() => setIsAddDialogOpen(true))}
+        className="flex flex-col items-center gap-2 cursor-pointer group w-[80px]">
+        <div className="w-12 h-12 relative flex items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-200">
+          <Plus className="w-6 h-6 text-gray-400 group-hover:text-gray-600 transition-colors" />
         </div>
-      </RequireAuth>
+        <span className="text-xs text-center text-gray-600 truncate w-full">
+          添加网站
+        </span>
+      </div>
 
       <AddSiteDialog
         open={isAddDialogOpen}
@@ -32,6 +33,8 @@ export function AddSiteCard({ activeCategory, onSuccess }: AddSiteCardProps) {
         activeCategory={activeCategory}
         onSuccess={onSuccess}
       />
+
+      <LoginAlert />
     </>
   );
 }
