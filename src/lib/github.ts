@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/rest";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 
 export interface FileContent {
   content: string;
