@@ -7,6 +7,7 @@ import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
 import { AddCategoryDialog } from "./AddCategoryDialog/index";
 import { CategoryContextMenu } from "./CategoryContextMenu";
+import { LoginButton } from "./auth/login-button";
 import { ModeToggle } from "./modeToggle";
 import { ForceRefresh } from "./forceRefresh";
 
@@ -73,6 +74,7 @@ export default function Sidebar({
       </AddCategoryDialog>
 
       <div className="mt-auto space-y-2 flex flex-col items-center w-full px-2">
+        <LoginButton />
         <ForceRefresh onRefresh={onCategoriesChange} />
         <ModeToggle />
       </div>

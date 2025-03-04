@@ -1,26 +1,29 @@
 import { Octokit } from "@octokit/rest";
-
-if (!process.env.GITHUB_TOKEN) {
-  throw new Error("GITHUB_TOKEN is required");
-}
-
-const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
-});
-
-const OWNER = process.env.GITHUB_OWNER || "wu529778790";
-const REPO = process.env.GITHUB_REPO || "shenzjd.com";
+import { auth } from "@/auth";
 
 export interface FileContent {
   content: string;
   sha?: string;
 }
 
+export async function getOctokit() {
+  const session = await auth();
+  return new Octokit({
+    auth: session?.user ? process.env.GITHUB_TOKEN : undefined,
+  });
+}
+
 export async function getFile(path: string): Promise<FileContent> {
   try {
+    const octokit = await getOctokit();
+    const session = await auth();
+    const owner =
+      session?.user?.name || process.env.GITHUB_OWNER || "wu529778790";
+    const repo = process.env.GITHUB_REPO || "shenzjd.com";
+
     const response = await octokit.repos.getContent({
-      owner: OWNER,
-      repo: REPO,
+      owner,
+      repo,
       path,
     });
 
@@ -43,10 +46,16 @@ export async function updateFile(
   content: string,
   sha?: string
 ): Promise<void> {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("User not authenticated");
+  }
+
   try {
+    const octokit = await getOctokit();
     await octokit.repos.createOrUpdateFileContents({
-      owner: OWNER,
-      repo: REPO,
+      owner: session.user.name || process.env.GITHUB_OWNER || "wu529778790",
+      repo: process.env.GITHUB_REPO || "shenzjd.com",
       path,
       message: `Update ${path}`,
       content: Buffer.from(content).toString("base64"),
@@ -59,10 +68,16 @@ export async function updateFile(
 }
 
 export async function createFile(path: string, content: string): Promise<void> {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("User not authenticated");
+  }
+
   try {
+    const octokit = await getOctokit();
     await octokit.repos.createOrUpdateFileContents({
-      owner: OWNER,
-      repo: REPO,
+      owner: session.user.name || process.env.GITHUB_OWNER || "wu529778790",
+      repo: process.env.GITHUB_REPO || "shenzjd.com",
       path,
       message: `Create ${path}`,
       content: Buffer.from(content).toString("base64"),
@@ -74,10 +89,16 @@ export async function createFile(path: string, content: string): Promise<void> {
 }
 
 export async function deleteFile(path: string, sha: string): Promise<void> {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("User not authenticated");
+  }
+
   try {
+    const octokit = await getOctokit();
     await octokit.repos.deleteFile({
-      owner: OWNER,
-      repo: REPO,
+      owner: session.user.name || process.env.GITHUB_OWNER || "wu529778790",
+      repo: process.env.GITHUB_REPO || "shenzjd.com",
       path,
       message: `Delete ${path}`,
       sha,
