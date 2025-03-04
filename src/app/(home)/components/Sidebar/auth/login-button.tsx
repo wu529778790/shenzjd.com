@@ -47,7 +47,7 @@ export function LoginButton() {
   return (
     <Button variant="ghost" size="icon" onClick={() => signIn("github")}>
       <Avatar className="h-8 w-8">
-        <AvatarFallback>?</AvatarFallback>
+        <AvatarFallback className="text-xs">登录</AvatarFallback>
       </Avatar>
     </Button>
   );
