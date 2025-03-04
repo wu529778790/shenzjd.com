@@ -29,8 +29,25 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
+# 声明构建参数
+ARG GITHUB_TOKEN
+ARG GITHUB_ID
+ARG GITHUB_SECRET
+ARG NEXTAUTH_SECRET
+
+# 设置环境变量
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
+ENV GITHUB_ID=$GITHUB_ID
+ENV GITHUB_SECRET=$GITHUB_SECRET
+ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
+
+# 从构建阶段复制必要文件
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
 # 暴露端口
 EXPOSE 3000
 
 # 启动应用
-CMD ["pnpm", "start"] 
+CMD ["node", "server.js"] 
