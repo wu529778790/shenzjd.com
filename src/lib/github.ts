@@ -6,6 +6,9 @@ export interface FileContent {
   sha?: string;
 }
 
+const ORIGINAL_OWNER = "wu529778790";
+const ORIGINAL_REPO = "shenzjd.com";
+
 export async function getOctokit() {
   const session = await auth();
   // 如果用户已登录，使用 OAuth token
@@ -20,13 +23,87 @@ export async function getOctokit() {
   });
 }
 
+// 确保用户已 fork 仓库
+export async function ensureForked() {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("User not authenticated");
+  }
+
+  const octokit = await getOctokit();
+  const username = session.user.name;
+
+  try {
+    console.log(`Checking if repository is forked for user: ${username}`);
+    // 检查是否已经 fork
+    await octokit.repos.get({
+      owner: username,
+      repo: ORIGINAL_REPO,
+    });
+    console.log(`Repository already forked for user: ${username}`);
+    return true;
+  } catch (error: unknown) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "status" in error &&
+      error.status === 404
+    ) {
+      console.log(`Forking repository for user: ${username}`);
+      try {
+        // 如果没有 fork，则创建 fork
+        await octokit.repos.createFork({
+          owner: ORIGINAL_OWNER,
+          repo: ORIGINAL_REPO,
+        });
+        console.log(`Successfully forked repository for user: ${username}`);
+        return true;
+      } catch (forkError: unknown) {
+        // 如果仓库正在 fork 中，等待一段时间后重试
+        if (
+          forkError &&
+          typeof forkError === "object" &&
+          "status" in forkError &&
+          "message" in forkError &&
+          forkError.status === 403 &&
+          typeof forkError.message === "string" &&
+          forkError.message.includes("already being forked")
+        ) {
+          console.log(`Repository is being forked, waiting...`);
+          // 等待 2 秒后重试
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          // 重新检查是否已经 fork
+          try {
+            await octokit.repos.get({
+              owner: username,
+              repo: ORIGINAL_REPO,
+            });
+            console.log(`Repository successfully forked after waiting`);
+            return true;
+          } catch (retryError) {
+            console.error(`Failed to verify fork after waiting:`, retryError);
+          }
+        }
+        console.error(
+          `Failed to fork repository for user ${username}:`,
+          forkError
+        );
+        throw new Error("Failed to fork repository");
+      }
+    }
+    console.error(`Error checking repository for user ${username}:`, error);
+    throw error;
+  }
+}
+
 export async function getFile(path: string): Promise<FileContent> {
   try {
     const octokit = await getOctokit();
     const session = await auth();
-    const owner =
-      session?.user?.name || process.env.GITHUB_OWNER || "wu529778790";
-    const repo = process.env.GITHUB_REPO || "shenzjd.com";
+
+    // 如果用户已登录，使用其 fork 的仓库
+    const owner = session?.user ? session.user.name : ORIGINAL_OWNER;
+    const repo = ORIGINAL_REPO;
 
     const response = await octokit.repos.getContent({
       owner,
@@ -60,10 +137,13 @@ export async function updateFile(
   }
 
   try {
+    // 确保用户已 fork 仓库
+    await ensureForked();
+
     const octokit = await getOctokit();
     await octokit.repos.createOrUpdateFileContents({
-      owner: session.user.name || process.env.GITHUB_OWNER || "wu529778790",
-      repo: process.env.GITHUB_REPO || "shenzjd.com",
+      owner: session.user.name,
+      repo: ORIGINAL_REPO,
       path,
       message: `Update ${path}`,
       content: Buffer.from(content).toString("base64"),
@@ -82,10 +162,13 @@ export async function createFile(path: string, content: string): Promise<void> {
   }
 
   try {
+    // 确保用户已 fork 仓库
+    await ensureForked();
+
     const octokit = await getOctokit();
     await octokit.repos.createOrUpdateFileContents({
-      owner: session.user.name || process.env.GITHUB_OWNER || "wu529778790",
-      repo: process.env.GITHUB_REPO || "shenzjd.com",
+      owner: session.user.name,
+      repo: ORIGINAL_REPO,
       path,
       message: `Create ${path}`,
       content: Buffer.from(content).toString("base64"),
@@ -103,10 +186,13 @@ export async function deleteFile(path: string, sha: string): Promise<void> {
   }
 
   try {
+    // 确保用户已 fork 仓库
+    await ensureForked();
+
     const octokit = await getOctokit();
     await octokit.repos.deleteFile({
-      owner: session.user.name || process.env.GITHUB_OWNER || "wu529778790",
-      repo: process.env.GITHUB_REPO || "shenzjd.com",
+      owner: session.user.name,
+      repo: ORIGINAL_REPO,
       path,
       message: `Delete ${path}`,
       sha,

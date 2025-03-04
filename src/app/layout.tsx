@@ -1,6 +1,14 @@
+"use client";
+
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/providers/session-provider";
+import { useFork } from "@/hooks/useFork";
+
+function ForkWrapper({ children }: { children: React.ReactNode }) {
+  useFork();
+  return <>{children}</>;
+}
 
 export default function RootLayout({
   children,
@@ -8,12 +16,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh" suppressHydrationWarning>
       <body>
         <AuthProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-          </ThemeProvider>
+          <ForkWrapper>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              {children}
+            </ThemeProvider>
+          </ForkWrapper>
         </AuthProvider>
       </body>
     </html>
