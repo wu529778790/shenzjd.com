@@ -37,7 +37,7 @@ export function ForceRefresh({ onRefresh }: ForceRefreshProps) {
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
           <Button
             variant="outline"
@@ -54,7 +54,7 @@ export function ForceRefresh({ onRefresh }: ForceRefreshProps) {
             />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent side="right">
           <p>强制刷新数据</p>
         </TooltipContent>
       </Tooltip>
