@@ -8,8 +8,15 @@ export interface FileContent {
 
 export async function getOctokit() {
   const session = await auth();
+  // 如果用户已登录，使用 OAuth token
+  if (session?.user) {
+    return new Octokit({
+      auth: session.accessToken,
+    });
+  }
+  // 如果用户未登录，使用环境变量中的 token
   return new Octokit({
-    auth: session?.user ? process.env.GITHUB_TOKEN : undefined,
+    auth: process.env.GITHUB_TOKEN,
   });
 }
 
@@ -41,6 +48,7 @@ export async function getFile(path: string): Promise<FileContent> {
   }
 }
 
+// 需要认证的操作
 export async function updateFile(
   path: string,
   content: string,
