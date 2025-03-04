@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Vercel部署优化配置
+  poweredByHeader: false,
+  compress: true,
+  reactStrictMode: true,
+  // 输出优化
+  output: "standalone",
+  // 缓存优化
+  experimental: {
+    optimizePackageImports: ["@/components", "@/lib"],
+  },
 };
 
 export default nextConfig;
