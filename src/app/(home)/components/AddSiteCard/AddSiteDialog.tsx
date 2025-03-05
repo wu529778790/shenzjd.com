@@ -118,7 +118,7 @@ export function AddSiteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="[&>button]:cursor-pointer">
         <DialogHeader>
           <DialogTitle>添加</DialogTitle>
           <DialogDescription>添加一个新链接</DialogDescription>
@@ -149,7 +149,10 @@ export function AddSiteDialog({
                 <Clipboard className="h-4 w-4" />
               </button>
             </div>
-            <Button onClick={() => handleParse()} disabled={loading}>
+            <Button
+              onClick={() => handleParse()}
+              disabled={loading}
+              className="cursor-pointer">
               {loading ? "解析中..." : "解析"}
             </Button>
           </div>
@@ -194,7 +197,7 @@ export function AddSiteDialog({
                 />
               </div>
 
-              <Button onClick={handleConfirm} className="w-full">
+              <Button onClick={handleConfirm} className="w-full cursor-pointer">
                 确认添加
               </Button>
             </div>
