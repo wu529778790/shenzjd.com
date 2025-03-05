@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { z } from "zod";
 import Image from "next/image";
 import { Site } from "@/types";
@@ -38,33 +38,58 @@ export function AddSiteDialog({
   const [siteInfo, setSiteInfo] = useState<Site | null>(null);
   const [editedTitle, setEditedTitle] = useState("");
 
-  const handleParse = async () => {
-    try {
-      urlSchema.parse(link);
-      setLoading(true);
-      setError("");
+  const handleParse = useCallback(
+    async (urlToCheck?: string) => {
+      try {
+        const urlToValidate = urlToCheck || link;
+        urlSchema.parse(urlToValidate);
+        setLoading(true);
+        setError("");
 
-      const response = await fetch("/api/parse-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url: link }),
-      });
+        const response = await fetch("/api/parse-url", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: urlToValidate }),
+        });
 
-      if (!response.ok) {
-        throw new Error("获取网站信息失败");
+        if (!response.ok) {
+          throw new Error("获取网站信息失败");
+        }
+
+        const data = await response.json();
+        setSiteInfo(data);
+        setEditedTitle(data.title);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "发生未知错误");
+        setLoading(false);
       }
+    },
+    [link]
+  );
 
-      const data = await response.json();
-      setSiteInfo(data);
-      setEditedTitle(data.title);
-      setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "发生未知错误");
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (!open) return;
+
+    const checkClipboard = async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        try {
+          urlSchema.parse(text);
+          setLink(text);
+          handleParse(text);
+        } catch {
+          console.log("剪贴板内容不是有效URL");
+        }
+      } catch (err) {
+        console.log("无法访问剪贴板:", err);
+      }
+    };
+
+    checkClipboard();
+  }, [open, handleParse]);
 
   const handleConfirm = async () => {
     if (!siteInfo) return;
@@ -105,7 +130,7 @@ export function AddSiteDialog({
               onChange={(e) => setLink(e.target.value)}
               disabled={loading}
             />
-            <Button onClick={handleParse} disabled={loading}>
+            <Button onClick={() => handleParse()} disabled={loading}>
               {loading ? "解析中..." : "解析"}
             </Button>
           </div>
