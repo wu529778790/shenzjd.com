@@ -145,7 +145,7 @@ export async function updateFile(
       owner: session.user.login,
       repo: ORIGINAL_REPO,
       path,
-      message: `Update ${path} [skip ci]`,
+      message: `[skip ci] Update ${path}`,
       content: Buffer.from(content).toString("base64"),
       sha,
     });
