@@ -1,5 +1,8 @@
 FROM node:20-alpine AS deps
 
+# 添加构建时间参数，用于强制刷新缓存
+ARG BUILD_DATE=unknown
+
 # 安装 pnpm
 RUN npm install -g pnpm
 

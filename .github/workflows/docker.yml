@@ -34,6 +34,9 @@ jobs:
         with:
           context: .
           push: true
+          no-cache: true
+          build-args: |
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           tags: |
             wu529778790/shenzjd.com:${{ env.new-version }}
             wu529778790/shenzjd.com:latest
