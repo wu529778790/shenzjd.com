@@ -1,54 +1,40 @@
-name: Deploy to Docker
+# 阶段一：构建阶段
+FROM node:20-slim AS builder
+WORKDIR /app
 
-on:
-  push:
-    branches:
-      - main
+# 启用 corepack 并安装 pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+# 优先复制包管理文件（利用 Docker 层缓存）
+COPY package.json pnpm-lock.yaml* .npmrc* ./
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+# 安装依赖（包含 devDependencies）
+RUN pnpm install --frozen-lockfile
 
-      - name: Update version and commit
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          new_version=$(npm version patch -m "chore(release): v%s [skip ci]")
-          echo "new-version=$new_version" >> $GITHUB_ENV
+# 复制项目文件
+COPY . .
 
-      - name: Set Docker Buildx
-        uses: docker/setup-buildx-action@v1
+# 构建项目
+RUN pnpm build
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+# 阶段二：生产镜像
+FROM node:20-slim
+WORKDIR /app
 
-      - name: Build and push docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          no-cache: true
-          build-args: |
-            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          tags: |
-            wu529778790/shenzjd.com:${{ env.new-version }}
-            wu529778790/shenzjd.com:latest
+# 从构建阶段复制必要文件
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/pnpm-lock.yaml .
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/next.config.ts ./
 
-      - name: Push changes
-        run: git push
+# 仅安装生产依赖
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --prod --frozen-lockfile
 
-      - name: Update Docker
-        run: |
-          curl -X POST https://api.shenzjd.com/docker \
-          -H "Content-Type: application/json" \
-          -d '{
-            "dockerName": "wu529778790/shenzjd.com",
-            "dockerComposeYml": "$(cat docker-compose.yml)"
-          }'
+# 环境变量配置
+ENV NODE_ENV=production
+ENV PORT=3000
+EXPOSE 3000
+
+# 启动命令
+CMD ["pnpm", "start"]
