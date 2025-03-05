@@ -2,8 +2,8 @@
 FROM node:20-slim AS builder
 WORKDIR /app
 
-# 启用 corepack 并安装 pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# 使用 npm 安装 pnpm
+RUN npm install -g pnpm@latest
 
 # 优先复制包管理文件（利用 Docker 层缓存）
 COPY package.json pnpm-lock.yaml* .npmrc* ./
@@ -21,6 +21,9 @@ RUN pnpm build
 FROM node:20-slim
 WORKDIR /app
 
+# 使用 npm 安装 pnpm
+RUN npm install -g pnpm@latest
+
 # 从构建阶段复制必要文件
 COPY --from=builder /app/package.json .
 COPY --from=builder /app/pnpm-lock.yaml .
@@ -28,7 +31,6 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/next.config.ts ./
 
 # 仅安装生产依赖
-RUN corepack enable && corepack prepare pnpm@latest --activate
 RUN pnpm install --prod --frozen-lockfile
 
 # 环境变量配置
