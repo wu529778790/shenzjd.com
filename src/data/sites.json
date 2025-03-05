@@ -27,6 +27,12 @@
         "favicon": "https://github.githubassets.com/favicons/favicon.svg",
         "url": "https://github.com/wu529778790",
         "id": "1741189593671"
+      },
+      {
+        "title": "每日新闻",
+        "favicon": "https://news.shenzjd.com/icon.svg",
+        "url": "https://news.shenzjd.com/",
+        "id": "1741189651274"
       }
     ]
   }
