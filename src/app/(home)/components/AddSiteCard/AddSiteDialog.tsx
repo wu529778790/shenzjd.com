@@ -14,6 +14,7 @@ import { z } from "zod";
 import Image from "next/image";
 import { Site } from "@/types";
 import { useSites } from "@/hooks/useSites";
+import { Clipboard } from "lucide-react";
 
 // URL schema 验证
 const urlSchema = z.string().url("请输入有效的URL");
@@ -124,12 +125,30 @@ export function AddSiteDialog({
         </DialogHeader>
         <div className="space-y-4">
           <div className="flex gap-2">
-            <Input
-              placeholder="请输入链接"
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              disabled={loading}
-            />
+            <div className="relative flex-1">
+              <Input
+                placeholder="请输入链接"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                disabled={loading}
+                className="pr-8"
+              />
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    setLink(text);
+                    handleParse(text);
+                  } catch (err) {
+                    console.log("无法访问剪贴板:", err);
+                  }
+                }}
+                disabled={loading}
+                type="button">
+                <Clipboard className="h-4 w-4" />
+              </button>
+            </div>
             <Button onClick={() => handleParse()} disabled={loading}>
               {loading ? "解析中..." : "解析"}
             </Button>
