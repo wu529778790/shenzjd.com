@@ -60,6 +60,7 @@ export function AddSiteDialog({
         }
 
         const data = await response.json();
+        console.log(data);
         setSiteInfo(data);
         setEditedTitle(data.title);
         setLoading(false);

@@ -5,65 +5,16 @@
     "icon": "home",
     "sites": [
       {
-        "id": "1741007885365",
-        "title": "React",
-        "favicon": "https://react.dev/favicon-32x32.png",
-        "url": "https://react.dev/"
-      },
-      {
-        "title": "Monica - 万能的助手，懂你的伙伴",
-        "favicon": "https://monica.cn/logo.png",
-        "url": "https://monica.cn/home",
-        "id": "1741079876169"
-      },
-      {
-        "title": "Llama Coder – AI Code Generator",
-        "favicon": "https://llamacoder.together.ai/favicon.ico",
-        "url": "https://llamacoder.together.ai/",
-        "id": "1741093135726"
-      },
-      {
-        "title": "扣子",
-        "favicon": "https://www.coze.cn//lf-coze-web-cdn.coze.cn/obj/coze-web-cn/obric/coze/favicon.1970.png",
-        "url": "https://www.coze.cn/",
-        "id": "1741093171759"
-      },
-      {
-        "title": "Coze",
-        "favicon": "https://www.coze.com//sf-coze-web-cdn.coze.com/obj/coze-web-sg/obric/coze/favicon.1970.png",
-        "url": "https://www.coze.com/",
-        "id": "1741093185942"
-      },
-      {
-        "title": "Dify",
-        "favicon": "https://cloud.dify.ai/favicon.ico",
-        "url": "https://cloud.dify.ai/apps",
-        "id": "1741093198782"
-      },
-      {
         "id": "1741185375721",
         "title": "资源共享频道",
         "url": "https://telegram.shenzjd.com/",
         "favicon": "https://cdn5.cdn-telegram.org/file/O1tLcdHAwYBNu0BMcbyBPM9ofphlsfKcc-0PBpeqBkfoA153IBeT2xdj1T19UpY4A8g276XEmsoX3-rxaydzt2P6cyc8krElQFB7ZU80vIt1TcdGgcSrUTrGb5ZDbyVjmxT8ICvghTjt_L6VH4qLSJICs6JlSxaXg6tdSWq8GhL35xsmvSgw-c7tPjOqcfLuX0vlDRcIBDfTGhlYpB5XbXnmO6Vv3RbZ3gbKwj9Y9HuqA4dogP0-p_Ru0F9Xst0RdSSyXJnAwE5020SoOn7TFAyskFPdyaSNgb8CvjX8Lr5H37ZvPkbNwWPswv0A5NJhDNznQBwFGpalvcohseK1-A.jpg"
       },
       {
-        "title": "神族九帝's blog",
+        "title": "神族九帝博客",
         "favicon": "https://blog.shenzjd.com/img/favicon.ico",
         "url": "https://blog.shenzjd.com/",
         "id": "1741185485367"
-      }
-    ]
-  },
-  {
-    "id": "1741009999537",
-    "name": "1",
-    "icon": "globe",
-    "sites": [
-      {
-        "title": "shenzjd.com/src/data/sites.json at main · wu529778790/shenzjd.com · GitHub",
-        "favicon": "https://github.githubassets.com/favicons/favicon.svg",
-        "url": "https://github.com/wu529778790/shenzjd.com/blob/main/src/data/sites.json",
-        "id": "1741010022519"
       }
     ]
   }
