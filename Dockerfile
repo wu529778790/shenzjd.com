@@ -1,63 +1,40 @@
-FROM node:20-alpine AS deps
-
-# 添加构建时间参数，用于强制刷新缓存
-ARG BUILD_DATE=unknown
-
-# 安装 pnpm
-RUN npm install -g pnpm
-
+# 阶段一：构建阶段
+FROM node:20-slim AS builder
 WORKDIR /app
 
-# 禁用 Next.js telemetry
-ENV NEXT_TELEMETRY_DISABLED=1
+# 启用 corepack 并安装 pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# 只复制依赖相关文件
-COPY package.json pnpm-lock.yaml ./
+# 优先复制包管理文件（利用 Docker 层缓存）
+COPY package.json pnpm-lock.yaml* .npmrc* ./
 
-# 只安装生产依赖
+# 安装依赖（包含 devDependencies）
 RUN pnpm install --frozen-lockfile
 
-# 构建阶段
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# 安装 pnpm
-RUN npm install -g pnpm
-
-# 禁用 Next.js telemetry
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# 复制依赖和源代码
-COPY --from=deps /app/node_modules ./node_modules
+# 复制项目文件
 COPY . .
 
 # 构建项目
-RUN pnpm install && pnpm run build
+RUN pnpm build
 
-# 生产阶段
-FROM node:20-alpine AS runner
-
+# 阶段二：生产镜像
+FROM node:20-slim
 WORKDIR /app
 
-# 环境变量设置
-ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1 \
-    PORT=3000 \
-    HOSTNAME="0.0.0.0"
-
-# 不需要再次安装 pnpm，因为我们只需要运行构建后的文件
+# 从构建阶段复制必要文件
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/pnpm-lock.yaml .
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/next.config.ts ./
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
 
-# 使用非 root 用户运行应用
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
-    chown -R nextjs:nodejs /app
+# 仅安装生产依赖
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --prod --frozen-lockfile
 
-USER nextjs
-
+# 环境变量配置
+ENV NODE_ENV=production
+ENV PORT=3000
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# 启动命令
+CMD ["pnpm", "start"]
