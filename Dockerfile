@@ -40,7 +40,6 @@ WORKDIR /app
 # 环境变量设置
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    NEXTAUTH_URL=https://shenzjd.com \
     PORT=3000 \
     HOSTNAME="0.0.0.0"
 

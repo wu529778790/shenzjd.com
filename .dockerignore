@@ -5,7 +5,6 @@ node_modules
 .yarn
 
 # Next.js 构建输出
-.next
 out
 
 # 开发工具和配置文件
