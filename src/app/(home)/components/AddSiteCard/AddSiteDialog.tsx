@@ -158,19 +158,35 @@ export function AddSiteDialog({
 
           {siteInfo && (
             <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-2">
-                {siteInfo.favicon && (
-                  <div className="relative w-6 h-6 flex-shrink-0">
-                    <Image
-                      src={siteInfo.favicon}
-                      alt="网站图标"
-                      fill
-                      sizes="24px"
-                      className="object-contain"
-                      unoptimized
-                    />
-                  </div>
-                )}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="图标URL"
+                    value={siteInfo.favicon || ""}
+                    onChange={(e) => {
+                      setSiteInfo((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              favicon: e.target.value,
+                            }
+                          : null
+                      );
+                    }}
+                  />
+                  {siteInfo.favicon && (
+                    <div className="relative w-6 h-6 flex-shrink-0">
+                      <Image
+                        src={siteInfo.favicon}
+                        alt="网站图标"
+                        fill
+                        sizes="24px"
+                        className="object-contain"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                </div>
                 <Input
                   placeholder="标题"
                   value={editedTitle}
