@@ -35,7 +35,7 @@ export default function Home() {
       />
 
       <main className="flex-1 pl-16">
-        <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm py-24 px-4">
+        <div className="sticky top-0 z-10 backdrop-blur-sm py-24 px-4">
           <SearchBar />
         </div>
 
