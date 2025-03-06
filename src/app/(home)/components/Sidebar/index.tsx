@@ -10,7 +10,7 @@ import { CategoryContextMenu } from "./CategoryContextMenu";
 import { LoginButton } from "./auth/login-button";
 import { ModeToggle } from "./modeToggle";
 import { ForceRefresh } from "./forceRefresh";
-import { GradientToggle } from "@/components/GradientToggle";
+import { GradientToggle } from "@/app/(home)/components/Sidebar/GradientToggle";
 
 interface SidebarProps {
   categories: Category[];
