@@ -10,7 +10,6 @@ import { CategoryContextMenu } from "./CategoryContextMenu";
 import { LoginButton } from "./auth/login-button";
 import { ModeToggle } from "./modeToggle";
 import { ForceRefresh } from "./forceRefresh";
-import { GradientToggle } from "@/app/(home)/components/Sidebar/GradientToggle";
 
 interface SidebarProps {
   categories: Category[];
@@ -76,7 +75,6 @@ export default function Sidebar({
 
       <div className="mt-auto space-y-2 flex flex-col items-center w-full px-2">
         <LoginButton />
-        <GradientToggle />
         <ForceRefresh onRefresh={onCategoriesChange} />
         <ModeToggle />
       </div>
