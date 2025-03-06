@@ -39,6 +39,12 @@
         "favicon": "https://wallpaper.shenzjd.com/favicon.ico",
         "url": "https://wallpaper.shenzjd.com/#/index",
         "id": "1741189693457"
+      },
+      {
+        "title": "Hacker News",
+        "favicon": "https://news.ycombinator.com/y18.svg",
+        "url": "https://news.ycombinator.com/news",
+        "id": "1741229353206"
       }
     ]
   }
