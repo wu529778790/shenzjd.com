@@ -15,30 +15,74 @@ interface SearchEngine {
   name: string;
   url: string;
   icon?: string;
+  group: "traditional" | "ai";
 }
 
 const searchEngines: SearchEngine[] = [
-  { id: "local", name: "站内搜索", url: "" },
-  { id: "baidu", name: "百度", url: "https://www.baidu.com/s?wd=" },
-  { id: "google", name: "谷歌", url: "https://www.google.com/search?q=" },
-  { id: "bing", name: "必应", url: "https://www.bing.com/search?q=" },
-  { id: "github", name: "GitHub", url: "https://github.com/search?q=" },
-  { id: "zhihu", name: "知乎", url: "https://www.zhihu.com/search?q=" },
+  // 传统搜索引擎
   {
-    id: "bilibili",
-    name: "哔哩哔哩",
-    url: "https://search.bilibili.com/all?keyword=",
+    id: "baidu",
+    name: "百度",
+    url: "https://www.baidu.com/s?wd=",
+    group: "traditional",
   },
-  { id: "npm", name: "NPM", url: "https://www.npmjs.com/search?q=" },
+  {
+    id: "google",
+    name: "谷歌",
+    url: "https://www.google.com/search?q=",
+    group: "traditional",
+  },
+  {
+    id: "bing",
+    name: "必应",
+    url: "https://www.bing.com/search?q=",
+    group: "traditional",
+  },
+  {
+    id: "sogou",
+    name: "搜狗",
+    url: "https://www.sogou.com/web?query=",
+    group: "traditional",
+  },
+  {
+    id: "360",
+    name: "360搜索",
+    url: "https://www.so.com/s?q=",
+    group: "traditional",
+  },
+
+  // AI搜索引擎
+  { id: "metaso", name: "秘塔AI", url: "https://metaso.cn/?q=%s", group: "ai" },
+  {
+    id: "nanoai",
+    name: "纳米AI",
+    url: "https://www.n.cn/search/?q=",
+    group: "ai",
+  },
+  {
+    id: "perplexity",
+    name: "Perplexity",
+    url: "https://www.perplexity.ai/search?q=",
+    group: "ai",
+  },
+  {
+    id: "chatgpt",
+    name: "ChatGPT",
+    url: "https://chat.openai.com/",
+    group: "ai",
+  },
+  { id: "claude", name: "Claude", url: "https://claude.ai/", group: "ai" },
+  {
+    id: "gemini",
+    name: "Gemini",
+    url: "https://gemini.google.com/",
+    group: "ai",
+  },
 ];
 
-interface SearchBarProps {
-  onSearch?: (query: string) => void;
-}
-
-export function SearchBar({ onSearch }: SearchBarProps) {
+export function SearchBar() {
   const [query, setQuery] = useState("");
-  const [selectedEngine, setSelectedEngine] = useState<string>("local");
+  const [selectedEngine, setSelectedEngine] = useState<string>("baidu");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -48,9 +92,6 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    if (selectedEngine === "local") {
-      onSearch?.(value);
-    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -61,14 +102,9 @@ export function SearchBar({ onSearch }: SearchBarProps) {
 
   const performSearch = () => {
     if (!query.trim()) return;
-
-    if (selectedEngine === "local") {
-      onSearch?.(query);
-    } else {
-      const engine = searchEngines.find((e) => e.id === selectedEngine);
-      if (engine) {
-        window.open(engine.url + encodeURIComponent(query), "_blank");
-      }
+    const engine = searchEngines.find((e) => e.id === selectedEngine);
+    if (engine) {
+      window.open(engine.url + encodeURIComponent(query), "_blank");
     }
   };
 
@@ -79,12 +115,27 @@ export function SearchBar({ onSearch }: SearchBarProps) {
           <SelectTrigger>
             <SelectValue placeholder="选择搜索引擎" />
           </SelectTrigger>
-          <SelectContent>
-            {searchEngines.map((engine) => (
-              <SelectItem key={engine.id} value={engine.id}>
-                {engine.name}
-              </SelectItem>
-            ))}
+          <SelectContent className="max-h-[500px]">
+            <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
+              传统搜索引擎
+            </div>
+            {searchEngines
+              .filter((engine) => engine.group === "traditional")
+              .map((engine) => (
+                <SelectItem key={engine.id} value={engine.id}>
+                  {engine.name}
+                </SelectItem>
+              ))}
+            <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground mt-2">
+              AI搜索引擎
+            </div>
+            {searchEngines
+              .filter((engine) => engine.group === "ai")
+              .map((engine) => (
+                <SelectItem key={engine.id} value={engine.id}>
+                  {engine.name}
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
       </div>
@@ -98,13 +149,9 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             onChange={handleSearch}
             onKeyDown={handleKeyDown}
             className="w-full h-10 pl-10 pr-4 rounded-lg bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-            placeholder={
-              selectedEngine === "local"
-                ? "输入搜索内容"
-                : `在${
-                    searchEngines.find((e) => e.id === selectedEngine)?.name
-                  }中搜索`
-            }
+            placeholder={`在${
+              searchEngines.find((e) => e.id === selectedEngine)?.name
+            }中搜索`}
           />
         </div>
         <button
