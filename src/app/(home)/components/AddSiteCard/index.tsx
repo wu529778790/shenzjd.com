@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { AddSiteDialog } from "./AddSiteDialog/AddSiteDialog";
+import { AddSiteDialog } from "./AddSiteDialog";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 
 interface AddSiteCardProps {
