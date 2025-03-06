@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import {
   Select,
@@ -68,14 +68,13 @@ const searchEngines: SearchEngine[] = [
   {
     id: "chatgpt",
     name: "ChatGPT",
-    url: "https://chat.openai.com/",
+    url: "https://chat.openai.com/search?q=",
     group: "ai",
   },
-  { id: "claude", name: "Claude", url: "https://claude.ai/", group: "ai" },
   {
-    id: "gemini",
-    name: "Gemini",
-    url: "https://gemini.google.com/",
+    id: "kimi",
+    name: "Kimi",
+    url: "https://kimi.moonshot.cn/search?q=",
     group: "ai",
   },
 ];
@@ -119,6 +118,11 @@ export function SearchBar() {
     }
   };
 
+  const handleClear = () => {
+    setQuery("");
+    inputRef.current?.focus();
+  };
+
   return (
     <div className="relative w-full max-w-2xl mx-auto flex gap-2">
       <div className="w-32">
@@ -126,7 +130,7 @@ export function SearchBar() {
           <SelectTrigger>
             <SelectValue placeholder="选择搜索引擎" />
           </SelectTrigger>
-          <SelectContent className="max-h-[500px]">
+          <SelectContent className="max-h-[800px]">
             <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
               传统搜索引擎
             </div>
@@ -159,11 +163,18 @@ export function SearchBar() {
             value={query}
             onChange={handleSearch}
             onKeyDown={handleKeyDown}
-            className="w-full h-10 pl-10 pr-4 rounded-lg bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+            className="w-full h-10 pl-10 pr-10 rounded-lg bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
             placeholder={`在${
               searchEngines.find((e) => e.id === selectedEngine)?.name
             }中搜索`}
           />
+          {query && (
+            <button
+              onClick={handleClear}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+              <X className="h-4 w-4 cursor-pointer" />
+            </button>
+          )}
         </div>
         <button
           onClick={performSearch}
