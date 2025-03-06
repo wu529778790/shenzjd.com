@@ -15,7 +15,6 @@ import Image from "next/image";
 import { Site } from "@/types";
 import { useSites } from "@/contexts/SitesContext";
 import { Clipboard } from "lucide-react";
-import { useRequireAuth } from "@/hooks/use-require-auth";
 
 // URL schema 验证
 const urlSchema = z.string().url("请输入有效的URL");
