@@ -1,8 +1,15 @@
-import { useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
 import type { Site, SiteCategory } from "@/lib/sites";
 import { useSession } from "next-auth/react";
 
-interface UseSitesReturn {
+interface SitesContextType {
   sites: SiteCategory[];
   loading: boolean;
   error: string | null;
@@ -15,12 +22,7 @@ interface UseSitesReturn {
   refreshSites: () => Promise<void>;
 }
 
-type RequestData = {
-  categoryId?: string;
-  siteId?: string;
-  site?: Site;
-  category?: SiteCategory;
-};
+const SitesContext = createContext<SitesContextType | null>(null);
 
 const CACHE_KEY = "sites_cache";
 const CACHE_EXPIRY_KEY = "sites_cache_expiry";
@@ -58,18 +60,24 @@ function setCachedSites(sites: SiteCategory[]) {
   }
 }
 
-export function useSites(): UseSitesReturn {
+type RequestData = {
+  categoryId?: string;
+  siteId?: string;
+  site?: Site;
+  category?: SiteCategory;
+};
+
+export function SitesProvider({ children }: { children: ReactNode }) {
   const [sites, setSites] = useState<SiteCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { data: session } = useSession();
 
-  const fetchSites = async (forceRefresh = false) => {
+  const fetchSites = useCallback(async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError(null);
 
-      // 如果不是强制刷新，先尝试从缓存获取
       if (!forceRefresh) {
         const cached = getCachedSites();
         if (cached) {
@@ -79,7 +87,6 @@ export function useSites(): UseSitesReturn {
         }
       }
 
-      // 从服务器获取数据
       const response = await fetch("/api/sites");
       if (!response.ok) {
         throw new Error("Failed to fetch sites");
@@ -92,11 +99,11 @@ export function useSites(): UseSitesReturn {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchSites();
-  }, []);
+  }, [fetchSites]);
 
   const makeRequest = async (
     method: string,
@@ -104,7 +111,6 @@ export function useSites(): UseSitesReturn {
     data: RequestData
   ) => {
     try {
-      // 检查是否已登录
       if (!session) {
         throw new Error("请先登录后再进行操作");
       }
@@ -158,16 +164,29 @@ export function useSites(): UseSitesReturn {
     await makeRequest("DELETE", "deleteCategory", { categoryId });
   };
 
-  return {
-    sites,
-    loading,
-    error,
-    addSite,
-    updateSite,
-    deleteSite,
-    addCategory,
-    updateCategory,
-    deleteCategory,
-    refreshSites: () => fetchSites(true), // 强制刷新
-  };
+  return (
+    <SitesContext.Provider
+      value={{
+        sites,
+        loading,
+        error,
+        addSite,
+        updateSite,
+        deleteSite,
+        addCategory,
+        updateCategory,
+        deleteCategory,
+        refreshSites: () => fetchSites(true),
+      }}>
+      {children}
+    </SitesContext.Provider>
+  );
+}
+
+export function useSites() {
+  const context = useContext(SitesContext);
+  if (!context) {
+    throw new Error("useSites must be used within a SitesProvider");
+  }
+  return context;
 }

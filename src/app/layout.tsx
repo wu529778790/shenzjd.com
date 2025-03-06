@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { useFork } from "@/hooks/useFork";
+import { SitesProvider } from "@/contexts/SitesContext";
 
 function ForkWrapper({ children }: { children: React.ReactNode }) {
   useFork();
@@ -21,7 +22,7 @@ export default function RootLayout({
         <AuthProvider>
           <ForkWrapper>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              {children}
+              <SitesProvider>{children}</SitesProvider>
             </ThemeProvider>
           </ForkWrapper>
         </AuthProvider>

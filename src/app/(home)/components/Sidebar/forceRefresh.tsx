@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useSites } from "@/hooks/useSites";
+import { useSites } from "@/contexts/SitesContext";
 
 interface ForceRefreshProps {
   onRefresh?: () => void;

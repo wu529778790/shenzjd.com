@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Category } from "@/types";
 import Sidebar from "./components/Sidebar/index";
 import { FullPageScroll } from "@/components/FullPageScroll";
-import { useSites } from "@/hooks/useSites";
+import { useSites } from "@/contexts/SitesContext";
 import { AddSiteCard } from "./components/AddSiteCard";
 
 export default function Home() {

@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useSites } from "@/hooks/useSites";
+import { useSites } from "@/contexts/SitesContext";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import { Pencil, Trash2 } from "lucide-react";
 

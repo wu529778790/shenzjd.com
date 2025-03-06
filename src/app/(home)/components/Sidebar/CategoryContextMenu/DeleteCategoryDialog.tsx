@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useSites } from "@/hooks/useSites";
+import { useSites } from "@/contexts/SitesContext";
 
 interface DeleteCategoryDialogProps {
   categoryId: string;

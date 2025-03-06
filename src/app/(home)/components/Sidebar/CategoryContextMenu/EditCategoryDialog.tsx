@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { IconPicker } from "../components/IconPicker";
 import { Category } from "@/types";
-import { useSites } from "@/hooks/useSites";
+import { useSites } from "@/contexts/SitesContext";
 
 interface EditDialogProps {
   category: Category;

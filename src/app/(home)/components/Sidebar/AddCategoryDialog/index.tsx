@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { IconPicker } from "../components/IconPicker";
-import { useSites } from "@/hooks/useSites";
+import { useSites } from "@/contexts/SitesContext";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 
 interface AddCategoryDialogProps {
