@@ -127,7 +127,7 @@ export function SearchBar() {
     <div className="relative w-full max-w-2xl mx-auto flex gap-2">
       <div className="w-32">
         <Select value={selectedEngine} onValueChange={handleEngineChange}>
-          <SelectTrigger>
+          <SelectTrigger className="h-10">
             <SelectValue placeholder="选择搜索引擎" />
           </SelectTrigger>
           <SelectContent className="max-h-[800px]">
