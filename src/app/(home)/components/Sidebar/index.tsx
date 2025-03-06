@@ -40,7 +40,7 @@ export default function Sidebar({
   };
 
   return (
-    <div className="w-16 fixed left-0 top-0 h-full flex flex-col items-center py-4 border-r">
+    <div className="w-16 fixed left-0 top-0 h-full flex flex-col items-center py-4 border-r border-border/40 bg-background/40 backdrop-blur-sm">
       {categories.map((category) => {
         const IconComponent = getIconComponent(category.icon);
 
