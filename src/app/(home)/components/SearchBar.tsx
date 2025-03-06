@@ -81,7 +81,7 @@ const searchEngines: SearchEngine[] = [
 
 export function SearchBar() {
   const [query, setQuery] = useState("");
-  const [selectedEngine, setSelectedEngine] = useState<string>("baidu");
+  const [selectedEngine, setSelectedEngine] = useState<string>("metaso");
   const inputRef = useRef<HTMLInputElement>(null);
 
   // 在组件挂载后从localStorage读取缓存的搜索引擎
@@ -164,9 +164,9 @@ export function SearchBar() {
             onChange={handleSearch}
             onKeyDown={handleKeyDown}
             className="w-full h-10 pl-10 pr-10 rounded-lg bg-muted/50 border border-border focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-            placeholder={`在${
+            placeholder={`用${
               searchEngines.find((e) => e.id === selectedEngine)?.name
-            }中搜索`}
+            }搜索`}
           />
           {query && (
             <button
