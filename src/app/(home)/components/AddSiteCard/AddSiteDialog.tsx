@@ -38,6 +38,7 @@ export function AddSiteDialog({
   const [error, setError] = useState("");
   const [siteInfo, setSiteInfo] = useState<Site | null>(null);
   const [editedTitle, setEditedTitle] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleParse = useCallback(
     async (urlToCheck?: string) => {
@@ -97,6 +98,7 @@ export function AddSiteDialog({
     if (!siteInfo) return;
 
     try {
+      setIsSubmitting(true);
       await addSite(activeCategory, {
         id: Date.now().toString(),
         title: editedTitle || siteInfo.title,
@@ -114,6 +116,8 @@ export function AddSiteDialog({
       onSuccess?.();
     } catch (error) {
       console.error("添加站点失败:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -177,6 +181,7 @@ export function AddSiteDialog({
                           : null
                       );
                     }}
+                    disabled={isSubmitting}
                   />
                   {siteInfo.favicon && (
                     <div className="relative w-6 h-6 flex-shrink-0">
@@ -195,11 +200,22 @@ export function AddSiteDialog({
                   placeholder="标题"
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
+                  disabled={isSubmitting}
                 />
               </div>
 
-              <Button onClick={handleConfirm} className="w-full cursor-pointer">
-                确认添加
+              <Button
+                onClick={handleConfirm}
+                className="w-full cursor-pointer"
+                disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    添加中...
+                  </div>
+                ) : (
+                  "确认添加"
+                )}
               </Button>
             </div>
           )}
