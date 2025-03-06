@@ -85,9 +85,20 @@ export function SearchBar() {
   const [selectedEngine, setSelectedEngine] = useState<string>("baidu");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // 在组件挂载后从localStorage读取缓存的搜索引擎
   useEffect(() => {
+    const savedEngine = localStorage.getItem("selectedSearchEngine");
+    if (savedEngine) {
+      setSelectedEngine(savedEngine);
+    }
     inputRef.current?.focus();
   }, []);
+
+  // 当选择的搜索引擎改变时，更新localStorage
+  const handleEngineChange = (value: string) => {
+    setSelectedEngine(value);
+    localStorage.setItem("selectedSearchEngine", value);
+  };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -111,7 +122,7 @@ export function SearchBar() {
   return (
     <div className="relative w-full max-w-2xl mx-auto flex gap-2">
       <div className="w-32">
-        <Select value={selectedEngine} onValueChange={setSelectedEngine}>
+        <Select value={selectedEngine} onValueChange={handleEngineChange}>
           <SelectTrigger>
             <SelectValue placeholder="选择搜索引擎" />
           </SelectTrigger>
