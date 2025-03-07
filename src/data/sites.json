@@ -89,6 +89,13 @@
     "id": "1741355491430",
     "name": "工具",
     "icon": "database",
-    "sites": []
+    "sites": [
+      {
+        "title": "小小API",
+        "favicon": "https://xxapi.cn/favicon.ico",
+        "url": "https://xxapi.cn/",
+        "id": "1741355508435"
+      }
+    ]
   }
 ]
