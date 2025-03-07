@@ -76,6 +76,12 @@
         "favicon": "https://aidh.net/wp-content/themes/aidh/assets/img/favicon.png",
         "url": "https://aidh.net/",
         "id": "1741355003219"
+      },
+      {
+        "title": "PySpur - AI Agent Builder",
+        "favicon": "https://www.pyspur.com/favicon.ico",
+        "url": "https://www.pyspur.com/",
+        "id": "1741355184743"
       }
     ]
   }
