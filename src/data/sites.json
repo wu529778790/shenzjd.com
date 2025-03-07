@@ -52,6 +52,13 @@
     "id": "1741352879071",
     "name": "AI",
     "icon": "globe",
-    "sites": []
+    "sites": [
+      {
+        "title": "AutoDraw",
+        "favicon": "https://autodraw.com/assets/images/favicon.png",
+        "url": "https://autodraw.com/",
+        "id": "1741352906635"
+      }
+    ]
   }
 ]
