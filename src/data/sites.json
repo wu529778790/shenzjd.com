@@ -64,6 +64,12 @@
         "favicon": "https://www.waytoagi.com/favicon.ico",
         "url": "https://www.waytoagi.com/zh",
         "id": "1741354707190"
+      },
+      {
+        "title": "Whisk - labs.google/fx",
+        "favicon": "https://labs.google/fx/icons/favicon/favicon.svg",
+        "url": "https://labs.google/fx/zh/tools/whisk",
+        "id": "1741354773875"
       }
     ]
   }
