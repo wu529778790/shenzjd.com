@@ -95,6 +95,12 @@
         "favicon": "https://xxapi.cn/favicon.ico",
         "url": "https://xxapi.cn/",
         "id": "1741355508435"
+      },
+      {
+        "title": "聚合数据",
+        "favicon": "https://www.juhe.cn/favicon.ico",
+        "url": "https://www.juhe.cn/docs/o1",
+        "id": "1741355600736"
       }
     ]
   }
