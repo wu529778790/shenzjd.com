@@ -132,6 +132,13 @@
     "id": "1742453638871",
     "name": "开发",
     "icon": "laptop",
-    "sites": []
+    "sites": [
+      {
+        "title": "sharp 中文网",
+        "favicon": "https://sharp.nodejs.cn/image/sharp-logo.svg",
+        "url": "https://sharp.nodejs.cn/",
+        "id": "1742453670159"
+      }
+    ]
   }
 ]
