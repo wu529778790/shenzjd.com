@@ -150,6 +150,12 @@
         "favicon": "https://static.vue-js.com/6280b990-ff19-11ea-85f6-6fac77c0c9b3.png",
         "url": "https://vue3js.cn/",
         "id": "1742520592557"
+      },
+      {
+        "title": "Component Party",
+        "favicon": "https://component-party.dev/favicon.png",
+        "url": "https://component-party.dev/",
+        "id": "1742520620768"
       }
     ]
   }
