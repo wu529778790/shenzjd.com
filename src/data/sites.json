@@ -112,6 +112,12 @@
         "favicon": "https://awesome-selfhosted.net/_static/favicon.ico",
         "url": "https://awesome-selfhosted.net/",
         "id": "1742645645680"
+      },
+      {
+        "title": "Qwen Chat",
+        "favicon": "https://assets.alicdn.com/g/qwenweb/qwen-webui-fe/0.0.56/favicon.png",
+        "url": "https://chat.qwen.ai/",
+        "id": "1742817242691"
       }
     ]
   },
