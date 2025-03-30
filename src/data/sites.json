@@ -118,6 +118,12 @@
         "favicon": "https://assets.alicdn.com/g/qwenweb/qwen-webui-fe/0.0.56/favicon.png",
         "url": "https://chat.qwen.ai/",
         "id": "1742817242691"
+      },
+      {
+        "title": "UFreeTools - 你的免费工具",
+        "favicon": "https://ufreetools.com/favicon-16x16.png",
+        "url": "https://ufreetools.com/zh",
+        "id": "1743306858897"
       }
     ]
   },
