@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { useFork } from "@/hooks/useFork";
 import { SitesProvider } from "@/contexts/SitesContext";
+import Script from "next/script";
 
 function ForkWrapper({ children }: { children: React.ReactNode }) {
   useFork();
@@ -18,6 +19,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh" suppressHydrationWarning>
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5258297935898402"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body>
         <AuthProvider>
           <ForkWrapper>
