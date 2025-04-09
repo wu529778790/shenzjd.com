@@ -1,4 +1,4 @@
-# shenzjd.com
+# nav.shenzjd.com
 
 一个基于 Next.js 15 开发的个人导航网站，支持用户自定义站点分类和书签管理。
 
