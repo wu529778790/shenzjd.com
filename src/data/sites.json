@@ -41,16 +41,16 @@
         "id": "1741189693457"
       },
       {
-        "title": "Noise导航 & 收录值得珍藏的网站",
-        "favicon": "https://unavatar.io/noisedh.cn",
-        "url": "https://www.noisedh.cn/",
-        "id": "1742049195246"
-      },
-      {
         "title": "Hacker News",
         "favicon": "https://unavatar.io/news.ycombinator.com",
         "url": "https://news.ycombinator.com/news",
         "id": "1741229353206"
+      },
+      {
+        "title": "Noise导航 & 收录值得珍藏的网站",
+        "favicon": "https://unavatar.io/noisedh.cn",
+        "url": "https://www.noisedh.cn/",
+        "id": "1742049195246"
       }
     ]
   },
