@@ -19,15 +19,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh" suppressHydrationWarning>
-      <head>
-        <meta name="google-adsense-account" content="ca-pub-5258297935898402" />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5258297935898402"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      </head>
       <body>
         <AuthProvider>
           <ForkWrapper>
