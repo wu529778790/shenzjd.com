@@ -46,35 +46,36 @@ export function AddSiteDialog({
         setLoading(true);
         setError("");
 
-        const response = await fetch("/api/parse-url", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ url: urlToValidate }),
+        // 使用 fetch 获取网站内容
+        const response = await fetch(urlToValidate);
+        const html = await response.text();
+
+        // 使用 DOMParser 解析 HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        // 获取标题
+        const title =
+          doc.querySelector("title")?.textContent ||
+          doc
+            .querySelector('meta[property="og:title"]')
+            ?.getAttribute("content") ||
+          "";
+
+        // 使用 unavatar.io 获取 favicon
+        const urlObj = new URL(urlToValidate);
+        const favicon = `https://unavatar.io/${urlObj.hostname}`;
+
+        setSiteInfo({
+          id: Date.now().toString(),
+          title,
+          favicon,
+          url: urlToValidate,
         });
-
-        if (!response.ok) {
-          // 如果获取网站信息失败，创建一个基本的siteInfo对象
-          setSiteInfo({
-            id: Date.now().toString(),
-            title: "",
-            favicon: "",
-            url: urlToValidate,
-          });
-          setEditedTitle("");
-          setError("无法自动获取网站信息，请手动填写标题和图标");
-          setLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-        console.log("新增网站信息", data);
-        setSiteInfo(data);
-        setEditedTitle(data.title);
+        setEditedTitle(title);
         setLoading(false);
       } catch (err) {
-        // 如果发生错误，同样创建一个基本的siteInfo对象
+        // 如果发生错误，创建一个基本的siteInfo对象
         setSiteInfo({
           id: Date.now().toString(),
           title: "",
