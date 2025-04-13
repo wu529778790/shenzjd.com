@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { useFork } from "@/hooks/useFork";
 import { SitesProvider } from "@/contexts/SitesContext";
-import Script from "next/script";
 
 function ForkWrapper({ children }: { children: React.ReactNode }) {
   useFork();
