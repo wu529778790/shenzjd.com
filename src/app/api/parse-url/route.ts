@@ -14,25 +14,9 @@ export async function POST(request: Request) {
     const title =
       $("title").text() || $('meta[property="og:title"]').attr("content") || "";
 
-    // 提取favicon
-    let favicon =
-      $('link[rel="icon"]').attr("href") ||
-      $('link[rel="shortcut icon"]').attr("href") ||
-      $('link[rel="apple-touch-icon"]').attr("href");
-
-    // 处理相对路径的favicon
-    if (favicon && !favicon.startsWith("http")) {
-      const urlObj = new URL(url);
-      favicon = favicon.startsWith("/")
-        ? `${urlObj.protocol}//${urlObj.host}${favicon}`
-        : `${urlObj.protocol}//${urlObj.host}/${favicon}`;
-    }
-
-    // 如果没有找到favicon，使用默认的favicon路径
-    if (!favicon) {
-      const urlObj = new URL(url);
-      favicon = `${urlObj.protocol}//${urlObj.host}/favicon.ico`;
-    }
+    // 使用 unavatar.io 获取 favicon
+    const urlObj = new URL(url);
+    const favicon = `https://unavatar.io/${urlObj.hostname}`;
 
     return NextResponse.json({
       title,
