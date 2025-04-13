@@ -3,6 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { SiteCard } from "./SiteCard";
 import { AddSiteCard } from "./AddSiteCard";
 import { useRequireAuth } from "@/hooks/use-require-auth";
+import { useState, useRef } from "react";
 
 interface SortableSiteCardProps {
   id: string;
@@ -24,6 +25,10 @@ export const SortableSiteCard = ({
   isAddCard = false,
 }: SortableSiteCardProps) => {
   const { checkAuth, isAuthenticated } = useRequireAuth();
+  const [isDragEnabled, setIsDragEnabled] = useState(false);
+  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const LONG_PRESS_DELAY = 500; // 500ms长按延迟
+
   const {
     attributes,
     listeners,
@@ -33,19 +38,45 @@ export const SortableSiteCard = ({
     isDragging,
   } = useSortable({
     id,
-    disabled: !isAuthenticated,
+    disabled: !isAuthenticated || !isDragEnabled,
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    cursor: isDragEnabled ? "grab" : "pointer",
   };
 
-  const handleDragStart = () => {
+  const handlePointerDown = () => {
     if (!isAuthenticated) {
-      checkAuth(() => {});
+      checkAuth(() => setIsDragEnabled(true));
+      return;
     }
+
+    // 开始长按计时
+    longPressTimeoutRef.current = setTimeout(() => {
+      setIsDragEnabled(true);
+    }, LONG_PRESS_DELAY);
+  };
+
+  const handlePointerUp = () => {
+    // 清除长按计时器
+    if (longPressTimeoutRef.current) {
+      clearTimeout(longPressTimeoutRef.current);
+    }
+  };
+
+  const handlePointerLeave = () => {
+    // 清除长按计时器
+    if (longPressTimeoutRef.current) {
+      clearTimeout(longPressTimeoutRef.current);
+    }
+    setIsDragEnabled(false);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragEnabled(false);
   };
 
   if (isAddCard) {
@@ -55,7 +86,10 @@ export const SortableSiteCard = ({
         style={style}
         {...attributes}
         {...listeners}
-        onDragStart={handleDragStart}>
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
+        onDragEnd={handleDragEnd}>
         <AddSiteCard activeCategory={categoryId} onSuccess={onSiteChange} />
       </div>
     );
@@ -67,7 +101,10 @@ export const SortableSiteCard = ({
       style={style}
       {...attributes}
       {...listeners}
-      onDragStart={handleDragStart}>
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
+      onDragEnd={handleDragEnd}>
       <SiteCard
         id={id}
         title={title}
