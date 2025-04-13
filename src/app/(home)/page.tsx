@@ -33,7 +33,7 @@ export default function Home() {
   };
 
   // 处理拖拽结束事件
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -65,7 +65,13 @@ export default function Home() {
         : category
     );
 
-    updateSites(updatedCategories);
+    try {
+      await updateSites(updatedCategories);
+    } catch (error) {
+      console.error("Failed to update sites order:", error);
+      // 如果更新失败，刷新数据以恢复原始顺序
+      refreshSites();
+    }
   };
 
   return (
