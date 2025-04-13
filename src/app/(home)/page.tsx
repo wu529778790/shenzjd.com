@@ -9,6 +9,7 @@ import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import { SortableSiteCard } from "./components/SortableSiteCard";
 import { arrayMove } from "@dnd-kit/sortable";
+import { MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 
 export default function Home() {
   const {
@@ -19,6 +20,25 @@ export default function Home() {
     updateSites,
   } = useSites();
   const [activeCategory, setActiveCategory] = useState<string>("default");
+
+  // 配置传感器
+  const mouseSensor = useSensor(MouseSensor, {
+    // 鼠标必须按下并保持500ms才开始拖动
+    activationConstraint: {
+      delay: 500,
+      tolerance: 5,
+    },
+  });
+
+  const touchSensor = useSensor(TouchSensor, {
+    // 触摸必须按下并保持500ms才开始拖动
+    activationConstraint: {
+      delay: 500,
+      tolerance: 5,
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
 
   // 处理页面切换
   const handlePageChange = (pageIndex: number) => {
@@ -119,6 +139,7 @@ export default function Home() {
               : categories.map((category) => (
                   <div key={category.id} className="container mx-auto p-4">
                     <DndContext
+                      sensors={sensors}
                       collisionDetection={closestCenter}
                       onDragEnd={handleDragEnd}>
                       <SortableContext
