@@ -20,6 +20,7 @@ interface SitesContextType {
   updateCategory: (categoryId: string, category: SiteCategory) => Promise<void>;
   deleteCategory: (categoryId: string) => Promise<void>;
   refreshSites: () => Promise<void>;
+  updateSites: (sites: SiteCategory[]) => Promise<void>;
 }
 
 const SitesContext = createContext<SitesContextType | null>(null);
@@ -164,6 +165,37 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     await makeRequest("DELETE", "deleteCategory", { categoryId });
   };
 
+  const updateSites = async (newSites: SiteCategory[]) => {
+    try {
+      if (!session) {
+        throw new Error("请先登录后再进行操作");
+      }
+
+      setError(null);
+      const response = await fetch("/api/sites", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "updateSites",
+          data: newSites,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "操作失败");
+      }
+
+      const result = await response.json();
+      setSites(result);
+      setCachedSites(result);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "操作失败";
+      setError(errorMessage);
+      throw err;
+    }
+  };
+
   return (
     <SitesContext.Provider
       value={{
@@ -177,6 +209,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         updateCategory,
         deleteCategory,
         refreshSites: () => fetchSites(true),
+        updateSites,
       }}>
       {children}
     </SitesContext.Provider>

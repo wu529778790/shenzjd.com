@@ -1,16 +1,23 @@
 "use client";
 
-import { SiteCard } from "./components/SiteCard";
 import { SearchBar } from "./components/SearchBar";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar/index";
 import { FullPageScroll } from "@/components/FullPageScroll";
 import { useSites } from "@/contexts/SitesContext";
-import { AddSiteCard } from "./components/AddSiteCard";
+import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
+import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import { SortableSiteCard } from "./components/SortableSiteCard";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export default function Home() {
-  const { sites: categories, loading, error, refreshSites } = useSites();
-
+  const {
+    sites: categories,
+    loading,
+    error,
+    refreshSites,
+    updateSites,
+  } = useSites();
   const [activeCategory, setActiveCategory] = useState<string>("default");
 
   // 处理页面切换
@@ -23,6 +30,42 @@ export default function Home() {
   // 获取当前分类的索引
   const getCurrentPageIndex = () => {
     return categories.findIndex((category) => category.id === activeCategory);
+  };
+
+  // 处理拖拽结束事件
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const activeCategory = categories.find((category) =>
+      category.sites.some((site) => site.id === active.id)
+    );
+    const overCategory = categories.find((category) =>
+      category.sites.some((site) => site.id === over.id)
+    );
+
+    if (
+      !activeCategory ||
+      !overCategory ||
+      activeCategory.id !== overCategory.id
+    )
+      return;
+
+    const oldIndex = activeCategory.sites.findIndex(
+      (site) => site.id === active.id
+    );
+    const newIndex = activeCategory.sites.findIndex(
+      (site) => site.id === over.id
+    );
+
+    const newSites = arrayMove(activeCategory.sites, oldIndex, newIndex);
+    const updatedCategories = categories.map((category) =>
+      category.id === activeCategory.id
+        ? { ...category, sites: newSites }
+        : category
+    );
+
+    updateSites(updatedCategories);
   };
 
   return (
@@ -69,23 +112,36 @@ export default function Home() {
                 ]
               : categories.map((category) => (
                   <div key={category.id} className="container mx-auto p-4">
-                    <div className="flex flex-wrap gap-4 justify-start items-start">
-                      {category.sites.map((site) => (
-                        <SiteCard
-                          key={site.id}
-                          id={site.id}
-                          title={site.title}
-                          url={site.url}
-                          favicon={site.favicon}
-                          categoryId={category.id}
-                          onSiteChange={refreshSites}
-                        />
-                      ))}
-                      <AddSiteCard
-                        activeCategory={category.id}
-                        onSuccess={refreshSites}
-                      />
-                    </div>
+                    <DndContext
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}>
+                      <SortableContext
+                        items={category.sites.map((site) => site.id)}
+                        strategy={rectSortingStrategy}>
+                        <div className="flex flex-wrap gap-4 justify-start items-start">
+                          {category.sites.map((site) => (
+                            <SortableSiteCard
+                              key={site.id}
+                              id={site.id}
+                              title={site.title}
+                              url={site.url}
+                              favicon={site.favicon}
+                              categoryId={category.id}
+                              onSiteChange={refreshSites}
+                            />
+                          ))}
+                          <SortableSiteCard
+                            id={`add-${category.id}`}
+                            title=""
+                            url=""
+                            favicon=""
+                            categoryId={category.id}
+                            onSiteChange={refreshSites}
+                            isAddCard
+                          />
+                        </div>
+                      </SortableContext>
+                    </DndContext>
                   </div>
                 ))}
           </FullPageScroll>

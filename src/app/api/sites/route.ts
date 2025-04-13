@@ -9,6 +9,7 @@ import {
   deleteCategory,
   type Site,
   type SiteCategory,
+  updateSites,
 } from "@/lib/sites";
 import { categorySchema, siteSchema } from "@/lib/validations/site";
 import { z } from "zod";
@@ -84,6 +85,10 @@ export async function PUT(request: Request) {
       case "updateCategory": {
         const { categoryId, category } = data;
         await updateCategory(categoryId, category as SiteCategory);
+        break;
+      }
+      case "updateSites": {
+        await updateSites(data as SiteCategory[]);
         break;
       }
       default:
