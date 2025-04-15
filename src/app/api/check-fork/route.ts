@@ -1,17 +1,9 @@
 import { auth } from "@/lib/auth";
 import { getOctokit } from "@/lib/github";
 import { NextResponse } from "next/server";
-import type { RestEndpointMethodTypes } from "@octokit/rest";
 
 const ORIGINAL_OWNER = "wu529778790";
 const ORIGINAL_REPO = "nav.shenzjd.com";
-
-type Repository =
-  RestEndpointMethodTypes["repos"]["listForUser"]["response"]["data"][0] & {
-    parent?: {
-      id: number;
-    };
-  };
 
 export async function GET() {
   try {
@@ -26,32 +18,24 @@ export async function GET() {
     console.log("Checking fork status for user:", login);
 
     try {
-      // 获取原始仓库信息
+      // 获取原始仓库的所有fork
       console.log(
-        "Fetching original repository:",
+        "Fetching forks of repository:",
         ORIGINAL_OWNER,
         ORIGINAL_REPO
       );
-      const { data: originalRepo } = await octokit.repos.get({
+      const { data: forks } = await octokit.repos.listForks({
         owner: ORIGINAL_OWNER,
         repo: ORIGINAL_REPO,
+        per_page: 100,
       });
-      console.log("Original repository ID:", originalRepo.id);
+      console.log("Found", forks.length, "forks");
 
-      // 获取用户的所有仓库
-      console.log("Fetching user repositories");
-      const { data: repos } = await octokit.repos.listForUser({
-        username: login,
-        sort: "updated",
-        direction: "desc",
-      });
-      console.log("Found", repos.length, "repositories");
-
-      // 检查是否有fork自原始仓库的仓库
-      const isForked = repos.some((repo: Repository) => {
-        const isFork = repo.fork && repo.parent?.id === originalRepo.id;
+      // 检查用户是否在fork列表中
+      const isForked = forks.some((fork) => {
+        const isFork = fork.owner.login === login;
         if (isFork) {
-          console.log("Found fork:", repo.name);
+          console.log("Found user's fork:", fork.name);
         }
         return isFork;
       });
