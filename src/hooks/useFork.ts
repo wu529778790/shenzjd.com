@@ -4,16 +4,27 @@ import { useEffect, useRef, useState } from "react";
 export function useFork() {
   const { data: session, status } = useSession();
   const [showForkDialog, setShowForkDialog] = useState(false);
+  const [isForked, setIsForked] = useState(false);
   const hasAttemptedFork = useRef(false);
 
   useEffect(() => {
-    if (
-      status === "authenticated" &&
-      session?.user?.provider === "github" &&
-      !hasAttemptedFork.current
-    ) {
-      setShowForkDialog(true);
-    }
+    const checkForkStatus = async () => {
+      if (status === "authenticated" && session?.user?.provider === "github") {
+        try {
+          const response = await fetch("/api/check-fork");
+          const data = await response.json();
+          setIsForked(data.isForked);
+
+          if (!data.isForked && !hasAttemptedFork.current) {
+            setShowForkDialog(true);
+          }
+        } catch (error) {
+          console.error("Failed to check fork status:", error);
+        }
+      }
+    };
+
+    checkForkStatus();
   }, [session, status]);
 
   const handleFork = async () => {
@@ -22,6 +33,7 @@ export function useFork() {
       await fetch("/api/fork", {
         method: "POST",
       });
+      setIsForked(true);
       setShowForkDialog(false);
     } catch (error) {
       console.error("Failed to fork repository:", error);
@@ -33,5 +45,6 @@ export function useFork() {
     showForkDialog,
     setShowForkDialog,
     handleFork,
+    isForked,
   };
 }
