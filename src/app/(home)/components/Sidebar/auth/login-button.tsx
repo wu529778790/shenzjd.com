@@ -11,12 +11,81 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import * as LucideIcons from "lucide-react";
+import { useState } from "react";
+
+interface LoginProviderProps {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+const providers: LoginProviderProps[] = [
+  {
+    id: "github",
+    name: "Sign in with GitHub",
+    icon: "https://authjs.dev/img/providers/github.svg",
+  },
+  {
+    id: "google",
+    name: "Sign in with Google",
+    icon: "https://authjs.dev/img/providers/google.svg",
+  },
+];
+
+function LoginDialog() {
+  const [open, setOpen] = useState(false);
+
+  const handleProviderLogin = (providerId: string) => {
+    signIn(providerId);
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Avatar className="h-8 w-8 cursor-pointer">
+            <AvatarFallback className="text-xs">登录</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-center">选择登录方式</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 py-4">
+          {providers.map((provider) => (
+            <Button
+              key={provider.id}
+              variant="outline"
+              className="w-full h-12 relative"
+              onClick={() => handleProviderLogin(provider.id)}>
+              <img
+                src={provider.icon}
+                alt={provider.name}
+                className="w-5 h-5 absolute left-4"
+              />
+              <span>{provider.name}</span>
+            </Button>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function LoginButton() {
   const { data: session } = useSession();
@@ -73,11 +142,7 @@ export function LoginButton() {
     <TooltipProvider>
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={() => signIn("github")}>
-            <Avatar className="h-8 w-8 cursor-pointer">
-              <AvatarFallback className="text-xs">登录</AvatarFallback>
-            </Avatar>
-          </Button>
+          <LoginDialog />
         </TooltipTrigger>
         <TooltipContent side="right" className="max-w-[200px]">
           <p className="text-sm">登录后即可将您的数据同步到您自己的 GitHub</p>
