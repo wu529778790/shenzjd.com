@@ -105,20 +105,54 @@ export async function getFile(path: string): Promise<FileContent> {
     const owner = session?.user ? session.user.login : ORIGINAL_OWNER;
     const repo = ORIGINAL_REPO;
 
-    const response = await octokit.repos.getContent({
-      owner,
-      repo,
-      path,
-    });
+    try {
+      const response = await octokit.repos.getContent({
+        owner,
+        repo,
+        path,
+      });
 
-    if ("content" in response.data) {
-      return {
-        content: Buffer.from(response.data.content, "base64").toString("utf-8"),
-        sha: response.data.sha,
-      };
+      if ("content" in response.data) {
+        return {
+          content: Buffer.from(response.data.content, "base64").toString(
+            "utf-8"
+          ),
+          sha: response.data.sha,
+        };
+      }
+
+      throw new Error("File not found");
+    } catch (error) {
+      // 如果从用户的 fork 仓库获取文件失败，尝试从原始仓库获取
+      if (session?.user && owner !== ORIGINAL_OWNER) {
+        console.log(
+          `Failed to get file from user's fork, trying original repository`
+        );
+        try {
+          const originalResponse = await octokit.repos.getContent({
+            owner: ORIGINAL_OWNER,
+            repo: ORIGINAL_REPO,
+            path,
+          });
+
+          if ("content" in originalResponse.data) {
+            return {
+              content: Buffer.from(
+                originalResponse.data.content,
+                "base64"
+              ).toString("utf-8"),
+              sha: originalResponse.data.sha,
+            };
+          }
+        } catch (originalError) {
+          console.error(
+            "Error getting file from original repository:",
+            originalError
+          );
+        }
+      }
+      throw error;
     }
-
-    throw new Error("File not found");
   } catch (error) {
     console.error("Error getting file:", error);
     throw error;
@@ -141,13 +175,34 @@ export async function updateFile(
     await ensureForked();
 
     const octokit = await getOctokit();
+
+    // 如果没有提供 SHA 值，尝试获取文件的 SHA 值
+    let fileSha = sha;
+    if (!fileSha) {
+      try {
+        const file = await getFile(path);
+        fileSha = file.sha;
+      } catch (error) {
+        console.error("Error getting file SHA:", error);
+        // 如果获取 SHA 值失败，可以尝试创建一个新文件
+        await octokit.repos.createOrUpdateFileContents({
+          owner: session.user.login,
+          repo: ORIGINAL_REPO,
+          path,
+          message: `Create ${path}`,
+          content: Buffer.from(content).toString("base64"),
+        });
+        return;
+      }
+    }
+
     await octokit.repos.createOrUpdateFileContents({
       owner: session.user.login,
       repo: ORIGINAL_REPO,
       path,
       message: `[skip ci] Update ${path}`,
       content: Buffer.from(content).toString("base64"),
-      sha,
+      sha: fileSha,
     });
   } catch (error) {
     console.error("Error updating file:", error);

@@ -31,7 +31,11 @@ export async function GET() {
     return NextResponse.json(sites);
   } catch (error) {
     console.error("Error in GET /api/sites:", error);
-    return NextResponse.json({ error: "Failed to get sites" }, { status: 500 });
+    let errorMessage = "Failed to get sites";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -64,10 +68,11 @@ export async function POST(request: Request) {
     return NextResponse.json(sites);
   } catch (error) {
     console.error("Error in POST /api/sites:", error);
-    return NextResponse.json(
-      { error: "Failed to perform operation" },
-      { status: 500 }
-    );
+    let errorMessage = "Failed to perform operation";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -102,10 +107,11 @@ export async function PUT(request: Request) {
     return NextResponse.json(sites);
   } catch (error) {
     console.error("Error in PUT /api/sites:", error);
-    return NextResponse.json(
-      { error: "Failed to perform operation" },
-      { status: 500 }
-    );
+    let errorMessage = "Failed to perform operation";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -136,9 +142,10 @@ export async function DELETE(request: Request) {
     return NextResponse.json(sites);
   } catch (error) {
     console.error("Error in DELETE /api/sites:", error);
-    return NextResponse.json(
-      { error: "Failed to perform operation" },
-      { status: 500 }
-    );
+    let errorMessage = "Failed to perform operation";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

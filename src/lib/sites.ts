@@ -28,7 +28,16 @@ export async function getSites(): Promise<SiteCategory[]> {
 
 export async function updateSites(sites: SiteCategory[]): Promise<void> {
   try {
-    const file = await getFile(SITES_FILE_PATH);
+    let file;
+    try {
+      file = await getFile(SITES_FILE_PATH);
+    } catch (error) {
+      console.error("Error getting sites file:", error);
+      // 如果文件不存在，创建一个新文件
+      await updateFile(SITES_FILE_PATH, JSON.stringify(sites, null, 2));
+      return;
+    }
+
     await updateFile(SITES_FILE_PATH, JSON.stringify(sites, null, 2), file.sha);
   } catch (error) {
     console.error("Error updating sites:", error);
