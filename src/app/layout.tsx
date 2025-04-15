@@ -3,13 +3,7 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { useFork } from "@/hooks/useFork";
 import { SitesProvider } from "@/contexts/SitesContext";
-
-function ForkWrapper({ children }: { children: React.ReactNode }) {
-  useFork();
-  return <>{children}</>;
-}
 
 export default function RootLayout({
   children,
@@ -20,11 +14,9 @@ export default function RootLayout({
     <html lang="zh" suppressHydrationWarning>
       <body>
         <AuthProvider>
-          <ForkWrapper>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <SitesProvider>{children}</SitesProvider>
-            </ThemeProvider>
-          </ForkWrapper>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <SitesProvider>{children}</SitesProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

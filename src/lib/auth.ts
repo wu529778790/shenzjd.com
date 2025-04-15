@@ -38,6 +38,7 @@ export const {
       if (account) {
         token.accessToken = account.access_token;
         token.login = profile?.login;
+        token.provider = account.provider;
       }
       return token;
     },
@@ -48,6 +49,7 @@ export const {
         session.user.email = token.email as string;
         session.user.image = token.picture as string;
         session.user.login = token.login as string;
+        session.user.provider = token.provider as string;
         session.accessToken = token.accessToken as string;
       }
       return session;
