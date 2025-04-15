@@ -176,34 +176,41 @@ export async function updateFile(
 
     const octokit = await getOctokit();
 
-    // 如果没有提供 SHA 值，尝试获取文件的 SHA 值
+    // 检查文件是否存在
+    let fileExists = false;
     let fileSha = sha;
-    if (!fileSha) {
-      try {
-        const file = await getFile(path);
-        fileSha = file.sha;
-      } catch (error) {
-        console.error("Error getting file SHA:", error);
-        // 如果获取 SHA 值失败，可以尝试创建一个新文件
-        await octokit.repos.createOrUpdateFileContents({
-          owner: session.user.login,
-          repo: ORIGINAL_REPO,
-          path,
-          message: `Create ${path}`,
-          content: Buffer.from(content).toString("base64"),
-        });
-        return;
-      }
+
+    try {
+      const file = await getFile(path);
+      fileExists = true;
+      fileSha = file.sha;
+    } catch {
+      console.log(
+        `File ${path} does not exist in the repository, will create a new file`
+      );
+      fileExists = false;
     }
 
-    await octokit.repos.createOrUpdateFileContents({
-      owner: session.user.login,
-      repo: ORIGINAL_REPO,
-      path,
-      message: `[skip ci] Update ${path}`,
-      content: Buffer.from(content).toString("base64"),
-      sha: fileSha,
-    });
+    if (fileExists && fileSha) {
+      // 文件存在，更新文件
+      await octokit.repos.createOrUpdateFileContents({
+        owner: session.user.login,
+        repo: ORIGINAL_REPO,
+        path,
+        message: `[skip ci] Update ${path}`,
+        content: Buffer.from(content).toString("base64"),
+        sha: fileSha,
+      });
+    } else {
+      // 文件不存在，创建新文件
+      await octokit.repos.createOrUpdateFileContents({
+        owner: session.user.login,
+        repo: ORIGINAL_REPO,
+        path,
+        message: `Create ${path}`,
+        content: Buffer.from(content).toString("base64"),
+      });
+    }
   } catch (error) {
     console.error("Error updating file:", error);
     throw error;
