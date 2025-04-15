@@ -66,6 +66,10 @@ export function SiteInfoForm({
           "确认添加"
         )}
       </Button>
+
+      <p className="text-xs text-gray-500 text-center">
+        请完成下方的人机验证后再点击确认添加
+      </p>
     </div>
   );
 }

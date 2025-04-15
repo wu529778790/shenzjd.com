@@ -7,12 +7,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { z } from "zod";
 import { Site } from "@/types";
 import { useSites } from "@/contexts/SitesContext";
 import { UrlInput } from "./UrlInput";
 import { SiteInfoForm } from "./SiteInfoForm";
+import ReCAPTCHA from "react-google-recaptcha";
 
 // URL schema 验证
 const urlSchema = z.string().url("请输入有效的URL");
@@ -37,6 +38,8 @@ export function AddSiteDialog({
   const [siteInfo, setSiteInfo] = useState<Site | null>(null);
   const [editedTitle, setEditedTitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const handleParse = useCallback(
     async (urlToCheck?: string) => {
@@ -116,11 +119,43 @@ export function AddSiteDialog({
     checkClipboard();
   }, [open, handleParse]);
 
+  // 重置reCAPTCHA
+  const resetRecaptcha = () => {
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+    }
+  };
+
   const handleConfirm = async () => {
     if (!siteInfo) return;
 
+    // 检查reCAPTCHA是否已通过验证
+    if (!recaptchaToken) {
+      setError("请完成人机验证");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
+
+      // 验证reCAPTCHA token
+      const verifyResponse = await fetch("/api/verify-recaptcha", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: recaptchaToken }),
+      });
+
+      const verifyResult = await verifyResponse.json();
+
+      if (!verifyResult.success) {
+        setError("人机验证失败，请重试");
+        resetRecaptcha();
+        setIsSubmitting(false);
+        return;
+      }
+
       await addSite(activeCategory, {
         id: Date.now().toString(),
         title: editedTitle || siteInfo.title,
@@ -132,12 +167,15 @@ export function AddSiteDialog({
       setLink("");
       setSiteInfo(null);
       setEditedTitle("");
+      setRecaptchaToken(null);
+      resetRecaptcha();
       onOpenChange?.(false);
 
       // 调用成功回调函数
       onSuccess?.();
     } catch (error) {
       console.error("添加站点失败:", error);
+      setError("添加站点失败，请重试");
     } finally {
       setIsSubmitting(false);
     }
@@ -161,16 +199,26 @@ export function AddSiteDialog({
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           {siteInfo && (
-            <SiteInfoForm
-              siteInfo={siteInfo}
-              editedTitle={editedTitle}
-              onTitleChange={setEditedTitle}
-              onFaviconChange={(favicon) =>
-                setSiteInfo((prev) => (prev ? { ...prev, favicon } : null))
-              }
-              onSubmit={handleConfirm}
-              isSubmitting={isSubmitting}
-            />
+            <>
+              <SiteInfoForm
+                siteInfo={siteInfo}
+                editedTitle={editedTitle}
+                onTitleChange={setEditedTitle}
+                onFaviconChange={(favicon) =>
+                  setSiteInfo((prev) => (prev ? { ...prev, favicon } : null))
+                }
+                onSubmit={handleConfirm}
+                isSubmitting={isSubmitting}
+              />
+
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                  onChange={(token) => setRecaptchaToken(token)}
+                />
+              </div>
+            </>
           )}
         </div>
       </DialogContent>
