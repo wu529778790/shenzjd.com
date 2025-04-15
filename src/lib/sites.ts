@@ -75,42 +75,62 @@ export async function deleteSite(
   categoryId: string,
   siteId: string
 ): Promise<void> {
-  const sites = await getSites();
-  const categoryIndex = sites.findIndex((cat) => cat.id === categoryId);
+  try {
+    const sites = await getSites();
+    const categoryIndex = sites.findIndex((cat) => cat.id === categoryId);
 
-  if (categoryIndex === -1) {
-    throw new Error("Category not found");
+    if (categoryIndex === -1) {
+      throw new Error("Category not found");
+    }
+
+    sites[categoryIndex].sites = sites[categoryIndex].sites.filter(
+      (site) => site.id !== siteId
+    );
+    await updateSites(sites);
+  } catch (error) {
+    console.error("Error deleting site:", error);
+    throw error;
   }
-
-  sites[categoryIndex].sites = sites[categoryIndex].sites.filter(
-    (site) => site.id !== siteId
-  );
-  await updateSites(sites);
 }
 
 export async function addCategory(category: SiteCategory): Promise<void> {
-  const sites = await getSites();
-  sites.push(category);
-  await updateSites(sites);
+  try {
+    const sites = await getSites();
+    sites.push(category);
+    await updateSites(sites);
+  } catch (error) {
+    console.error("Error adding category:", error);
+    throw error;
+  }
 }
 
 export async function updateCategory(
   categoryId: string,
   updatedCategory: SiteCategory
 ): Promise<void> {
-  const sites = await getSites();
-  const categoryIndex = sites.findIndex((cat) => cat.id === categoryId);
+  try {
+    const sites = await getSites();
+    const categoryIndex = sites.findIndex((cat) => cat.id === categoryId);
 
-  if (categoryIndex === -1) {
-    throw new Error("Category not found");
+    if (categoryIndex === -1) {
+      throw new Error("Category not found");
+    }
+
+    sites[categoryIndex] = updatedCategory;
+    await updateSites(sites);
+  } catch (error) {
+    console.error("Error updating category:", error);
+    throw error;
   }
-
-  sites[categoryIndex] = updatedCategory;
-  await updateSites(sites);
 }
 
 export async function deleteCategory(categoryId: string): Promise<void> {
-  const sites = await getSites();
-  const filteredSites = sites.filter((cat) => cat.id !== categoryId);
-  await updateSites(filteredSites);
+  try {
+    const sites = await getSites();
+    const filteredSites = sites.filter((cat) => cat.id !== categoryId);
+    await updateSites(filteredSites);
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    throw error;
+  }
 }

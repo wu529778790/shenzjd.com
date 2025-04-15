@@ -57,7 +57,23 @@ export async function ensureForked() {
           repo: ORIGINAL_REPO,
         });
         console.log(`Successfully forked repository for user: ${login}`);
-        return true;
+
+        // 等待一段时间，确保 fork 完成
+        console.log(`Waiting for fork to complete...`);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        // 再次检查是否已经 fork
+        try {
+          await octokit.repos.get({
+            owner: login,
+            repo: ORIGINAL_REPO,
+          });
+          console.log(`Repository successfully forked after waiting`);
+          return true;
+        } catch (retryError) {
+          console.error(`Failed to verify fork after waiting:`, retryError);
+          throw new Error("Failed to verify fork after waiting");
+        }
       } catch (forkError: unknown) {
         // 如果仓库正在 fork 中，等待一段时间后重试
         if (
@@ -70,8 +86,8 @@ export async function ensureForked() {
           forkError.message.includes("already being forked")
         ) {
           console.log(`Repository is being forked, waiting...`);
-          // 等待 2 秒后重试
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          // 等待 5 秒后重试
+          await new Promise((resolve) => setTimeout(resolve, 5000));
           // 重新检查是否已经 fork
           try {
             await octokit.repos.get({
@@ -82,6 +98,7 @@ export async function ensureForked() {
             return true;
           } catch (retryError) {
             console.error(`Failed to verify fork after waiting:`, retryError);
+            throw new Error("Failed to verify fork after waiting");
           }
         }
         console.error(
@@ -106,6 +123,7 @@ export async function getFile(path: string): Promise<FileContent> {
     const repo = ORIGINAL_REPO;
 
     try {
+      console.log(`Attempting to get file ${path} from ${owner}/${repo}`);
       const response = await octokit.repos.getContent({
         owner,
         repo,
@@ -129,6 +147,9 @@ export async function getFile(path: string): Promise<FileContent> {
           `Failed to get file from user's fork, trying original repository`
         );
         try {
+          console.log(
+            `Attempting to get file ${path} from ${ORIGINAL_OWNER}/${ORIGINAL_REPO}`
+          );
           const originalResponse = await octokit.repos.getContent({
             owner: ORIGINAL_OWNER,
             repo: ORIGINAL_REPO,
@@ -252,13 +273,35 @@ export async function deleteFile(path: string, sha: string): Promise<void> {
     await ensureForked();
 
     const octokit = await getOctokit();
-    await octokit.repos.deleteFile({
-      owner: session.user.login,
-      repo: ORIGINAL_REPO,
-      path,
-      message: `Delete ${path}`,
-      sha,
-    });
+
+    // 检查文件是否存在
+    let fileExists = false;
+    let fileSha = sha;
+
+    if (!fileSha) {
+      try {
+        const file = await getFile(path);
+        fileExists = true;
+        fileSha = file.sha || ""; // 确保 fileSha 不为 undefined
+      } catch {
+        console.log(
+          `File ${path} does not exist in the repository, cannot delete`
+        );
+        return; // 如果文件不存在，直接返回
+      }
+    } else {
+      fileExists = true;
+    }
+
+    if (fileExists && fileSha) {
+      await octokit.repos.deleteFile({
+        owner: session.user.login,
+        repo: ORIGINAL_REPO,
+        path,
+        message: `Delete ${path}`,
+        sha: fileSha,
+      });
+    }
   } catch (error) {
     console.error("Error deleting file:", error);
     throw error;
