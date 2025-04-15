@@ -150,8 +150,12 @@ export function AddSiteDialog({
       const verifyResult = await verifyResponse.json();
 
       if (!verifyResult.success) {
-        setError("人机验证失败，请重试");
+        setError(verifyResult.message || "人机验证失败，请重试");
+        if (verifyResult.details?.includes("timeout-or-duplicate")) {
+          setError("验证已过期，请重新验证");
+        }
         resetRecaptcha();
+        setRecaptchaToken(null);
         setIsSubmitting(false);
         return;
       }
@@ -176,6 +180,8 @@ export function AddSiteDialog({
     } catch (error) {
       console.error("添加站点失败:", error);
       setError("添加站点失败，请重试");
+      resetRecaptcha();
+      setRecaptchaToken(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -216,7 +222,18 @@ export function AddSiteDialog({
                   <ReCAPTCHA
                     ref={recaptchaRef}
                     sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                    onChange={(token) => setRecaptchaToken(token)}
+                    onChange={(token) => {
+                      setError(""); // 清除之前的错误信息
+                      setRecaptchaToken(token);
+                    }}
+                    onExpired={() => {
+                      setRecaptchaToken(null);
+                      setError("验证已过期，请重新验证");
+                    }}
+                    onErrored={() => {
+                      setRecaptchaToken(null);
+                      setError("验证出错，请刷新页面重试");
+                    }}
                   />
                 </div>
               </div>
