@@ -11,13 +11,7 @@ import { SortableSiteCard } from "./components/SortableSiteCard";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export default function Home() {
-  const {
-    sites: categories,
-    loading,
-    error,
-    refreshSites,
-    updateSites,
-  } = useSites();
+  const { sites: categories, loading, refreshSites, updateSites } = useSites();
   const [activeCategory, setActiveCategory] = useState<string>("default");
 
   // 处理页面切换
@@ -105,14 +99,6 @@ export default function Home() {
                           <div className="w-16 h-3 bg-muted rounded" />
                         </div>
                       ))}
-                    </div>
-                  </div>,
-                ]
-              : error
-              ? [
-                  <div key="error" className="container mx-auto p-4">
-                    <div className="flex items-center justify-center h-32 text-red-500">
-                      {error}
                     </div>
                   </div>,
                 ]

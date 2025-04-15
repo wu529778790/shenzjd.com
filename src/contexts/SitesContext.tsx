@@ -9,6 +9,7 @@ import {
 import type { Site, SiteCategory } from "@/lib/sites";
 import { useSession } from "next-auth/react";
 import { useForkContext } from "@/components/ForkProvider";
+import { toast } from "sonner";
 
 interface SitesContextType {
   sites: SiteCategory[];
@@ -98,7 +99,10 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       setSites(data);
       setCachedSites(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorMessage =
+        err instanceof Error ? err.message : "An error occurred";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -144,9 +148,11 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       const result = await response.json();
       setSites(result);
       setCachedSites(result);
+      toast.success("操作成功");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "操作失败";
       setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -199,9 +205,11 @@ export function SitesProvider({ children }: { children: ReactNode }) {
       const result = await response.json();
       setSites(result);
       setCachedSites(result);
+      toast.success("操作成功");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "操作失败";
       setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     }
   };
