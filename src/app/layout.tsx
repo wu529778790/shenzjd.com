@@ -3,23 +3,8 @@
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { useFork } from "@/hooks/useFork";
 import { SitesProvider } from "@/contexts/SitesContext";
-import { ForkDialog } from "@/components/ForkDialog";
-
-function ForkWrapper({ children }: { children: React.ReactNode }) {
-  const { showForkDialog, setShowForkDialog, handleFork } = useFork();
-  return (
-    <>
-      {children}
-      <ForkDialog
-        open={showForkDialog}
-        onOpenChange={setShowForkDialog}
-        onConfirm={handleFork}
-      />
-    </>
-  );
-}
+import { ForkProvider } from "@/components/ForkProvider";
 
 export default function RootLayout({
   children,
@@ -30,11 +15,11 @@ export default function RootLayout({
     <html lang="zh" suppressHydrationWarning>
       <body>
         <AuthProvider>
-          <ForkWrapper>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <ForkProvider>
               <SitesProvider>{children}</SitesProvider>
-            </ThemeProvider>
-          </ForkWrapper>
+            </ForkProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

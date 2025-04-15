@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { Site, SiteCategory } from "@/lib/sites";
 import { useSession } from "next-auth/react";
+import { useForkContext } from "@/components/ForkProvider";
 
 interface SitesContextType {
   sites: SiteCategory[];
@@ -73,6 +74,7 @@ export function SitesProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { data: session } = useSession();
+  const { checkAndShowForkDialog } = useForkContext();
 
   const fetchSites = useCallback(async (forceRefresh = false) => {
     try {
@@ -114,6 +116,11 @@ export function SitesProvider({ children }: { children: ReactNode }) {
     try {
       if (!session) {
         throw new Error("请先登录后再进行操作");
+      }
+
+      const isForked = await checkAndShowForkDialog();
+      if (!isForked) {
+        throw new Error("需要先 Fork 仓库才能保存数据");
       }
 
       setError(null);
