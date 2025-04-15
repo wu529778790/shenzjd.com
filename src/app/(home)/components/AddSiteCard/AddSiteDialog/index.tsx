@@ -45,14 +45,19 @@ export function AddSiteDialog({
         urlSchema.parse(urlToValidate);
         setLoading(true);
         setError("");
+        setIsSubmitting(false);
 
-        // 使用 fetch 获取网站内容
-        const response = await fetch(urlToValidate);
-        const html = await response.text();
+        // 使用专门的API服务获取网站信息
+        const urlObj = new URL(urlToValidate);
+        const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
+          urlToValidate
+        )}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
 
-        // 使用 DOMParser 解析 HTML
+        // 解析返回的HTML内容
         const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
+        const doc = parser.parseFromString(data.contents, "text/html");
 
         // 获取标题
         const title =
@@ -63,7 +68,6 @@ export function AddSiteDialog({
           "";
 
         // 使用 unavatar.io 获取 favicon
-        const urlObj = new URL(urlToValidate);
         const favicon = `https://unavatar.io/${urlObj.hostname}`;
 
         setSiteInfo({
@@ -85,6 +89,7 @@ export function AddSiteDialog({
         setEditedTitle("");
         setError(err instanceof Error ? err.message : "发生未知错误");
         setLoading(false);
+        setIsSubmitting(false);
       }
     },
     [link]
