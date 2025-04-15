@@ -199,7 +199,7 @@ export function AddSiteDialog({
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           {siteInfo && (
-            <>
+            <div className="space-y-4">
               <SiteInfoForm
                 siteInfo={siteInfo}
                 editedTitle={editedTitle}
@@ -211,14 +211,19 @@ export function AddSiteDialog({
                 isSubmitting={isSubmitting}
               />
 
-              <div className="flex justify-center">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-                  onChange={(token) => setRecaptchaToken(token)}
-                />
+              <div className="relative z-50 flex justify-center">
+                <div className="absolute left-1/2 -translate-x-1/2 transform">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                    onChange={(token) => setRecaptchaToken(token)}
+                  />
+                </div>
               </div>
-            </>
+
+              {/* 添加一个占位符，确保有足够的空间显示reCAPTCHA */}
+              <div className="h-[100px]" />
+            </div>
           )}
         </div>
       </DialogContent>
