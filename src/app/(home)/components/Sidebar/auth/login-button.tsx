@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/tooltip";
 import * as LucideIcons from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 interface LoginProviderProps {
   id: string;
@@ -73,10 +74,12 @@ function LoginDialog() {
               variant="outline"
               className="w-full h-12 relative"
               onClick={() => handleProviderLogin(provider.id)}>
-              <img
+              <Image
                 src={provider.icon}
                 alt={provider.name}
-                className="w-5 h-5 absolute left-4"
+                width={20}
+                height={20}
+                className="absolute left-4"
               />
               <span>{provider.name}</span>
             </Button>
