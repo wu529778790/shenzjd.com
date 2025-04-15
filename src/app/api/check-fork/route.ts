@@ -18,30 +18,45 @@ export async function GET() {
     console.log("Checking fork status for user:", login);
 
     try {
-      // 获取原始仓库的所有fork
+      // 获取原始仓库信息
       console.log(
-        "Fetching forks of repository:",
+        "Fetching original repository:",
         ORIGINAL_OWNER,
         ORIGINAL_REPO
       );
-      const { data: forks } = await octokit.repos.listForks({
+      const { data: originalRepo } = await octokit.repos.get({
         owner: ORIGINAL_OWNER,
         repo: ORIGINAL_REPO,
-        per_page: 100,
       });
-      console.log("Found", forks.length, "forks");
+      console.log("Original repository ID:", originalRepo.id);
 
-      // 检查用户是否在fork列表中
-      const isForked = forks.some((fork) => {
-        const isFork = fork.owner.login === login;
-        if (isFork) {
-          console.log("Found user's fork:", fork.name);
+      // 直接检查用户是否fork了这个仓库
+      try {
+        const { data: userRepo } = await octokit.repos.get({
+          owner: login,
+          repo: ORIGINAL_REPO,
+        });
+        console.log("User repository found:", userRepo.name);
+        console.log("Is fork:", userRepo.fork);
+        console.log("Fork parent:", userRepo.parent?.full_name);
+
+        const isForked =
+          userRepo.fork && userRepo.parent?.id === originalRepo.id;
+        console.log("Is forked from original:", isForked);
+
+        return NextResponse.json({ isForked });
+      } catch (error: unknown) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "status" in error &&
+          error.status === 404
+        ) {
+          console.log("User has not forked the repository");
+          return NextResponse.json({ isForked: false });
         }
-        return isFork;
-      });
-
-      console.log("Is forked:", isForked);
-      return NextResponse.json({ isForked });
+        throw error;
+      }
     } catch (error) {
       console.error("Error checking fork status:", error);
       return NextResponse.json({ isForked: false });
