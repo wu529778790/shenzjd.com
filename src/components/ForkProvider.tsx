@@ -1,11 +1,11 @@
 "use client";
 
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useState } from "react";
 import { useFork } from "@/hooks/useFork";
 import { ForkDialog } from "@/components/ForkDialog";
 
 interface ForkContextType {
-  checkAndShowForkDialog: () => Promise<boolean>;
+  checkAndShowForkDialog: (onSuccess?: () => void) => Promise<boolean>;
   isForked: boolean;
 }
 
@@ -19,10 +19,24 @@ export function ForkProvider({ children }: { children: ReactNode }) {
     isForked,
     checkForkStatus,
   } = useFork();
+  const [pendingCallback, setPendingCallback] = useState<(() => void) | null>(
+    null
+  );
 
-  const checkAndShowForkDialog = async () => {
+  const handleForkWithCallback = async () => {
+    const success = await handleFork();
+    if (success && pendingCallback) {
+      pendingCallback();
+      setPendingCallback(null);
+    }
+  };
+
+  const checkAndShowForkDialog = async (onSuccess?: () => void) => {
     const isAlreadyForked = await checkForkStatus();
     if (!isAlreadyForked) {
+      if (onSuccess) {
+        setPendingCallback(() => onSuccess);
+      }
       setShowForkDialog(true);
       return false;
     }
@@ -35,7 +49,7 @@ export function ForkProvider({ children }: { children: ReactNode }) {
       <ForkDialog
         open={showForkDialog}
         onOpenChange={setShowForkDialog}
-        onConfirm={handleFork}
+        onConfirm={handleForkWithCallback}
       />
     </ForkContext.Provider>
   );

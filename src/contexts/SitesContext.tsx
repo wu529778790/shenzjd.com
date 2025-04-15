@@ -118,9 +118,12 @@ export function SitesProvider({ children }: { children: ReactNode }) {
         throw new Error("请先登录后再进行操作");
       }
 
-      const isForked = await checkAndShowForkDialog();
+      const isForked = await checkAndShowForkDialog(async () => {
+        await makeRequest(method, type, data);
+      });
+
       if (!isForked) {
-        throw new Error("需要先 Fork 仓库才能保存数据");
+        return;
       }
 
       setError(null);
