@@ -109,28 +109,6 @@ src/
 - 使用 Server Components 优先原则
 - 组件采用函数式组件和 Hooks
 
-### 提交规范
-
-提交信息格式：
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-type 类型：
-
-- feat: 新功能
-- fix: 修复
-- docs: 文档
-- style: 格式
-- refactor: 重构
-- test: 测试
-- chore: 构建过程或辅助工具的变动
-
 ## 部署
 
 项目可以部署到任何支持 Next.js 的平台，推荐使用 Vercel：
