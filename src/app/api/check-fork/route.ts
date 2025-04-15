@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { getOctokit } from "@/lib/github";
 import { NextResponse } from "next/server";
 
-const ORIGINAL_REPO = "shenzjd.com";
+const ORIGINAL_REPO = "nav.shenzjd.com";
 
 export async function GET() {
   try {
@@ -15,22 +15,21 @@ export async function GET() {
     const login = session.user.login;
 
     try {
-      // 检查是否已经 fork
-      await octokit.repos.get({
-        owner: login,
-        repo: ORIGINAL_REPO,
+      const { data: repos } = await octokit.repos.listForUser({
+        username: login,
+        sort: "updated",
+        direction: "desc",
       });
-      return NextResponse.json({ isForked: true });
-    } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === "object" &&
-        "status" in error &&
-        error.status === 404
-      ) {
-        return NextResponse.json({ isForked: false });
-      }
-      throw error;
+
+      const isForked = repos.some(
+        (repo) =>
+          repo.fork && repo.name === ORIGINAL_REPO && repo.owner.login === login
+      );
+
+      return NextResponse.json({ isForked });
+    } catch (error) {
+      console.error("Error checking fork status:", error);
+      return NextResponse.json({ isForked: false });
     }
   } catch (error) {
     console.error("Check fork error:", error);
