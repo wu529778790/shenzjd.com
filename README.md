@@ -33,20 +33,13 @@
 
 ### 安装步骤
 
-1. 克隆项目
-
-```bash
-git clone https://github.com/yourusername/shenzjd.com.git
-cd shenzjd.com
-```
-
-2. 安装依赖
+1. 安装依赖
 
 ```bash
 pnpm install
 ```
 
-3. 配置环境变量
+2. 配置环境变量
 创建 `.env.local` 文件并添加以下配置：
 
 ```env
@@ -55,15 +48,13 @@ GITHUB_ID=your-github-client-id
 GITHUB_SECRET=your-github-client-secret
 ```
 
-4. 启动开发服务器
+3. 启动开发服务器
 
 ```bash
 npm run dev
 # 或
 yarn dev
 ```
-
-5. 访问 <http://localhost:3000>
 
 ## 项目结构
 
@@ -81,7 +72,7 @@ src/
 
 ### 未登录用户
 
-- 只能访问原始仓库的公开数据(<https://github.com/wu529778790/shenzjd.com/blob/main/src/data/sites.json>)
+- 只能访问原始仓库的公开数据(<https://github.com/wu529778790/nav.shenzjd.com/blob/main/src/data/sites.json>)
 - 不能进行任何修改操作
 
 ### 已登录用户
