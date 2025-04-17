@@ -1,3 +1,4 @@
+export const runtime = "edge";
 import { auth } from "@/lib/auth";
 import { getOctokit } from "@/lib/github";
 import { NextResponse } from "next/server";

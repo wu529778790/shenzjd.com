@@ -1,3 +1,4 @@
+export const runtime = "edge";
 import { auth } from "@/lib/auth";
 import { ensureForked } from "@/lib/github";
 import { NextResponse } from "next/server";
