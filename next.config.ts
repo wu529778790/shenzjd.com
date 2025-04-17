@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // 缓存优化
   experimental: {
+    edgeRuntime: true,
+    runtime: "experimental-edge",
     optimizePackageImports: ["@/components", "@/lib"],
   },
 };
