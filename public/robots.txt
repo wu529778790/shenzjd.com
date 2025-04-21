@@ -1,3 +1,0 @@
-# 允许所有爬虫访问网站
-User-agent: *
-Allow: /
