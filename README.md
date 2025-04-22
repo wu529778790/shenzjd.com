@@ -1,5 +1,15 @@
 # nav.shenzjd.com
 
+## 依赖
+
+- tweakcn 自定义 shadcn-ui 的主题工具
+
+<https://tweakcn.com>
+
+- Better Auth
+
+<https://www.better-auth.com>
+
 ## 部署遇到的问题
 
 ### 1. 环境变量问题
@@ -54,5 +64,3 @@ Cloudflare Pages 默认不支持 Node.js 运行时，除非显式启用 nodejs_c
 ## 参考链接
 
 - <https://developers.cloudflare.com/pages/get-started/>
-- <https://www.better-auth.com/>
-- <https://tweakcn.com>
