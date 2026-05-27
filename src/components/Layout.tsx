@@ -53,14 +53,14 @@ export default function Layout({
       </a>
 
       <main id="main-content" className="relative mx-4 sm:mx-5">
-        <div className="mx-auto flex w-full max-w-[800px] flex-col sm:flex-row sm:items-start">
+        <div className="mx-auto flex w-full max-w-[800px] flex-col-reverse sm:flex-row sm:items-start">
           {/* Main content */}
           <div className="w-full min-w-0 pb-5 pt-3 sm:mr-6 sm:flex-1 sm:border-r sm:border-[var(--color-line)] sm:pr-8 sm:pt-6">
             {children}
           </div>
 
           {/* Sidebar */}
-          <aside className="sticky top-0 w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-paper)] pb-3 sm:w-[200px] sm:min-w-[200px] sm:self-start sm:border-b-0 sm:bg-transparent sm:pb-6 sm:shadow-none">
+          <aside className="w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-paper)] pb-3 sm:w-[200px] sm:min-w-[200px] sm:self-start sm:border-b-0 sm:bg-transparent sm:pb-6 sm:shadow-none">
             {/* Mobile: hamburger toggle */}
             <div className="flex items-center justify-between px-1 pt-3 sm:hidden">
               <span className="text-sm font-medium text-[var(--color-heading)]">

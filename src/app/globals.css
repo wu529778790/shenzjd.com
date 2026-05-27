@@ -720,4 +720,17 @@
       display: block !important;
     }
   }
+
+  /* Mobile aside: fixed top bar instead of sticky (sticky doesn't work in flex-col) */
+  aside {
+    position: relative;
+    top: auto;
+  }
+
+  @media (min-width: 37.5rem) {
+    aside {
+      position: sticky;
+      top: 0;
+    }
+  }
 }
