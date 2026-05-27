@@ -38,23 +38,23 @@ export default function List({
           </li>
         ))}
       </ol>
-      <nav className="my-6 flex items-center gap-3" aria-label="Pagination">
+      <nav className="my-5 flex items-center gap-3" aria-label="Pagination">
         {before && beforeCursor && Number(beforeCursor) > 1 ? (
           <a
             href={`${siteUrl}before/${beforeCursor}`}
             title="Older posts"
-            className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-full)] border border-[var(--color-muted)]/30 px-4 py-1.5 text-sm font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
+            className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
             &larr; Before
           </a>
         ) : (
           <span className="inline-block w-[34px]" aria-hidden="true">&nbsp;</span>
         )}
-        <div className="flex-1 text-center text-xs font-medium text-[var(--color-muted)]" />
+        <div className="flex-1 text-center text-[12px] font-medium text-[var(--color-muted)]" />
         {after && afterCursor ? (
           <a
             href={`${siteUrl}after/${afterCursor}`}
             title="Newer posts"
-            className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-full)] border border-[var(--color-muted)]/30 px-4 py-1.5 text-sm font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
+            className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
             After &rarr;
           </a>
         ) : (

@@ -55,12 +55,12 @@ export default function Layout({
       <main id="main-content" className="relative mx-4 sm:mx-5">
         <div className="mx-auto flex w-full max-w-[800px] flex-col-reverse sm:flex-row sm:items-start">
           {/* Main content */}
-          <div className="w-full min-w-0 pb-5 pt-3 sm:mr-6 sm:flex-1 sm:border-r sm:border-[var(--color-line)] sm:pr-8 sm:pt-6">
+          <div className="w-full min-w-0 pb-5 pt-3 sm:mr-5 sm:flex-1 sm:border-r sm:border-[var(--color-line)] sm:pr-7 sm:pt-5">
             {children}
           </div>
 
           {/* Sidebar */}
-          <aside className="w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-sidebar)] pb-3 sm:w-[220px] sm:min-w-[220px] sm:self-start sm:rounded-[var(--radius-lg)] sm:border sm:border-[var(--color-line)] sm:bg-[var(--color-surface)] sm:p-5 sm:shadow-[var(--shadow-soft)]">
+          <aside className="w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-sidebar)] pb-3 sm:w-[200px] sm:min-w-[200px] sm:self-start sm:rounded-[var(--radius-md)] sm:border sm:border-[var(--color-line)] sm:bg-[var(--color-surface)] sm:p-4 sm:shadow-[var(--shadow-soft)]">
             {/* Mobile: hamburger toggle */}
             <div className="flex items-center justify-between px-1 pt-3 sm:hidden">
               <span className="text-sm font-medium text-[var(--color-heading)]">
@@ -83,43 +83,43 @@ export default function Layout({
             {/* Nav content - collapsible on mobile */}
             <div id="nav-content" className="relative overflow-y-visible sm:max-h-[100svh] sm:overflow-y-auto">
               <nav aria-label="Primary navigation">
-                <ul className="m-0 flex list-none flex-wrap gap-1 pl-0 pt-3 sm:block sm:gap-0 sm:pt-5">
-                  <li className="flex items-center text-sm leading-none sm:mb-2.5">
+                <ul className="m-0 flex list-none flex-wrap gap-1 pl-0 pt-3 sm:block sm:gap-0 sm:pt-4">
+                  <li className="flex items-center text-[13px] leading-none sm:mb-1.5">
                     <a
                       href={siteUrl}
                       title={channel?.title}
-                      className={`flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline ${currentPathname === siteRootPathname ? "bg-white/70 shadow-[var(--shadow-soft)]" : ""}`}>
+                      className={`flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === siteRootPathname ? "bg-[var(--color-line)] font-medium" : ""}`}>
                       Home
                     </a>
                   </li>
                   {TAGS && (
-                    <li className="flex items-center text-sm leading-none sm:mb-2.5">
+                    <li className="flex items-center text-[13px] leading-none sm:mb-1.5">
                       <a
                         href={`${siteUrl}tags`}
                         title="Tags"
-                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline ${currentPathname === tagsPathname ? "bg-white/70 shadow-[var(--shadow-soft)]" : ""}`}>
+                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === tagsPathname ? "bg-[var(--color-line)] font-medium" : ""}`}>
                         Tags
                       </a>
                     </li>
                   )}
                   {LINKS && (
-                    <li className="flex items-center text-sm leading-none sm:mb-2.5">
+                    <li className="flex items-center text-[13px] leading-none sm:mb-1.5">
                       <a
                         href={`${siteUrl}links`}
                         title="Links"
-                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline ${currentPathname === linksPathname ? "bg-white/70 shadow-[var(--shadow-soft)]" : ""}`}>
+                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === linksPathname ? "bg-[var(--color-line)] font-medium" : ""}`}>
                         Links
                       </a>
                     </li>
                   )}
                   {navs.map((nav) => (
-                    <li key={nav.href} className="flex items-center text-sm leading-none sm:mb-2.5">
+                    <li key={nav.href} className="flex items-center text-[13px] leading-none sm:mb-1.5">
                       <a
                         href={nav.href}
                         title={nav.title}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline">
+                        className="flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline">
                         {nav.title}
                       </a>
                     </li>
@@ -128,7 +128,7 @@ export default function Layout({
               </nav>
 
               <form
-                className="mt-3 hidden rounded-[var(--radius-sm)] bg-[var(--color-code)] p-2 sm:mt-0 sm:block"
+                className="mt-2 hidden rounded-[var(--radius-sm)] bg-[var(--color-code)] p-1.5 sm:mt-0 sm:block"
                 action={searchAction}
                 method="get"
                 role="search">
@@ -144,7 +144,7 @@ export default function Layout({
                 </label>
                 <input
                   id="search-query"
-                  className="box-border w-full rounded-[var(--radius-sm)] border border-[var(--color-paper)] bg-[var(--color-code)] px-2 text-sm leading-9 text-[var(--color-muted)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-heading)] focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-heading)] sm:text-xs"
+                  className="box-border w-full rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] px-2.5 text-[13px] leading-8 text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)] focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                   type="search"
                   name="q"
                   placeholder="Search…"
@@ -154,13 +154,14 @@ export default function Layout({
                 />
               </form>
 
-              <footer className="hidden p-2 text-sm leading-relaxed text-[var(--color-footer)] sm:block">
+              <footer className="hidden p-2 text-[12px] leading-relaxed text-[var(--color-footer)] sm:block">
                 Powered by{" "}
                 <a
                   href="https://github.com/shenzjd_com/microblog"
                   title="MicroBlog"
                   target="_blank"
-                  rel="noopener noreferrer">
+                  rel="noopener noreferrer"
+                  className="text-[var(--color-muted)] hover:text-[var(--color-heading)]">
                   MicroBlog
                 </a>
               </footer>
