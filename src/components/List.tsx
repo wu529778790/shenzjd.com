@@ -24,8 +24,8 @@ export default function List({
   children,
 }: ListProps) {
   const posts = channel.posts ?? []
-  const beforeCursor = posts[posts.length - 1]?.id
-  const afterCursor = posts[0]?.id
+  const beforeCursor = posts[posts.length - 1]?.datetime
+  const afterCursor = posts[0]?.datetime
 
   return (
     <div>
@@ -39,7 +39,7 @@ export default function List({
         ))}
       </ol>
       <nav className="my-5 flex items-center gap-3" aria-label="Pagination">
-        {before && beforeCursor && Number(beforeCursor) > 1 ? (
+        {before && beforeCursor ? (
           <a
             href={`${siteUrl}before/${beforeCursor}`}
             title="Older posts"
