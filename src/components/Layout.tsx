@@ -158,10 +158,10 @@ export default function Layout({
                 Powered by{" "}
                 <a
                   href="https://github.com/shenzjd_com/microblog"
-                  title="microblog"
+                  title="MicroBlog"
                   target="_blank"
                   rel="noopener noreferrer">
-                  microblog
+                  MicroBlog
                 </a>
               </footer>
             </div>
