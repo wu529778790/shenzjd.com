@@ -60,7 +60,7 @@ export default function Layout({
           </div>
 
           {/* Sidebar */}
-          <aside className="w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-paper)] pb-3 sm:w-[200px] sm:min-w-[200px] sm:self-start sm:border-b-0 sm:bg-transparent sm:pb-6 sm:shadow-none">
+          <aside className="w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-sidebar)] pb-3 sm:w-[220px] sm:min-w-[220px] sm:self-start sm:rounded-[var(--radius-lg)] sm:border sm:border-[var(--color-line)] sm:bg-[var(--color-surface)] sm:p-5 sm:shadow-[var(--shadow-soft)]">
             {/* Mobile: hamburger toggle */}
             <div className="flex items-center justify-between px-1 pt-3 sm:hidden">
               <span className="text-sm font-medium text-[var(--color-heading)]">

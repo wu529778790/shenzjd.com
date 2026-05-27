@@ -11,18 +11,19 @@
     'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --breakpoint-sm: 37.5rem;
 
-  /* Warm paper palette */
-  --color-paper: #f5f2ed;
-  --color-surface: #ffffff;
-  --color-code: #faf8f5;
-  --color-ink: #1a1614;
-  --color-heading: #2c2520;
-  --color-accent: #a83a1a;
-  --color-muted: #7a706a;
-  --color-link: #5c5550;
-  --color-link-hover: #3d3835;
-  --color-line: rgba(0, 0, 0, 0.06);
-  --color-footer: #8a807a;
+  /* Warm journal palette — visibly warm, not just slightly off-white */
+  --color-paper: #f0ebe3;
+  --color-surface: #faf7f2;
+  --color-code: #f5f0e8;
+  --color-ink: #1c1816;
+  --color-heading: #2a2118;
+  --color-accent: #c04a1a;
+  --color-muted: #8a7e74;
+  --color-link: #6b5d52;
+  --color-link-hover: #3d3228;
+  --color-line: rgba(42, 33, 24, 0.1);
+  --color-footer: #9a8e84;
+  --color-sidebar: #e8e1d6;
 
   /* Spacing tokens (4pt grid) */
   --space-xs: 0.25rem;
@@ -35,16 +36,16 @@
 
   /* Elevation */
   --shadow-soft:
-    0 1px 2px rgba(26, 22, 20, 0.04),
-    0 2px 8px rgba(26, 22, 20, 0.03);
+    0 1px 3px rgba(42, 33, 24, 0.06),
+    0 4px 12px rgba(42, 33, 24, 0.04);
   --shadow-medium:
-    0 2px 4px rgba(26, 22, 20, 0.04),
-    0 4px 16px rgba(26, 22, 20, 0.04);
+    0 2px 8px rgba(42, 33, 24, 0.08),
+    0 8px 24px rgba(42, 33, 24, 0.06);
 
   /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
   --radius-full: 9999px;
 }
 
@@ -52,8 +53,8 @@
   :root {
     --back-to-top-offset: 1.25rem;
     --back-to-top-size: 2rem;
-    --icon-hover-filter: invert(51%) sepia(0%) saturate(0%) hue-rotate(23deg) brightness(90%) contrast(90%);
-    --icon-secondary-filter: invert(97%) sepia(0%) saturate(0%) hue-rotate(129deg) brightness(86%) contrast(88%);
+    --icon-hover-filter: invert(40%) sepia(10%) saturate(30%) hue-rotate(10deg) brightness(95%) contrast(90%);
+    --icon-secondary-filter: invert(60%) sepia(5%) saturate(10%) hue-rotate(10deg) brightness(90%) contrast(85%);
   }
 
   * {
@@ -69,8 +70,8 @@
     background-color: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -81,7 +82,7 @@
 
   a:link,
   a:visited {
-    color: var(--color-link);
+    color: var(--color-accent);
     text-decoration: none;
     line-break: loose;
     transition: color 0.15s ease;
@@ -90,8 +91,8 @@
   a:hover {
     color: var(--color-link-hover);
     text-decoration: underline;
-    text-underline-offset: 0.2em;
-    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 1.5px;
   }
 
   a:focus-visible,
@@ -99,14 +100,14 @@
   input:focus-visible,
   summary:focus-visible {
     outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
 
   hr {
     border: none;
     height: 1px;
     background-color: var(--color-line);
-    margin: var(--space-xl) 0;
+    margin: var(--space-2xl) 0;
   }
 }
 
@@ -190,26 +191,28 @@
   }
 
   .content h1 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.25;
+    margin: var(--space-3xl) 0 var(--space-lg);
+    color: var(--color-heading);
+    letter-spacing: -0.02em;
+  }
+
+  .content h2 {
+    font-size: 1.375rem;
     font-weight: 700;
     line-height: 1.3;
     margin: var(--space-2xl) 0 var(--space-md);
     color: var(--color-heading);
-  }
-
-  .content h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    line-height: 1.35;
-    margin: var(--space-xl) 0 var(--space-sm);
-    color: var(--color-heading);
+    letter-spacing: -0.01em;
   }
 
   .content h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.4;
-    margin: var(--space-xl) 0 var(--space-sm);
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: var(--space-xl) 0 var(--space-md);
     color: var(--color-heading);
   }
 

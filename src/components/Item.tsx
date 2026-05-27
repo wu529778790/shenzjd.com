@@ -33,8 +33,8 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
       style={{ viewTransitionName: `post-${post.id}` } as React.CSSProperties}>
       {/* Timestamp */}
       <header className="flex items-center leading-none">
-        <span className="h-2 w-2 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
-        <p className="m-0 flex-1 pl-2.5 text-sm font-medium text-[var(--color-accent)]">
+        <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
+        <p className="m-0 flex-1 pl-3 text-[15px] font-semibold tracking-tight text-[var(--color-accent)]">
           <a
             href={`${siteUrl}posts/${post.id}`}
             title={post.datetime}
@@ -47,19 +47,19 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
       {/* Content */}
       {hasContent && (
         <div
-          className="ml-[3px] border-l-2 border-[var(--color-line)] py-6 pl-4 text-base leading-relaxed sm:pl-8 content"
+          className="ml-[3px] border-l-[3px] border-[var(--color-accent)]/20 py-7 pl-5 text-[17px] leading-[1.75] sm:pl-9 content"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       )}
 
       {/* Reactions */}
       {hasReactions && (
-        <div className={`ml-[3px] border-l-2 border-[var(--color-line)] pb-6 pl-4 pt-1.5 sm:pl-8 ${hasContent ? '-mt-3 pt-0' : ''}`}>
-          <div className="m-0 flex flex-wrap gap-1.5">
+        <div className={`ml-[3px] border-l-[3px] border-[var(--color-accent)]/20 pb-6 pl-5 pt-2 sm:pl-9 ${hasContent ? '-mt-3 pt-0' : ''}`}>
+          <div className="m-0 flex flex-wrap gap-2">
             {post.reactions.map((reaction, i) => (
               <span
                 key={i}
-                className={`inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-code)] py-0.5 pl-1.5 pr-2 text-xs text-[var(--color-muted)] ${reaction.isPaid ? 'border-[rgba(255,196,0,0.35)] bg-[rgba(255,196,0,0.12)] text-[#9a6a00]' : ''}`}>
+                className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--color-line)] bg-white py-1 pl-2 pr-2.5 text-sm text-[var(--color-muted)] shadow-sm ${reaction.isPaid ? 'border-amber-300 bg-amber-50 text-amber-700' : ''}`}>
                 <span className="inline-flex items-center text-sm leading-none">
                   {reaction.isPaid ? '⭐' : reaction.emojiImage ? (
                     <img src={reaction.emojiImage} alt={reaction.emoji || 'emoji'} loading="lazy" width="20" height="20" className="block h-4 w-4" />
@@ -76,14 +76,14 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
 
       {/* Tags */}
       {hasTags && (
-        <footer className={`ml-[3px] flex flex-wrap items-center gap-2 border-l-2 border-[var(--color-line)] pl-4 text-sm leading-relaxed sm:pl-8 ${!hasContent ? 'pt-6' : COMMENTS ? 'pb-8' : 'pb-5'}`}>
+        <footer className={`ml-[3px] flex flex-wrap items-center gap-2 border-l-[3px] border-[var(--color-accent)]/20 pl-5 text-sm leading-relaxed sm:pl-9 ${!hasContent ? 'pt-6' : COMMENTS ? 'pb-8' : 'pb-5'}`}>
           <span className="tag-icon" aria-hidden="true" />
           {post.tags.map(tag => (
             <a
               key={tag}
               href={getTagHref(tag)}
               title={tag}
-              className="inline-block rounded-[var(--radius-sm)] border border-[var(--color-line)] px-2.5 py-0.5 text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline">
+              className="inline-block rounded-[var(--radius-full)] bg-[var(--color-accent)]/8 px-3 py-1 text-[13px] font-medium text-[var(--color-accent)] no-underline transition-all hover:bg-[var(--color-accent)] hover:text-white hover:no-underline">
               {tag}
             </a>
           ))}
