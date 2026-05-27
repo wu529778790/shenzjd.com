@@ -9,23 +9,6 @@ const REACTIONS = getEnv('REACTIONS')
 
 if (locale) dayjs.locale(locale)
 
-const articleClass = 'transition duration-200'
-const timeBoxClass = 'flex items-center leading-none'
-const timeDotClass = 'h-[8px] w-[8px] rounded-full bg-accent'
-const timeTextClass = 'm-0 flex-1 pl-[10px] text-[14px] font-medium text-accent'
-const itemLinkClass = 'text-accent no-underline hover:underline'
-const contentClass = 'ml-[3px] border-l-2 border-line py-[30px] pl-[15px] text-base leading-[1.6] sm:pl-[30px]'
-const reactionBoxClass = 'ml-[3px] border-l-2 border-line pb-6 pl-[15px] pt-[6px] sm:pl-[30px]'
-const reactionListClass = 'm-0 flex flex-wrap gap-[6px]'
-const reactionPillClass = 'inline-flex items-center gap-1 rounded-full border border-line bg-code py-[3px] pl-[6px] pr-[8px] text-[12px] text-muted'
-const reactionPaidClass = 'border-[rgba(255,196,0,0.35)] bg-[rgba(255,196,0,0.12)] text-[#9a6a00]'
-const reactionEmojiClass = 'inline-flex items-center text-[14px] leading-none'
-const reactionCountClass = 'font-medium opacity-80 [font-variant-numeric:tabular-nums]'
-const tagBoxClass = 'ml-[3px] flex flex-wrap items-center gap-2 border-l-2 border-line pl-[15px] text-[14px] leading-[1.6] sm:pl-[30px]'
-const tagPaddingClass = COMMENTS ? 'pb-[30px]' : 'pb-5'
-const tagStandaloneClass = 'pt-[30px]'
-const tagLinkClass = 'inline-block rounded-[4px] border border-line px-[10px] py-[2px] text-muted no-underline hover:border-accent hover:text-accent hover:no-underline'
-const commentsClass = 'ml-[3px] border-l-2 border-line pb-6 pl-[15px] pt-[6px] sm:pl-[30px]'
 const getTagHref = (tag: string) => `/search/result?q=${encodeURIComponent(`#${tag}`)}`
 
 interface ItemProps {
@@ -45,46 +28,71 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
   const hasTags = post.tags.length > 0
 
   return (
-    <article className={articleClass} style={{ viewTransitionName: `post-${post.id}` } as React.CSSProperties}>
-      <header className={timeBoxClass}>
-        <span className={timeDotClass} aria-hidden="true" />
-        <p className={timeTextClass}>
-          <a href={`${siteUrl}posts/${post.id}`} title={post.datetime} className={itemLinkClass}>
+    <article
+      className="transition-opacity duration-200"
+      style={{ viewTransitionName: `post-${post.id}` } as React.CSSProperties}>
+      {/* Timestamp */}
+      <header className="flex items-center leading-none">
+        <span className="h-2 w-2 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
+        <p className="m-0 flex-1 pl-2.5 text-sm font-medium text-[var(--color-accent)]">
+          <a
+            href={`${siteUrl}posts/${post.id}`}
+            title={post.datetime}
+            className="text-[var(--color-accent)] no-underline hover:underline">
             <time dateTime={post.datetime} title={timeago}>{timeago}</time>
           </a>
         </p>
       </header>
-      {hasContent && <div className={`${contentClass} content`} dangerouslySetInnerHTML={{ __html: post.content }} />}
+
+      {/* Content */}
+      {hasContent && (
+        <div
+          className="ml-[3px] border-l-2 border-[var(--color-line)] py-6 pl-4 text-base leading-relaxed sm:pl-8 content"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+      )}
+
+      {/* Reactions */}
       {hasReactions && (
-        <div className={`${reactionBoxClass} ${hasContent ? '-mt-3 pt-0' : ''}`}>
-          <div className={reactionListClass}>
+        <div className={`ml-[3px] border-l-2 border-[var(--color-line)] pb-6 pl-4 pt-1.5 sm:pl-8 ${hasContent ? '-mt-3 pt-0' : ''}`}>
+          <div className="m-0 flex flex-wrap gap-1.5">
             {post.reactions.map((reaction, i) => (
-              <span key={i} className={`${reactionPillClass} ${reaction.isPaid ? reactionPaidClass : ''}`}>
-                <span className={reactionEmojiClass}>
+              <span
+                key={i}
+                className={`inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-code)] py-0.5 pl-1.5 pr-2 text-xs text-[var(--color-muted)] ${reaction.isPaid ? 'border-[rgba(255,196,0,0.35)] bg-[rgba(255,196,0,0.12)] text-[#9a6a00]' : ''}`}>
+                <span className="inline-flex items-center text-sm leading-none">
                   {reaction.isPaid ? '⭐' : reaction.emojiImage ? (
-                    <img src={reaction.emojiImage} alt={reaction.emoji || 'emoji'} loading="lazy" width="20" height="20" className="block h-[1em] w-[1em]" />
+                    <img src={reaction.emojiImage} alt={reaction.emoji || 'emoji'} loading="lazy" width="20" height="20" className="block h-4 w-4" />
                   ) : (
                     reaction.emoji
                   )}
                 </span>
-                <span className={reactionCountClass}>{reaction.count}</span>
+                <span className="font-medium opacity-80 tabular-nums">{reaction.count}</span>
               </span>
             ))}
           </div>
         </div>
       )}
+
+      {/* Tags */}
       {hasTags && (
-        <footer className={`${tagBoxClass} ${!hasContent ? tagStandaloneClass : tagPaddingClass}`}>
+        <footer className={`ml-[3px] flex flex-wrap items-center gap-2 border-l-2 border-[var(--color-line)] pl-4 text-sm leading-relaxed sm:pl-8 ${!hasContent ? 'pt-6' : COMMENTS ? 'pb-8' : 'pb-5'}`}>
           <span className="tag-icon" aria-hidden="true" />
           {post.tags.map(tag => (
-            <a key={tag} href={getTagHref(tag)} title={tag} className={tagLinkClass}>
+            <a
+              key={tag}
+              href={getTagHref(tag)}
+              title={tag}
+              className="inline-block rounded-[var(--radius-sm)] border border-[var(--color-line)] px-2.5 py-0.5 text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline">
               {tag}
             </a>
           ))}
         </footer>
       )}
+
+      {/* Comments */}
       {COMMENTS && isItem && channelName && (
-        <section className={commentsClass} aria-label="Comments">
+        <section className="ml-[3px] border-l-2 border-[var(--color-line)] pb-6 pl-4 pt-1.5 sm:pl-8" aria-label="Comments">
           <script
             async
             src="https://telegram.org/js/telegram-widget.js"

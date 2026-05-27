@@ -1,9 +1,7 @@
-'use client'
-
 import type { ChannelInfo } from '../types'
 import { getEnv } from '../lib/env'
 
-const PODCASRT = getEnv('PODCASRT')
+const PODCAST = getEnv('PODCAST') ?? getEnv('PODCASRT')
 const TWITTER = getEnv('TWITTER')
 const GITHUB = getEnv('GITHUB')
 const TELEGRAM = getEnv('TELEGRAM')
@@ -19,7 +17,6 @@ interface SocialLink {
   label: string
   icon: string
   rel: string
-  type?: string
 }
 
 function getSocialLinks(rssUrl: string): SocialLink[] {
@@ -30,11 +27,10 @@ function getSocialLinks(rssUrl: string): SocialLink[] {
       label: 'RSS Feed',
       icon: 'ri:rss-line',
       rel: 'alternate noopener noreferrer',
-      type: 'application/rss+xml',
     },
   ]
 
-  if (PODCASRT) links.push({ href: PODCASRT, title: 'Podcast', label: 'Podcast', icon: 'ri:mic-line', rel: 'noopener noreferrer' })
+  if (PODCAST) links.push({ href: PODCAST, title: 'Podcast', label: 'Podcast', icon: 'ri:mic-line', rel: 'noopener noreferrer' })
   if (TWITTER) links.push({ href: `https://x.com/${TWITTER}`, title: 'Twitter', label: 'Twitter / X', icon: 'ri:twitter-x-line', rel: 'noopener noreferrer' })
   if (GITHUB) links.push({ href: `https://github.com/${GITHUB}`, title: 'GitHub', label: 'GitHub', icon: 'ri:github-line', rel: 'noopener noreferrer' })
   if (TELEGRAM) links.push({ href: `https://t.me/${TELEGRAM}`, title: 'Telegram', label: 'Telegram', icon: 'ri:telegram-line', rel: 'noopener noreferrer' })
@@ -45,21 +41,12 @@ function getSocialLinks(rssUrl: string): SocialLink[] {
   return links
 }
 
-const headerMainClass = 'mb-[10px] flex items-center p-[10px] font-semibold max-sm:p-0'
-const avatarClass = 'block h-10 w-10 rounded-full border-[3px] border-white object-cover shadow-soft'
-const titleWrapClass = 'ml-[10px] min-w-0 flex-1 pr-[10px] text-[20px]'
-const titleLinkClass = 'text-heading no-underline hover:text-ink hover:underline'
-const iconNavClass = 'flex items-center gap-[2px]'
-const socialLinkClass = 'group p-1 no-underline'
-const socialIconClass = 'h-[1em] w-[1em] align-bottom [filter:var(--icon-secondary-filter)] group-hover:[filter:var(--icon-hover-filter)]'
-const introClass = 'mb-5 ml-[3px] break-words rounded-panel border-l-2 border-line bg-code px-5 py-[10px] text-base leading-[1.6] text-muted shadow-soft max-sm:my-5 max-sm:ml-0'
-
 export default function Header({ channel, siteUrl, rssUrl }: { channel: ChannelInfo, siteUrl: string, rssUrl: string }) {
   const socialLinks = getSocialLinks(rssUrl)
 
   return (
     <header>
-      <div className={headerMainClass}>
+      <div className="mb-2.5 flex items-center gap-2.5 p-0 font-semibold max-sm:mb-2 max-sm:p-0">
         <a href={siteUrl} title={channel?.title}>
           <img
             src={channel?.avatar?.startsWith('http') ? STATIC_PROXY + channel?.avatar : '/void.png'}
@@ -68,15 +55,19 @@ export default function Header({ channel, siteUrl, rssUrl }: { channel: ChannelI
             fetchPriority="high"
             width="40"
             height="40"
-            className={avatarClass}
+            className="block h-10 w-10 rounded-full border-[3px] border-white object-cover shadow-[var(--shadow-soft)]"
           />
         </a>
-        <div className={titleWrapClass}>
-          <a href={siteUrl} className={titleLinkClass} style={{ viewTransitionName: 'site-title', transition: '0.2s ease' } as React.CSSProperties} title={channel?.title}>
+        <div className="min-w-0 flex-1 pr-2.5">
+          <a
+            href={siteUrl}
+            className="text-lg text-[var(--color-heading)] no-underline hover:text-[var(--color-ink)] hover:underline"
+            style={{ viewTransitionName: 'site-title', transition: '0.2s ease' } as React.CSSProperties}
+            title={channel?.title}>
             {channel?.title}
           </a>
         </div>
-        <nav className={iconNavClass} aria-label="Channel links">
+        <nav className="flex items-center gap-0.5" aria-label="Channel links">
           {socialLinks.map(item => (
             <a
               key={item.href}
@@ -84,15 +75,18 @@ export default function Header({ channel, siteUrl, rssUrl }: { channel: ChannelI
               title={item.title}
               target="_blank"
               rel={item.rel}
-              className={socialLinkClass}
+              className="group p-1 no-underline"
             >
-              <span className={`iconify ${item.icon} ${socialIconClass}`} aria-hidden="true" />
+              <span className={`iconify ${item.icon} h-4 w-4 align-bottom [filter:var(--icon-secondary-filter)] group-hover:[filter:var(--icon-hover-filter)]`} aria-hidden="true" />
             </a>
           ))}
         </nav>
       </div>
       {HIDE_DESCRIPTION !== 'true' && channel?.descriptionHTML && channel.descriptionHTML.length > 0 && (
-        <div className={`${introClass} content`} dangerouslySetInnerHTML={{ __html: channel.descriptionHTML }} />
+        <div
+          className="mb-5 break-words rounded-[var(--radius-sm)] border-l-2 border-[var(--color-line)] bg-[var(--color-code)] px-5 py-2.5 text-base leading-relaxed text-[var(--color-muted)] shadow-[var(--shadow-soft)] max-sm:my-5 max-sm:ml-0 content"
+          dangerouslySetInnerHTML={{ __html: channel.descriptionHTML }}
+        />
       )}
     </header>
   )

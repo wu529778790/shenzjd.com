@@ -1,5 +1,3 @@
-"use client";
-
 import type { ChannelInfo, NavItem } from "../types";
 import { getEnv } from "../lib/env";
 
@@ -18,31 +16,9 @@ const navs: NavItem[] = (NAVS || "")
     return { title, href };
   });
 
-const layoutShellClass = "mx-5";
-const layoutGridClass =
-  "mx-auto flex w-full max-w-[800px] flex-col-reverse sm:flex-row sm:items-start";
-const mainPanelClass =
-  "w-full min-w-0 pb-5 pt-[10px] sm:mr-5 sm:flex-1 sm:border-r sm:border-line sm:pr-[30px] sm:pt-5";
-const asidePanelClass =
-  "sticky top-0 w-full min-w-0 border-b border-line bg-paper pb-[10px] shadow-[0_4px_16px_-16px_rgba(0,0,0,0.1)] sm:w-[200px] sm:min-w-[200px] sm:self-start sm:border-b-0 sm:bg-transparent sm:pb-5 sm:shadow-none";
-const asideInnerClass =
-  "relative overflow-y-visible sm:max-h-[100svh] sm:overflow-y-auto";
-const navListClass =
-  "m-0 flex list-none flex-wrap gap-[2px] pl-0 pt-5 sm:block";
-const navItemClass =
-  "flex items-center text-[14px] leading-none sm:mb-[10px] sm:text-base sm:leading-normal";
-const navLinkClass =
-  "flex-1 inline-block rounded-panel px-[10px] py-[5px] text-heading no-underline transition-[background-color,box-shadow] duration-150 ease-in-out hover:bg-white/65 hover:shadow-soft hover:no-underline";
-const navLinkCurrentClass = "bg-white/75 shadow-soft";
-const skipLinkClass =
-  "pointer-events-none absolute left-5 top-0 z-[1100] -translate-y-full rounded-panel bg-heading px-3 py-2 text-sm text-white no-underline transition-transform duration-150 focus-visible:pointer-events-auto focus-visible:translate-y-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading sm:hidden";
-const searchFormClass =
-  "mt-3 hidden rounded-panel bg-code p-2 text-muted sm:mt-0 sm:block";
-const searchInputClass =
-  "box-border w-full rounded-panel border border-paper bg-code px-2 text-[16px] leading-[2.4] text-muted outline-none placeholder:text-muted focus-visible:border-heading focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-heading sm:text-[12px]";
-const footerClass = "hidden p-2 text-[14px] leading-[1.5] text-footer sm:block";
-const backToTopClass =
-  "pointer-events-auto z-[1000] flex h-8 w-8 items-center justify-center rounded-full bg-code text-[24px] opacity-90 transition-transform duration-300 hover:-translate-y-[3px] active:translate-y-px";
+function normalizePathname(p: string): string {
+  return p.replace(/\/$/, "") || "/";
+}
 
 interface LayoutProps {
   channel: ChannelInfo;
@@ -63,10 +39,6 @@ export default function Layout({
     ? "https://www.google.com/search"
     : `${siteUrl}search/result`;
 
-  function normalizePathname(p: string): string {
-    return p.replace(/\/$/, "") || "/";
-  }
-
   const currentPathname = normalizePathname(pathname);
   const siteRootPathname = normalizePathname(new URL(siteUrl).pathname);
   const tagsPathname = normalizePathname(new URL("tags", siteUrl).pathname);
@@ -74,52 +46,80 @@ export default function Layout({
 
   return (
     <>
-      <a href="#main-content" className={skipLinkClass}>
+      <a
+        href="#main-content"
+        className="pointer-events-none absolute left-5 top-0 z-[1100] -translate-y-full rounded-[var(--radius-sm)] bg-[var(--color-heading)] px-3 py-2 text-sm text-white no-underline transition-transform duration-150 focus-visible:pointer-events-auto focus-visible:translate-y-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-heading)] sm:hidden">
         Skip to main content
       </a>
-      <main id="main-content" className={layoutShellClass}>
-        <div className={layoutGridClass}>
-          <div className={mainPanelClass}>{children}</div>
-          <aside className={asidePanelClass}>
-            <div className={asideInnerClass}>
+
+      <main id="main-content" className="relative mx-4 sm:mx-5">
+        <div className="mx-auto flex w-full max-w-[800px] flex-col sm:flex-row sm:items-start">
+          {/* Main content */}
+          <div className="w-full min-w-0 pb-5 pt-3 sm:mr-6 sm:flex-1 sm:border-r sm:border-[var(--color-line)] sm:pr-8 sm:pt-6">
+            {children}
+          </div>
+
+          {/* Sidebar */}
+          <aside className="sticky top-0 w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-paper)] pb-3 sm:w-[200px] sm:min-w-[200px] sm:self-start sm:border-b-0 sm:bg-transparent sm:pb-6 sm:shadow-none">
+            {/* Mobile: hamburger toggle */}
+            <div className="flex items-center justify-between px-1 pt-3 sm:hidden">
+              <span className="text-sm font-medium text-[var(--color-heading)]">
+                {channel?.title || "MicroBlog"}
+              </span>
+              <button
+                type="button"
+                id="nav-toggle"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+                className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] bg-transparent text-[var(--color-muted)] transition-colors hover:bg-[var(--color-surface)]">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <line x1="3" y1="5" x2="15" y2="5" />
+                  <line x1="3" y1="9" x2="15" y2="9" />
+                  <line x1="3" y1="13" x2="15" y2="13" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Nav content - collapsible on mobile */}
+            <div id="nav-content" className="relative overflow-y-visible sm:max-h-[100svh] sm:overflow-y-auto">
               <nav aria-label="Primary navigation">
-                <ul className={navListClass}>
-                  <li className={navItemClass}>
+                <ul className="m-0 flex list-none flex-wrap gap-1 pl-0 pt-3 sm:block sm:gap-0 sm:pt-5">
+                  <li className="flex items-center text-sm leading-none sm:mb-2.5">
                     <a
                       href={siteUrl}
                       title={channel?.title}
-                      className={`${navLinkClass} ${currentPathname === siteRootPathname ? navLinkCurrentClass : ""}`}>
+                      className={`flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline ${currentPathname === siteRootPathname ? "bg-white/70 shadow-[var(--shadow-soft)]" : ""}`}>
                       Home
                     </a>
                   </li>
                   {TAGS && (
-                    <li className={navItemClass}>
+                    <li className="flex items-center text-sm leading-none sm:mb-2.5">
                       <a
                         href={`${siteUrl}tags`}
                         title="Tags"
-                        className={`${navLinkClass} ${currentPathname === tagsPathname ? navLinkCurrentClass : ""}`}>
+                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline ${currentPathname === tagsPathname ? "bg-white/70 shadow-[var(--shadow-soft)]" : ""}`}>
                         Tags
                       </a>
                     </li>
                   )}
                   {LINKS && (
-                    <li className={navItemClass}>
+                    <li className="flex items-center text-sm leading-none sm:mb-2.5">
                       <a
                         href={`${siteUrl}links`}
                         title="Links"
-                        className={`${navLinkClass} ${currentPathname === linksPathname ? navLinkCurrentClass : ""}`}>
+                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline ${currentPathname === linksPathname ? "bg-white/70 shadow-[var(--shadow-soft)]" : ""}`}>
                         Links
                       </a>
                     </li>
                   )}
                   {navs.map((nav) => (
-                    <li key={nav.href} className={navItemClass}>
+                    <li key={nav.href} className="flex items-center text-sm leading-none sm:mb-2.5">
                       <a
                         href={nav.href}
                         title={nav.title}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={navLinkClass}>
+                        className="flex-1 inline-block rounded-[var(--radius-sm)] px-3 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-white/60 hover:no-underline">
                         {nav.title}
                       </a>
                     </li>
@@ -128,7 +128,7 @@ export default function Layout({
               </nav>
 
               <form
-                className={searchFormClass}
+                className="mt-3 hidden rounded-[var(--radius-sm)] bg-[var(--color-code)] p-2 sm:mt-0 sm:block"
                 action={searchAction}
                 method="get"
                 role="search">
@@ -144,7 +144,7 @@ export default function Layout({
                 </label>
                 <input
                   id="search-query"
-                  className={searchInputClass}
+                  className="box-border w-full rounded-[var(--radius-sm)] border border-[var(--color-paper)] bg-[var(--color-code)] px-2 text-sm leading-9 text-[var(--color-muted)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-heading)] focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-heading)] sm:text-xs"
                   type="search"
                   name="q"
                   placeholder="Search…"
@@ -154,7 +154,7 @@ export default function Layout({
                 />
               </form>
 
-              <footer className={footerClass}>
+              <footer className="hidden p-2 text-sm leading-relaxed text-[var(--color-footer)] sm:block">
                 Powered by{" "}
                 <a
                   href="https://github.com/shenzjd_com/microblog"
@@ -167,16 +167,29 @@ export default function Layout({
             </div>
           </aside>
         </div>
+
+        {/* Back to top */}
         <div id="back-to-top-wrapper">
           <a
             href="#main-content"
             id="back-to-top"
-            className={backToTopClass}
+            className="pointer-events-auto z-[1000] flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-code)] text-2xl opacity-90 transition-transform duration-300 hover:-translate-y-1 active:translate-y-px"
             aria-label="Back to top">
-            ↑
+            &uarr;
           </a>
         </div>
       </main>
+
+      {/* Mobile nav toggle script */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){var t=document.getElementById('nav-toggle'),c=document.getElementById('nav-content');if(!t||!c)return;t.addEventListener('click',function(){var o=c.style.display==='block';c.style.display=o?'none':'block';t.setAttribute('aria-expanded',String(!o))})})()`,
+        }}
+      />
+
+      {HEADER_INJECT && (
+        <div dangerouslySetInnerHTML={{ __html: HEADER_INJECT }} />
+      )}
       {FOOTER_INJECT && (
         <div dangerouslySetInnerHTML={{ __html: FOOTER_INJECT }} />
       )}
