@@ -57,23 +57,23 @@ export default function Layout({
 
       {/* Top navigation bar */}
       <header className="sticky top-0 z-[100] border-b border-[var(--color-line)] bg-[var(--color-paper)]/80 backdrop-blur-md">
-        <div className="mx-auto flex h-12 max-w-[960px] items-center px-4 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-[960px] items-center px-4 sm:px-6">
           {/* Site title */}
           <a
             href={siteUrl}
             title={channel?.title}
-            className="mr-4 flex items-center gap-2.5 no-underline"
+            className="mr-4 flex items-center gap-3 no-underline"
             style={{ viewTransitionName: 'site-title', transition: '0.15s ease' } as React.CSSProperties}>
             <img
               src={channel?.avatar?.startsWith('http') ? `/static/${channel?.avatar}` : '/void.png'}
               alt={channel?.title}
               loading="eager"
               fetchPriority="high"
-              width="24"
-              height="24"
-              className="block h-6 w-6 rounded-full object-cover"
+              width="32"
+              height="32"
+              className="block h-8 w-8 rounded-full object-cover"
             />
-            <span className="text-sm font-bold text-[var(--color-heading)] max-sm:hidden">
+            <span className="text-base font-bold text-[var(--color-heading)] max-sm:hidden">
               {channel?.title}
             </span>
           </a>
