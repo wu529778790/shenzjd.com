@@ -32,7 +32,7 @@ export default async function LinksPage() {
 
   return (
     <Layout channel={channel} siteUrl={siteUrl} pathname="/links">
-      <Header channel={channel} siteUrl={siteUrl} />
+      <Header channel={channel} />
       <TagCloud title="Links" items={items} />
     </Layout>
   )

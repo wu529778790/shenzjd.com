@@ -35,7 +35,7 @@ export default function List({
   return (
     <div>
       {pageHeading && <h1 className="sr-only">{pageHeading}</h1>}
-      {children ?? <Header channel={channel} siteUrl={siteUrl} />}
+      {children ?? <Header channel={channel} />}
       <div className="flex flex-col gap-4">
         {posts.map(post => (
           <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} />

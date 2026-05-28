@@ -23,7 +23,7 @@ export default async function TagsPage() {
 
   return (
     <Layout channel={channel} siteUrl={siteUrl} pathname="/tags">
-      <Header channel={channel} siteUrl={siteUrl} />
+      <Header channel={channel} />
       <TagCloud title="Tags" items={items} />
     </Layout>
   )
