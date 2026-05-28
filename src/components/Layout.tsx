@@ -76,7 +76,7 @@ export default function Layout({
             </span>
           </a>
 
-          {/* Navigation links */}
+          {/* Desktop navigation */}
           <nav className="flex items-center gap-0.5 max-sm:hidden" aria-label="Primary navigation">
             <a
               href={siteUrl}
@@ -112,7 +112,7 @@ export default function Layout({
 
           {/* Right side: search + mobile menu */}
           <div className="ml-auto flex items-center gap-2">
-            {/* Search (desktop) */}
+            {/* Desktop search */}
             <form
               className="hidden sm:block"
               action={searchAction}
@@ -134,77 +134,72 @@ export default function Layout({
               />
             </form>
 
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              id="nav-toggle"
-              aria-label="Toggle navigation"
-              aria-expanded="false"
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-transparent text-[var(--color-muted)] transition-colors hover:bg-[var(--color-line)] sm:hidden">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                <line x1="3" y1="5" x2="15" y2="5" />
-                <line x1="3" y1="9" x2="15" y2="9" />
-                <line x1="3" y1="13" x2="15" y2="13" />
-              </svg>
-            </button>
+            {/* Mobile hamburger - using details/summary for CSS-only toggle */}
+            <details className="sm:hidden">
+              <summary
+                className="flex h-8 w-8 cursor-pointer list-none items-center justify-center rounded-[var(--radius-md)] bg-transparent text-[var(--color-muted)] transition-colors hover:bg-[var(--color-line)] [&::-webkit-details-marker]:hidden">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <line x1="3" y1="5" x2="15" y2="5" />
+                  <line x1="3" y1="9" x2="15" y2="9" />
+                  <line x1="3" y1="13" x2="15" y2="13" />
+                </svg>
+              </summary>
+              <div className="absolute inset-x-0 top-12 border-t border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-medium)]">
+                <nav aria-label="Mobile navigation" className="mx-auto flex max-w-[960px] flex-col px-4 py-2">
+                  <a
+                    href={siteUrl}
+                    className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(siteRootPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
+                    Home
+                  </a>
+                  {TAGS && (
+                    <a
+                      href={`${siteUrl}tags`}
+                      className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(tagsPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
+                      Tags
+                    </a>
+                  )}
+                  {LINKS && (
+                    <a
+                      href={`${siteUrl}links`}
+                      className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(linksPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
+                      Links
+                    </a>
+                  )}
+                  {navs.map((nav) => (
+                    <a
+                      key={nav.href}
+                      href={nav.href}
+                      title={nav.title}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-[var(--radius-sm)] px-3 py-2 text-[13px] text-[var(--color-heading)] no-underline transition-colors duration-200 hover:bg-[var(--color-line)]">
+                      {nav.title}
+                    </a>
+                  ))}
+                  <form
+                    className="mt-1 border-t border-[var(--color-line)] pt-2"
+                    action={searchAction}
+                    method="get"
+                    role="search">
+                    {GOOGLE_SEARCH_SITE && (
+                      <input type="hidden" name="as_sitesearch" value={GOOGLE_SEARCH_SITE} />
+                    )}
+                    <label className="sr-only" htmlFor="nav-search-mobile">Search</label>
+                    <input
+                      id="nav-search-mobile"
+                      className="box-border h-9 w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-paper)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)]"
+                      type="search"
+                      name="q"
+                      placeholder="Search..."
+                      autoComplete="off"
+                      inputMode="search"
+                      spellCheck={false}
+                    />
+                  </form>
+                </nav>
+              </div>
+            </details>
           </div>
-        </div>
-
-        {/* Mobile nav dropdown */}
-        <div id="nav-content" className="hidden border-t border-[var(--color-line)] bg-[var(--color-surface)] sm:hidden">
-          <nav aria-label="Mobile navigation" className="flex flex-col px-3 py-2">
-            <a
-              href={siteUrl}
-              className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(siteRootPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
-              Home
-            </a>
-            {TAGS && (
-              <a
-                href={`${siteUrl}tags`}
-                className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(tagsPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
-                Tags
-              </a>
-            )}
-            {LINKS && (
-              <a
-                href={`${siteUrl}links`}
-                className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(linksPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
-                Links
-              </a>
-            )}
-            {navs.map((nav) => (
-              <a
-                key={nav.href}
-                href={nav.href}
-                title={nav.title}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-[var(--radius-sm)] px-3 py-2 text-[13px] text-[var(--color-heading)] no-underline transition-colors duration-200 hover:bg-[var(--color-line)]">
-                {nav.title}
-              </a>
-            ))}
-            {/* Mobile search */}
-            <form
-              className="mt-1 border-t border-[var(--color-line)] pt-2"
-              action={searchAction}
-              method="get"
-              role="search">
-              {GOOGLE_SEARCH_SITE && (
-                <input type="hidden" name="as_sitesearch" value={GOOGLE_SEARCH_SITE} />
-              )}
-              <label className="sr-only" htmlFor="nav-search-mobile">Search</label>
-              <input
-                id="nav-search-mobile"
-                className="box-border h-9 w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-paper)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)]"
-                type="search"
-                name="q"
-                placeholder="Search..."
-                autoComplete="off"
-                inputMode="search"
-                spellCheck={false}
-              />
-            </form>
-          </nav>
         </div>
       </header>
 
@@ -233,13 +228,6 @@ export default function Layout({
         aria-label="Back to top">
         &uarr;
       </a>
-
-      {/* Mobile nav toggle script */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){var t=document.getElementById('nav-toggle'),c=document.getElementById('nav-content');if(!t||!c)return;t.addEventListener('click',function(){var o=c.style.display==='block';c.style.display=o?'none':'block';t.setAttribute('aria-expanded',String(!o))})})()`,
-        }}
-      />
 
       {HEADER_INJECT && (
         <div dangerouslySetInnerHTML={{ __html: HEADER_INJECT }} />
