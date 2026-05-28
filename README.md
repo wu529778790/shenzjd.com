@@ -7,7 +7,7 @@
 - 自动同步 Telegram 频道帖子
 - 文章卡片式布局，阅读优化
 - 帖子搜索、标签分类、链接收藏
-- RSS / JSON Feed / Sitemap
+- Sitemap
 - 响应式设计，支持移动端
 - 代码高亮（PrismJS）
 - Telegram 评论和表情反应
