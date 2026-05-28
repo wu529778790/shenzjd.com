@@ -30,11 +30,12 @@ export default function List({
   children,
 }: ListProps) {
   const posts = channel.posts ?? []
-  const newestId = extractId(posts[0]?.id)
-  const oldestId = extractId(posts[posts.length - 1]?.id)
+  // Posts array is ordered oldest-first: posts[0]=oldest, posts[last]=newest
+  const oldestId = extractId(posts[0]?.id)
+  const newestId = extractId(posts[posts.length - 1]?.id)
 
-  // Telegram before=X returns ALL posts with ID < X (no limit).
-  // Use newestId (first post) as cursor for "下一页" to avoid overlap with current page.
+  // "上一页" = newer posts = after/${oldestId}
+  // "下一页" = older posts = before/${newestId}
   const prevCursor = oldestId
   const nextCursor = newestId
 
