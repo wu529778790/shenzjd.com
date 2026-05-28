@@ -224,12 +224,12 @@ export default function Layout({
       <footer className="border-t border-[var(--color-line)] py-6 text-center text-[11px] text-[var(--color-footer)]">
         Powered by{" "}
         <a
-          href="https://github.com/shenzjd_com/microblog"
-          title="MicroBlog"
+          href="https://github.com/wu529778790/shenzjd.com"
+          title="shenzjd.com"
           target="_blank"
           rel="noopener noreferrer"
           className="text-[var(--color-muted)] hover:text-[var(--color-heading)] transition-colors duration-200">
-          MicroBlog
+          shenzjd.com
         </a>
       </footer>
 

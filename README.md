@@ -1,4 +1,4 @@
-# MicroBlog
+# shenzjd.com
 
 将 Telegram 频道内容转化为精致的网页阅读体验。
 
@@ -50,9 +50,9 @@ npm run dev
 ### Docker
 
 ```bash
-docker build -t microblog .
+docker build -t shenzjd .
 docker run -d \
-  --name microblog \
+  --name shenzjd \
   --restart unless-stopped \
   --env-file .env \
   -p 3000:3000 \
@@ -63,7 +63,7 @@ docker run -d \
 
 ```yaml
 services:
-  microblog:
+  shenzjd:
     build: .
     ports:
       - "3000:3000"
@@ -73,7 +73,7 @@ services:
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/wu529778790/MicroBlog)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/wu529778790/shenzjd.com)
 
 ## 技术栈
 
