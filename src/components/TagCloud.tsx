@@ -5,31 +5,25 @@ export interface TagItem {
   external?: boolean
 }
 
-export default function TagCloud({ title, items }: { title: string, items: TagItem[] }) {
+export default function TagCloud({ title, items }: { title: string; items: TagItem[] }) {
   return (
-    <section aria-labelledby={`${title.toLowerCase()}-title`}>
-      <h1
-        id={`${title.toLowerCase()}-title`}
-        className="m-0 px-2.5 text-base font-semibold leading-none text-[var(--color-heading)]">
+    <section aria-labelledby="tag-cloud-heading">
+      <h2 id="tag-cloud-heading" className="mb-4 text-[15px] font-semibold text-[var(--color-heading)]">
         {title}
-      </h1>
-      <ul
-        className="mt-4 mb-0 list-none pl-0 leading-normal [column-count:1] [column-gap:20px] sm:[column-count:2] sm:[column-gap:40px] sm:[column-rule:1px_solid_var(--color-line)]"
-        role="list">
-        {items.map(item => (
-          <li key={item.href} className="mb-2 block break-inside-avoid">
-            <a
-              href={item.href}
-              className="inline-block rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-sm text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline"
-              title={item.title ?? item.label}
-              target={item.external ? '_blank' : undefined}
-              rel={item.external ? 'noopener noreferrer' : undefined}
-            >
-              {item.label}
-            </a>
-          </li>
+      </h2>
+      <div className="break-inside-avoid columns-1 gap-6 sm:columns-2 [&>*:not(:first-child)]:mt-3" style={{ columnRule: '1px solid var(--color-line)' }}>
+        {items.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            title={item.title || item.label}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener noreferrer' : undefined}
+            className="mb-3 inline-block w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-heading)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline">
+            {item.label}
+          </a>
         ))}
-      </ul>
+      </div>
     </section>
   )
 }

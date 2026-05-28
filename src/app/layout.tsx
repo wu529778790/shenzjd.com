@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
+import { getEnv } from '../lib/env'
 import './globals.css'
+
+const LOCALE = getEnv('LOCALE') ?? 'en'
 
 export const metadata: Metadata = {
   title: 'MicroBlog',
@@ -12,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang={LOCALE.split('-')[0]}>
       <body>{children}</body>
     </html>
   )

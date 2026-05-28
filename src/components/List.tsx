@@ -36,40 +36,38 @@ export default function List({
     <div>
       {pageHeading && <h1 className="sr-only">{pageHeading}</h1>}
       {children ?? <Header channel={channel} siteUrl={siteUrl} />}
-      <ol className="mt-5 mb-0 list-none pl-0 max-sm:ml-0" aria-label={isItem ? 'Post' : 'Posts'}>
+      <div className="flex flex-col gap-4">
         {posts.map(post => (
-          <li key={post.id}>
-            <Item post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} />
-          </li>
+          <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} />
         ))}
-      </ol>
-      <nav className="my-5 flex items-center gap-3" aria-label="Pagination">
+      </div>
+      <nav className="mt-6 flex items-center justify-between" aria-label="Pagination">
         {before && beforeCursor ? (
           pageType === 'home' ? (
-            <span className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] px-3 py-1 text-[13px] font-medium text-[var(--color-line)] cursor-default select-none">
+            <span className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] px-4 py-2 text-[13px] font-medium text-[var(--color-line-strong)] cursor-default select-none">
               &larr; 上一页
             </span>
           ) : (
             <a
               href={`${siteUrl}before/${beforeCursor}`}
               title="上一页"
-              className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
+              className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
               &larr; 上一页
             </a>
           )
         ) : (
-          <span className="inline-block w-[34px]" aria-hidden="true">&nbsp;</span>
+          <span className="inline-block w-[36px]" aria-hidden="true">&nbsp;</span>
         )}
-        <div className="flex-1 text-center text-[12px] font-medium text-[var(--color-muted)]" />
+        <div className="flex-1" />
         {after && afterCursor ? (
           <a
             href={`${siteUrl}after/${afterCursor}`}
             title="下一页"
-            className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
+            className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
             下一页 &rarr;
           </a>
         ) : (
-          <span className="inline-block w-[34px]" aria-hidden="true">&nbsp;</span>
+          <span className="inline-block w-[36px]" aria-hidden="true">&nbsp;</span>
         )}
       </nav>
     </div>

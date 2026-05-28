@@ -29,16 +29,16 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
 
   return (
     <article
-      className="transition-opacity duration-150"
+      className={`group rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-soft)] sm:p-6 ${isItem ? '' : 'mb-4'}`}
       style={{ viewTransitionName: `post-${post.id}` } as React.CSSProperties}>
       {/* Timestamp */}
-      <header className="flex items-center leading-none">
-        <span className="h-2 w-2 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
-        <p className="m-0 flex-1 pl-2.5 text-[13px] font-medium tracking-wide text-[var(--color-muted)]">
+      <header className="mb-3 flex items-center leading-none">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
+        <p className="m-0 flex-1 pl-2 text-[12px] font-medium tracking-wide text-[var(--color-muted)]">
           <a
             href={`${siteUrl}posts/${post.id}`}
             title={post.datetime}
-            className="text-[var(--color-muted)] no-underline transition-colors hover:text-[var(--color-heading)]">
+            className="text-[var(--color-muted)] no-underline transition-colors duration-200 hover:text-[var(--color-heading)]">
             <time dateTime={post.datetime} title={timeago}>{timeago}</time>
           </a>
         </p>
@@ -47,19 +47,19 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
       {/* Content */}
       {hasContent && (
         <div
-          className="ml-[3px] border-l-2 border-[var(--color-line)] py-6 pl-4 text-[16px] leading-[1.8] sm:pl-7 content"
+          className="text-[15px] leading-[1.8] text-[var(--color-ink)] content"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       )}
 
       {/* Reactions */}
       {hasReactions && (
-        <div className={`ml-[3px] border-l-2 border-[var(--color-line)] pb-5 pl-4 pt-1.5 sm:pl-7 ${hasContent ? '-mt-2 pt-0' : ''}`}>
+        <div className={`mt-3 ${hasContent ? '' : ''}`}>
           <div className="m-0 flex flex-wrap gap-1.5">
             {post.reactions.map((reaction, i) => (
               <span
                 key={i}
-                className={`inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-surface)] px-2 py-0.5 text-[13px] text-[var(--color-muted)] ${reaction.isPaid ? 'border-amber-300 bg-amber-50 text-amber-700' : ''}`}>
+                className={`inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] px-2.5 py-1 text-[12px] text-[var(--color-muted)] transition-colors duration-200 hover:border-[var(--color-accent-light)] hover:bg-[var(--color-accent-light)] ${reaction.isPaid ? 'border-amber-300 bg-amber-50 text-amber-700' : ''}`}>
                 <span className="inline-flex items-center leading-none">
                   {reaction.isPaid ? '⭐' : reaction.emojiImage ? (
                     <img src={reaction.emojiImage} alt={reaction.emoji || 'emoji'} loading="lazy" width="16" height="16" className="block h-4 w-4" />
@@ -76,13 +76,13 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
 
       {/* Tags */}
       {hasTags && (
-        <footer className={`ml-[3px] flex flex-wrap items-center gap-1.5 border-l-2 border-[var(--color-line)] pl-4 text-[13px] leading-relaxed sm:pl-7 ${!hasContent ? 'pt-5' : COMMENTS ? 'pb-7' : 'pb-4'}`}>
+        <footer className={`mt-3 flex flex-wrap items-center gap-1.5 text-[13px] leading-relaxed ${!hasContent ? 'pt-2' : COMMENTS ? 'pb-2' : ''}`}>
           {post.tags.map(tag => (
             <a
               key={tag}
               href={getTagHref(tag)}
               title={tag}
-              className="inline-block rounded-[var(--radius-sm)] bg-[var(--color-line)] px-2 py-0.5 text-[12px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:bg-[var(--color-accent)] hover:text-white hover:no-underline">
+              className="inline-block rounded-[var(--radius-full)] bg-[var(--color-tag-bg)] px-3 py-1 text-[11px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:bg-[var(--color-tag-hover)] hover:text-white hover:no-underline">
               {tag}
             </a>
           ))}
@@ -91,7 +91,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
 
       {/* Comments */}
       {COMMENTS && isItem && channelName && (
-        <section className="ml-[3px] border-l-2 border-[var(--color-line)] pb-6 pl-4 pt-1.5 sm:pl-7" aria-label="Comments">
+        <section className="mt-4 border-t border-[var(--color-line)] pt-4" aria-label="Comments">
           <script
             async
             src="https://telegram.org/js/telegram-widget.js"

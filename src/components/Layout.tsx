@@ -51,15 +51,15 @@ export default function Layout({
         Skip to main content
       </a>
 
-      <main id="main-content" className="relative mx-4 sm:mx-5">
-        <div className="mx-auto flex w-full max-w-[800px] flex-col-reverse sm:flex-row sm:items-start">
+      <main id="main-content" className="relative mx-4 sm:mx-6 lg:mx-8">
+        <div className="mx-auto flex w-full max-w-[820px] flex-col-reverse sm:flex-row sm:items-start sm:gap-8">
           {/* Main content */}
-          <div className="w-full min-w-0 pb-5 pt-3 sm:mr-5 sm:flex-1 sm:border-r sm:border-[var(--color-line)] sm:pr-7 sm:pt-5">
+          <div className="w-full min-w-0 pb-6 pt-4 sm:flex-1 sm:pt-6">
             {children}
           </div>
 
           {/* Sidebar */}
-          <aside className="w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-sidebar)] pb-3 sm:w-[200px] sm:min-w-[200px] sm:self-start sm:rounded-[var(--radius-md)] sm:border sm:border-[var(--color-line)] sm:bg-[var(--color-surface)] sm:p-4 sm:shadow-[var(--shadow-soft)]">
+          <aside className="w-full min-w-0 border-b border-[var(--color-line)] bg-[var(--color-sidebar)] pb-4 sm:w-[220px] sm:min-w-[220px] sm:self-start sm:rounded-[var(--radius-lg)] sm:border sm:border-[var(--color-line)] sm:bg-[var(--color-card)] sm:p-5 sm:shadow-[var(--shadow-card)]">
             {/* Mobile: hamburger toggle */}
             <div className="flex items-center justify-between px-1 pt-3 sm:hidden">
               <span className="text-sm font-medium text-[var(--color-heading)]">
@@ -70,7 +70,7 @@ export default function Layout({
                 id="nav-toggle"
                 aria-label="Toggle navigation"
                 aria-expanded="false"
-                className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] bg-transparent text-[var(--color-muted)] transition-colors hover:bg-[var(--color-surface)]">
+                className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-transparent text-[var(--color-muted)] transition-colors hover:bg-[var(--color-line)]">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <line x1="3" y1="5" x2="15" y2="5" />
                   <line x1="3" y1="9" x2="15" y2="9" />
@@ -82,43 +82,43 @@ export default function Layout({
             {/* Nav content - collapsible on mobile */}
             <div id="nav-content" className="relative overflow-y-visible sm:max-h-[100svh] sm:overflow-y-auto">
               <nav aria-label="Primary navigation">
-                <ul className="m-0 flex list-none flex-wrap gap-1 pl-0 pt-3 sm:block sm:gap-0 sm:pt-4">
-                  <li className="flex items-center text-[13px] leading-none sm:mb-1.5">
+                <ul className="m-0 flex list-none flex-wrap gap-1.5 pl-0 pt-3 sm:block sm:gap-0 sm:pt-0">
+                  <li className="flex items-center text-[13px] leading-none sm:mb-1">
                     <a
                       href={siteUrl}
                       title={channel?.title}
-                      className={`flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === siteRootPathname ? "bg-[var(--color-line)] font-medium" : ""}`}>
+                      className={`flex-1 inline-block rounded-[var(--radius-md)] px-3 py-2 text-[var(--color-heading)] no-underline transition-all duration-200 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === siteRootPathname ? "bg-[var(--color-accent-light)] font-medium text-[var(--color-accent)]" : ""}`}>
                       Home
                     </a>
                   </li>
                   {TAGS && (
-                    <li className="flex items-center text-[13px] leading-none sm:mb-1.5">
+                    <li className="flex items-center text-[13px] leading-none sm:mb-1">
                       <a
                         href={`${siteUrl}tags`}
                         title="Tags"
-                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === tagsPathname ? "bg-[var(--color-line)] font-medium" : ""}`}>
+                        className={`flex-1 inline-block rounded-[var(--radius-md)] px-3 py-2 text-[var(--color-heading)] no-underline transition-all duration-200 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === tagsPathname ? "bg-[var(--color-accent-light)] font-medium text-[var(--color-accent)]" : ""}`}>
                         Tags
                       </a>
                     </li>
                   )}
                   {LINKS && (
-                    <li className="flex items-center text-[13px] leading-none sm:mb-1.5">
+                    <li className="flex items-center text-[13px] leading-none sm:mb-1">
                       <a
                         href={`${siteUrl}links`}
                         title="Links"
-                        className={`flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === linksPathname ? "bg-[var(--color-line)] font-medium" : ""}`}>
+                        className={`flex-1 inline-block rounded-[var(--radius-md)] px-3 py-2 text-[var(--color-heading)] no-underline transition-all duration-200 hover:bg-[var(--color-line)] hover:no-underline ${currentPathname === linksPathname ? "bg-[var(--color-accent-light)] font-medium text-[var(--color-accent)]" : ""}`}>
                         Links
                       </a>
                     </li>
                   )}
                   {navs.map((nav) => (
-                    <li key={nav.href} className="flex items-center text-[13px] leading-none sm:mb-1.5">
+                    <li key={nav.href} className="flex items-center text-[13px] leading-none sm:mb-1">
                       <a
                         href={nav.href}
                         title={nav.title}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-line)] hover:no-underline">
+                        className="flex-1 inline-block rounded-[var(--radius-md)] px-3 py-2 text-[var(--color-heading)] no-underline transition-all duration-200 hover:bg-[var(--color-line)] hover:no-underline">
                         {nav.title}
                       </a>
                     </li>
@@ -127,7 +127,7 @@ export default function Layout({
               </nav>
 
               <form
-                className="mt-2 hidden rounded-[var(--radius-sm)] bg-[var(--color-code)] p-1.5 sm:mt-0 sm:block"
+                className="mt-3 hidden rounded-[var(--radius-md)] bg-[var(--color-code)] p-2 sm:mt-4 sm:block"
                 action={searchAction}
                 method="get"
                 role="search">
@@ -143,24 +143,24 @@ export default function Layout({
                 </label>
                 <input
                   id="search-query"
-                  className="box-border w-full rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] px-2.5 text-[13px] leading-8 text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)] focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                  className="box-border w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 py-2 text-[13px] leading-relaxed text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)] focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                   type="search"
                   name="q"
-                  placeholder="Search…"
+                  placeholder="Search..."
                   autoComplete="off"
                   inputMode="search"
                   spellCheck={false}
                 />
               </form>
 
-              <footer className="hidden p-2 text-[12px] leading-relaxed text-[var(--color-footer)] sm:block">
+              <footer className="hidden p-2 pt-4 text-[11px] leading-relaxed text-[var(--color-footer)] sm:block">
                 Powered by{" "}
                 <a
                   href="https://github.com/shenzjd_com/microblog"
                   title="MicroBlog"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--color-muted)] hover:text-[var(--color-heading)]">
+                  className="text-[var(--color-muted)] hover:text-[var(--color-heading)] transition-colors duration-200">
                   MicroBlog
                 </a>
               </footer>
@@ -173,7 +173,7 @@ export default function Layout({
           <a
             href="#main-content"
             id="back-to-top"
-            className="pointer-events-auto z-[1000] flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-code)] text-2xl opacity-90 transition-transform duration-300 hover:-translate-y-1 active:translate-y-px"
+            className="pointer-events-auto z-[1000] flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-card)] text-xl text-[var(--color-muted)] opacity-90 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-medium)] active:translate-y-px"
             aria-label="Back to top">
             &uarr;
           </a>
