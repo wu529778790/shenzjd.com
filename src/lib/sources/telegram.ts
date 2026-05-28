@@ -1,4 +1,5 @@
-import type { AnyNode, Cheerio, CheerioAPI } from 'cheerio'
+import type { AnyNode } from 'domhandler'
+import type { Cheerio, CheerioAPI } from 'cheerio'
 import type { ChannelInfo, GetChannelInfoParams, Post, Reaction } from '../../types'
 import * as cheerio from 'cheerio'
 import flourite from 'flourite'
