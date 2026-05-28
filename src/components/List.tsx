@@ -27,10 +27,10 @@ export default function List({
   const newestDatetime = posts[0]?.datetime
   const oldestDatetime = posts[posts.length - 1]?.datetime
 
-  // On "before" pages: "Before" uses oldest (go further back), "After" uses oldest (go forward)
-  // On other pages: "Before" uses oldest (go back), "After" uses newest (go forward)
-  const beforeCursor = oldestDatetime
-  const afterCursor = pageType === 'before' ? oldestDatetime : newestDatetime
+  // "上一页" = go to newer posts = after/${newestDatetime}
+  // "下一页" = go to older posts = before/${oldestDatetime}
+  const prevCursor = newestDatetime
+  const nextCursor = oldestDatetime
 
   return (
     <div>
@@ -42,14 +42,14 @@ export default function List({
         ))}
       </div>
       <nav className="mt-6 flex items-center justify-between" aria-label="Pagination">
-        {before && beforeCursor ? (
+        {before && prevCursor ? (
           pageType === 'home' ? (
             <span className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] px-4 py-2 text-[13px] font-medium text-[var(--color-line-strong)] cursor-default select-none">
               &larr; 上一页
             </span>
           ) : (
             <a
-              href={`${siteUrl}before/${beforeCursor}`}
+              href={`${siteUrl}after/${prevCursor}`}
               title="上一页"
               className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
               &larr; 上一页
@@ -59,9 +59,9 @@ export default function List({
           <span className="inline-block w-[36px]" aria-hidden="true">&nbsp;</span>
         )}
         <div className="flex-1" />
-        {after && afterCursor ? (
+        {after && nextCursor ? (
           <a
-            href={`${siteUrl}after/${afterCursor}`}
+            href={`${siteUrl}before/${nextCursor}`}
             title="下一页"
             className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
             下一页 &rarr;
