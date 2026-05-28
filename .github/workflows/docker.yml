@@ -41,8 +41,7 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
           build-args: |
             BUILD_TIME=${{ env.BUILD_TIME }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
 
   deploy:
     needs: build-and-push
