@@ -13,6 +13,12 @@ interface ListProps {
   children?: React.ReactNode
 }
 
+/** Extract numeric message ID from post ID like "channel/4327" → "4327" */
+function extractId(postId: string): string | undefined {
+  const parts = postId.split('/')
+  return parts[parts.length - 1]
+}
+
 export default function List({
   channel,
   siteUrl,
@@ -24,14 +30,14 @@ export default function List({
   children,
 }: ListProps) {
   const posts = channel.posts ?? []
-  const newestDatetime = posts[0]?.datetime
-  const oldestDatetime = posts[posts.length - 1]?.datetime
+  // Telegram before/after params need numeric message IDs
+  const newestId = extractId(posts[0]?.id)
+  const oldestId = extractId(posts[posts.length - 1]?.id)
 
-  // Telegram API: before=X returns newer posts, after=X returns older posts
-  // "上一页" = go to newer posts = before/${newestDatetime}
-  // "下一页" = go to older posts = after/${oldestDatetime}
-  const prevCursor = newestDatetime
-  const nextCursor = oldestDatetime
+  // "上一页" = newer posts = before/${newestId}
+  // "下一页" = older posts = after/${oldestId}
+  const prevCursor = newestId
+  const nextCursor = oldestId
 
   return (
     <div>
