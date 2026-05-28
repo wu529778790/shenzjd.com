@@ -53,12 +53,12 @@ jobs:
           script: |
             IMAGE="ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):latest"
             sudo docker pull "$IMAGE"
-            sudo docker stop microblog || true
-            sudo docker rm microblog || true
+            sudo docker stop MicroBlog || true
+            sudo docker rm MicroBlog || true
             sudo docker run -d \
-              --name microblog \
+              --name MicroBlog \
               --restart unless-stopped \
               --env-file /opt/microblog/.env \
-              -p 3000:3000 \
+              -p 6669:3000 \
               "$IMAGE"
             sudo docker image prune -f
