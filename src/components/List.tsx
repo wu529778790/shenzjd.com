@@ -27,8 +27,9 @@ export default function List({
   const newestDatetime = posts[0]?.datetime
   const oldestDatetime = posts[posts.length - 1]?.datetime
 
-  // "上一页" = go to newer posts = after/${newestDatetime}
-  // "下一页" = go to older posts = before/${oldestDatetime}
+  // Telegram API: before=X returns newer posts, after=X returns older posts
+  // "上一页" = go to newer posts = before/${newestDatetime}
+  // "下一页" = go to older posts = after/${oldestDatetime}
   const prevCursor = newestDatetime
   const nextCursor = oldestDatetime
 
@@ -49,7 +50,7 @@ export default function List({
             </span>
           ) : (
             <a
-              href={`${siteUrl}after/${prevCursor}`}
+              href={`${siteUrl}before/${prevCursor}`}
               title="上一页"
               className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
               &larr; 上一页
@@ -61,7 +62,7 @@ export default function List({
         <div className="flex-1" />
         {after && nextCursor ? (
           <a
-            href={`${siteUrl}before/${nextCursor}`}
+            href={`${siteUrl}after/${nextCursor}`}
             title="下一页"
             className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
             下一页 &rarr;
