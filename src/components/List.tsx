@@ -45,12 +45,18 @@ export default function List({
       </ol>
       <nav className="my-5 flex items-center gap-3" aria-label="Pagination">
         {before && beforeCursor ? (
-          <a
-            href={`${siteUrl}before/${beforeCursor}`}
-            title="Older posts"
-            className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
-            &larr; Before
-          </a>
+          pageType === 'home' ? (
+            <span className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] px-3 py-1 text-[13px] font-medium text-[var(--color-line)] cursor-default select-none">
+              &larr; 上一页
+            </span>
+          ) : (
+            <a
+              href={`${siteUrl}before/${beforeCursor}`}
+              title="上一页"
+              className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
+              &larr; 上一页
+            </a>
+          )
         ) : (
           <span className="inline-block w-[34px]" aria-hidden="true">&nbsp;</span>
         )}
@@ -58,9 +64,9 @@ export default function List({
         {after && afterCursor ? (
           <a
             href={`${siteUrl}after/${afterCursor}`}
-            title="Newer posts"
+            title="下一页"
             className="inline-flex min-h-[32px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] px-3 py-1 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:bg-[var(--color-line)]">
-            After &rarr;
+            下一页 &rarr;
           </a>
         ) : (
           <span className="inline-block w-[34px]" aria-hidden="true">&nbsp;</span>
