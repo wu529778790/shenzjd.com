@@ -2,6 +2,7 @@ FROM node:22-alpine AS base
 
 # --- Build stage ---
 FROM base AS builder
+ARG BUILD_TIME
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci

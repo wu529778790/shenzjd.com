@@ -28,6 +28,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set build timestamp
+        run: echo "BUILD_TIME=$(date +%s)" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -36,6 +39,8 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          build-args: |
+            BUILD_TIME=${{ env.BUILD_TIME }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
