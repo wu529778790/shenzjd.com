@@ -142,33 +142,12 @@
 }
 
 @layer components {
-  #main-content {
-    position: relative;
-  }
-
-  #back-to-top-wrapper {
-    position: absolute;
-    inset-inline-end: var(--back-to-top-offset);
-    top: calc(200vh - var(--back-to-top-size) - var(--back-to-top-offset));
-    bottom: 0;
-    width: var(--back-to-top-size);
-    pointer-events: none;
-  }
-
   #back-to-top {
     position: fixed;
     inset-inline-end: var(--back-to-top-offset);
     bottom: var(--back-to-top-offset);
-  }
-
-  @supports (position: sticky) {
-    #back-to-top {
-      position: sticky;
-      top: calc(100vh - var(--back-to-top-size) - var(--back-to-top-offset));
-      inset-inline-end: auto;
-      bottom: auto;
-      pointer-events: auto;
-    }
+    z-index: 1000;
+    pointer-events: auto;
   }
 
   .content {

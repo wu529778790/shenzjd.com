@@ -226,15 +226,13 @@ export default function Layout({
       </footer>
 
       {/* Back to top */}
-      <div id="back-to-top-wrapper">
-        <a
-          href="#main-content"
-          id="back-to-top"
-          className="pointer-events-auto z-[1000] flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-card)] text-xl text-[var(--color-muted)] opacity-90 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-medium)] active:translate-y-px"
-          aria-label="Back to top">
-          &uarr;
-        </a>
-      </div>
+      <a
+        href="#main-content"
+        id="back-to-top"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-card)] text-xl text-[var(--color-muted)] opacity-90 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-medium)] active:translate-y-px"
+        aria-label="Back to top">
+        &uarr;
+      </a>
 
       {/* Mobile nav toggle script */}
       <script
