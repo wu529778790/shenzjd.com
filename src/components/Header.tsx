@@ -19,16 +19,8 @@ interface SocialLink {
   rel: string
 }
 
-function getSocialLinks(rssUrl: string): SocialLink[] {
-  const links: SocialLink[] = [
-    {
-      href: rssUrl,
-      title: 'RSS Feed',
-      label: 'RSS Feed',
-      icon: 'ri:rss-line',
-      rel: 'alternate noopener noreferrer',
-    },
-  ]
+function getSocialLinks(): SocialLink[] {
+  const links: SocialLink[] = []
 
   if (PODCAST) links.push({ href: PODCAST, title: 'Podcast', label: 'Podcast', icon: 'ri:mic-line', rel: 'noopener noreferrer' })
   if (TWITTER) links.push({ href: `https://x.com/${TWITTER}`, title: 'Twitter', label: 'Twitter / X', icon: 'ri:twitter-x-line', rel: 'noopener noreferrer' })
@@ -41,8 +33,8 @@ function getSocialLinks(rssUrl: string): SocialLink[] {
   return links
 }
 
-export default function Header({ channel, siteUrl, rssUrl }: { channel: ChannelInfo, siteUrl: string, rssUrl: string }) {
-  const socialLinks = getSocialLinks(rssUrl)
+export default function Header({ channel, siteUrl }: { channel: ChannelInfo, siteUrl: string }) {
+  const socialLinks = getSocialLinks()
 
   return (
     <header>

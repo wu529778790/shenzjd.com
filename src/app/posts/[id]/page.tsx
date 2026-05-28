@@ -17,7 +17,6 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   if (!id) redirect('/')
 
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const rssUrl = `${siteUrl}rss.xml`
   const staticProxy = getEnv('STATIC_PROXY') ?? '/static/'
 
   const channelInfo = await getChannelInfo()
@@ -32,7 +31,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <Layout channel={channel} siteUrl={siteUrl} rssUrl={rssUrl} pathname={`/posts/${id}`}>
+    <Layout channel={channel} siteUrl={siteUrl} pathname={`/posts/${id}`}>
       <nav className={breadcrumbClass} aria-label="Breadcrumb">
         <ol className={breadcrumbListClass}>
           <li>
@@ -55,7 +54,6 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
       <List
         channel={channel}
         siteUrl={siteUrl}
-        rssUrl={rssUrl}
         before={false}
         after={false}
         isItem={true}

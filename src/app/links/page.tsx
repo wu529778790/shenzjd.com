@@ -9,7 +9,6 @@ export const dynamic = 'force-dynamic'
 
 export default async function LinksPage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const rssUrl = `${siteUrl}rss.xml`
   const channel = await getChannelInfo()
 
   channel.seo = { title: 'Links' }
@@ -32,8 +31,8 @@ export default async function LinksPage() {
   }))
 
   return (
-    <Layout channel={channel} siteUrl={siteUrl} rssUrl={rssUrl} pathname="/links">
-      <Header channel={channel} siteUrl={siteUrl} rssUrl={rssUrl} />
+    <Layout channel={channel} siteUrl={siteUrl} pathname="/links">
+      <Header channel={channel} siteUrl={siteUrl} />
       <TagCloud title="Links" items={items} />
     </Layout>
   )

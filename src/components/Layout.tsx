@@ -23,7 +23,6 @@ function normalizePathname(p: string): string {
 interface LayoutProps {
   channel: ChannelInfo;
   siteUrl: string;
-  rssUrl: string;
   pathname: string;
   children: React.ReactNode;
 }
@@ -31,7 +30,6 @@ interface LayoutProps {
 export default function Layout({
   channel,
   siteUrl,
-  rssUrl,
   pathname,
   children,
 }: LayoutProps) {

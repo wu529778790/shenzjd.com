@@ -5,7 +5,6 @@ import Item from './Item'
 interface ListProps {
   channel: ChannelInfo
   siteUrl: string
-  rssUrl: string
   before?: boolean
   after?: boolean
   isItem?: boolean
@@ -16,7 +15,6 @@ interface ListProps {
 export default function List({
   channel,
   siteUrl,
-  rssUrl,
   before = true,
   after = true,
   isItem = false,
@@ -30,7 +28,7 @@ export default function List({
   return (
     <div>
       {pageHeading && <h1 className="sr-only">{pageHeading}</h1>}
-      {children ?? <Header channel={channel} siteUrl={siteUrl} rssUrl={rssUrl} />}
+      {children ?? <Header channel={channel} siteUrl={siteUrl} />}
       <ol className="mt-5 mb-0 list-none pl-0 max-sm:ml-0" aria-label={isItem ? 'Post' : 'Posts'}>
         {posts.map(post => (
           <li key={post.id}>

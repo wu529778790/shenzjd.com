@@ -7,15 +7,13 @@ export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const rssUrl = `${siteUrl}rss.xml`
   const channel = await getChannelInfo()
 
   return (
-    <Layout channel={channel} siteUrl={siteUrl} rssUrl={rssUrl} pathname="/">
+    <Layout channel={channel} siteUrl={siteUrl} pathname="/">
       <List
         channel={channel}
         siteUrl={siteUrl}
-        rssUrl={rssUrl}
         pageHeading={channel.title}
       />
     </Layout>
