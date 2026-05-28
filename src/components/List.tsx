@@ -30,14 +30,14 @@ export default function List({
   children,
 }: ListProps) {
   const posts = channel.posts ?? []
-  // Telegram before/after params need numeric message IDs
-  const newestId = extractId(posts[0]?.id)
-  const oldestId = extractId(posts[posts.length - 1]?.id)
+  // Telegram: before=X returns older posts (ID < X), after=X returns newer posts (ID > X)
+  const newestId = extractId(posts[0]?.id)      // newest post on this page
+  const oldestId = extractId(posts[posts.length - 1]?.id)  // oldest post on this page
 
-  // "上一页" = newer posts = before/${newestId}
-  // "下一页" = older posts = after/${oldestId}
-  const prevCursor = newestId
-  const nextCursor = oldestId
+  // "上一页" = newer posts = after/${oldestId}
+  // "下一页" = older posts = before/${newestId}
+  const prevCursor = oldestId
+  const nextCursor = newestId
 
   return (
     <div>
@@ -56,7 +56,7 @@ export default function List({
             </span>
           ) : (
             <a
-              href={`${siteUrl}before/${prevCursor}`}
+              href={`${siteUrl}after/${prevCursor}`}
               title="上一页"
               className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
               &larr; 上一页
@@ -68,7 +68,7 @@ export default function List({
         <div className="flex-1" />
         {after && nextCursor ? (
           <a
-            href={`${siteUrl}after/${nextCursor}`}
+            href={`${siteUrl}before/${nextCursor}`}
             title="下一页"
             className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-[var(--shadow-soft)] hover:no-underline active:translate-y-px">
             下一页 &rarr;
