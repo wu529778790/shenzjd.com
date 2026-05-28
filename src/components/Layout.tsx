@@ -151,24 +151,24 @@ export default function Layout({
         </div>
 
         {/* Mobile nav dropdown */}
-        <div id="nav-content" className="hidden border-t border-[var(--color-line)] bg-[var(--color-paper)] px-4 pb-3 pt-2 sm:hidden">
-          <nav aria-label="Mobile navigation" className="flex flex-col gap-0.5">
+        <div id="nav-content" className="hidden border-t border-[var(--color-line)] bg-[var(--color-surface)] sm:hidden">
+          <nav aria-label="Mobile navigation" className="flex flex-col px-3 py-2">
             <a
               href={siteUrl}
-              className={`rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-medium no-underline transition-colors duration-200 hover:bg-[var(--color-line)] ${isActive(siteRootPathname) ? 'bg-[var(--color-accent-light)] text-[var(--color-accent)]' : 'text-[var(--color-heading)]'}`}>
+              className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(siteRootPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
               Home
             </a>
             {TAGS && (
               <a
                 href={`${siteUrl}tags`}
-                className={`rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-medium no-underline transition-colors duration-200 hover:bg-[var(--color-line)] ${isActive(tagsPathname) ? 'bg-[var(--color-accent-light)] text-[var(--color-accent)]' : 'text-[var(--color-heading)]'}`}>
+                className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(tagsPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
                 Tags
               </a>
             )}
             {LINKS && (
               <a
                 href={`${siteUrl}links`}
-                className={`rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-medium no-underline transition-colors duration-200 hover:bg-[var(--color-line)] ${isActive(linksPathname) ? 'bg-[var(--color-accent-light)] text-[var(--color-accent)]' : 'text-[var(--color-heading)]'}`}>
+                className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(linksPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
                 Links
               </a>
             )}
@@ -179,13 +179,13 @@ export default function Layout({
                 title={nav.title}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-[var(--radius-md)] px-3 py-2 text-[13px] font-medium text-[var(--color-heading)] no-underline transition-colors duration-200 hover:bg-[var(--color-line)]">
+                className="rounded-[var(--radius-sm)] px-3 py-2 text-[13px] text-[var(--color-heading)] no-underline transition-colors duration-200 hover:bg-[var(--color-line)]">
                 {nav.title}
               </a>
             ))}
             {/* Mobile search */}
             <form
-              className="mt-2"
+              className="mt-1 border-t border-[var(--color-line)] pt-2"
               action={searchAction}
               method="get"
               role="search">
@@ -195,7 +195,7 @@ export default function Layout({
               <label className="sr-only" htmlFor="nav-search-mobile">Search</label>
               <input
                 id="nav-search-mobile"
-                className="box-border h-9 w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)]"
+                className="box-border h-9 w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-paper)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)]"
                 type="search"
                 name="q"
                 placeholder="Search..."
