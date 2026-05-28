@@ -78,11 +78,6 @@ export default function Layout({
 
           {/* Desktop navigation */}
           <nav className="flex items-center gap-0.5 max-sm:hidden" aria-label="Primary navigation">
-            <a
-              href={siteUrl}
-              className={`rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[13px] font-medium no-underline transition-colors duration-200 hover:bg-[var(--color-line)] ${isActive(siteRootPathname) ? 'text-[var(--color-accent)]' : 'text-[var(--color-heading)]'}`}>
-              Home
-            </a>
             {TAGS && (
               <a
                 href={`${siteUrl}tags`}
@@ -146,11 +141,6 @@ export default function Layout({
               </summary>
               <div className="absolute inset-x-0 top-12 border-t border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-medium)]">
                 <nav aria-label="Mobile navigation" className="mx-auto flex max-w-[960px] flex-col px-4 py-2">
-                  <a
-                    href={siteUrl}
-                    className={`rounded-[var(--radius-sm)] px-3 py-2 text-[13px] no-underline transition-colors duration-200 ${isActive(siteRootPathname) ? 'font-medium text-[var(--color-accent)]' : 'text-[var(--color-heading)] hover:bg-[var(--color-line)]'}`}>
-                    Home
-                  </a>
                   {TAGS && (
                     <a
                       href={`${siteUrl}tags`}
