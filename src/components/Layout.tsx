@@ -38,9 +38,10 @@ export default function Layout({
     : `${siteUrl}search/result`;
 
   const currentPathname = normalizePathname(pathname);
-  const siteRootPathname = normalizePathname(new URL(siteUrl).pathname);
-  const tagsPathname = normalizePathname(new URL("tags", siteUrl).pathname);
-  const linksPathname = normalizePathname(new URL("links", siteUrl).pathname);
+  const isAbsolute = siteUrl.startsWith('http');
+  const siteRootPathname = normalizePathname(isAbsolute ? new URL(siteUrl).pathname : siteUrl);
+  const tagsPathname = normalizePathname(isAbsolute ? new URL("tags", siteUrl).pathname : `${siteUrl}tags`);
+  const linksPathname = normalizePathname(isAbsolute ? new URL("links", siteUrl).pathname : `${siteUrl}links`);
 
   return (
     <>
