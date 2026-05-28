@@ -15,6 +15,7 @@ export default async function BeforePage({ params }: { params: Promise<{ cursor:
       <List
         channel={channel}
         siteUrl={siteUrl}
+        pageType="before"
         pageHeading={channel.title}
       />
     </Layout>

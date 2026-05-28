@@ -15,6 +15,7 @@ export default async function AfterPage({ params }: { params: Promise<{ cursor: 
       <List
         channel={channel}
         siteUrl={siteUrl}
+        pageType="after"
         pageHeading={channel.title}
       />
     </Layout>

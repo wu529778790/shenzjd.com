@@ -9,6 +9,7 @@ interface ListProps {
   after?: boolean
   isItem?: boolean
   pageHeading?: string
+  pageType?: 'home' | 'before' | 'after'
   children?: React.ReactNode
 }
 
@@ -19,11 +20,17 @@ export default function List({
   after = true,
   isItem = false,
   pageHeading,
+  pageType = 'home',
   children,
 }: ListProps) {
   const posts = channel.posts ?? []
-  const beforeCursor = posts[posts.length - 1]?.datetime
-  const afterCursor = posts[0]?.datetime
+  const newestDatetime = posts[0]?.datetime
+  const oldestDatetime = posts[posts.length - 1]?.datetime
+
+  // On "before" pages: "Before" uses oldest (go further back), "After" uses oldest (go forward)
+  // On other pages: "Before" uses oldest (go back), "After" uses newest (go forward)
+  const beforeCursor = oldestDatetime
+  const afterCursor = pageType === 'before' ? oldestDatetime : newestDatetime
 
   return (
     <div>
