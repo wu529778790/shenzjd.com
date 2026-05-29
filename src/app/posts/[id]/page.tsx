@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic'
 const breadcrumbClass = 'mb-5 py-[10px] font-semibold'
 const breadcrumbListClass = 'm-0 flex list-none items-center p-0'
 const breadcrumbLinkClass = 'inline-flex items-center no-underline'
-const breadcrumbAvatarClass = 'block h-5 w-5 rounded-full border-2 border-white object-cover shadow-soft'
-const breadcrumbTitleClass = 'ml-[10px] flex-1 text-[14px] text-heading'
+const breadcrumbAvatarClass = 'block h-5 w-5 rounded-full border-2 border-[var(--color-card)] object-cover shadow-soft'
+const breadcrumbTitleClass = 'ml-[10px] flex-1 text-[14px] text-[var(--color-heading)]'
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

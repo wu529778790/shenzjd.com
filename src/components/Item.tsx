@@ -60,7 +60,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
             {post.reactions.map((reaction, i) => (
               <span
                 key={i}
-                className={`inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] px-2.5 py-1 text-[12px] text-[var(--color-muted)] transition-colors duration-200 hover:border-[var(--color-accent-light)] hover:bg-[var(--color-accent-light)] ${reaction.isPaid ? 'border-amber-300 bg-amber-50 text-amber-700' : ''}`}>
+                className={`inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] px-2.5 py-1 text-[12px] text-[var(--color-muted)] transition-colors duration-200 hover:border-[var(--color-accent-light)] hover:bg-[var(--color-accent-light)] ${reaction.isPaid ? 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300' : ''}`}>
                 <span className="inline-flex items-center leading-none">
                   {reaction.isPaid ? '⭐' : reaction.emojiImage ? (
                     <img src={reaction.emojiImage} alt={reaction.emoji || 'emoji'} loading="lazy" width="16" height="16" className="block h-4 w-4" />
@@ -83,7 +83,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
               key={tag}
               href={getTagHref(tag)}
               title={tag}
-              className="inline-block rounded-[var(--radius-full)] bg-[var(--color-tag-bg)] px-3 py-1 text-[11px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:bg-[var(--color-tag-hover)] hover:text-white hover:no-underline">
+              className="inline-block rounded-[var(--radius-full)] bg-[var(--color-tag-bg)] px-3 py-1 text-[11px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:bg-[var(--color-tag-hover)] hover:text-[var(--color-paper)] hover:no-underline">
               {tag}
             </a>
           ))}
@@ -99,7 +99,6 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
             data-telegram-discussion={`${channelName}/${post.id}`}
             data-comments-limit="50"
             data-colorful="1"
-            data-color="454545"
           />
         </section>
       )}
