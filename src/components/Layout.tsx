@@ -9,6 +9,7 @@ const TELEGRAM = getEnv("CHANNEL");
 const GOOGLE_SEARCH_SITE = getEnv("GOOGLE_SEARCH_SITE");
 const HEADER_INJECT = getEnv("HEADER_INJECT");
 const FOOTER_INJECT = getEnv("FOOTER_INJECT");
+const PROMOS = getEnv("PROMOS");
 
 const navs: NavItem[] = (NAVS || "")
   .split(";")
@@ -17,6 +18,21 @@ const navs: NavItem[] = (NAVS || "")
     const [title = "", href = ""] = link.split(",");
     return { title, href };
   });
+
+interface PromoItem {
+  title: string;
+  description: string;
+  url: string;
+}
+
+const promos: PromoItem[] = (PROMOS || "")
+  .split(";")
+  .filter(Boolean)
+  .map((item) => {
+    const [title = "", description = "", url = ""] = item.split("|");
+    return { title, description, url };
+  })
+  .filter((p) => p.title && p.url);
 
 function normalizePathname(p: string): string {
   return p.replace(/\/$/, "") || "/";
@@ -234,8 +250,31 @@ export default function Layout({
         </div>
       </header>
 
-      <main id="main-content" className="relative mx-auto max-w-[720px] px-4 py-6 sm:px-6 sm:py-8">
-        {children}
+      <main id="main-content" className="relative mx-auto max-w-[960px] px-4 py-6 sm:px-6 sm:py-8">
+        <div className="lg:flex lg:gap-6">
+          <div className={`min-w-0 mx-auto max-w-[680px] ${promos.length > 0 ? "lg:mx-0 lg:max-w-[600px]" : ""}`}>
+            {children}
+          </div>
+          {promos.length > 0 && (
+            <aside className="hidden lg:block w-[260px] shrink-0" aria-label="Promotions">
+              <div className="sticky top-20 space-y-3">
+                {promos.map((promo, i) => (
+                  <a
+                    key={i}
+                    href={promo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] p-4 shadow-[var(--shadow-card)] transition-colors duration-200 hover:border-[var(--color-accent)]">
+                    <h3 className="text-[13px] font-medium text-[var(--color-heading)] leading-snug mb-1">{promo.title}</h3>
+                    {promo.description && (
+                      <p className="text-xs text-[var(--color-muted)] leading-relaxed line-clamp-3">{promo.description}</p>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </aside>
+          )}
+        </div>
       </main>
 
       {/* Footer */}
