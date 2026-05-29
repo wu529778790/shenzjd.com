@@ -29,6 +29,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
 
   return (
     <article
+      data-animate="post"
       className={`group rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-soft)] sm:p-6 ${isItem ? '' : 'mb-4'}`}
       style={{ viewTransitionName: `post-${post.id}` } as React.CSSProperties}>
       {/* Timestamp */}

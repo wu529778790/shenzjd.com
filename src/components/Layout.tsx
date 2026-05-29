@@ -1,5 +1,6 @@
 import type { ChannelInfo, NavItem } from "../types";
 import { getEnv } from "../lib/env";
+import Animations from "./Animations";
 
 const TAGS = getEnv("TAGS");
 const LINKS = getEnv("LINKS");
@@ -264,6 +265,7 @@ export default function Layout({
                     href={promo.url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-animate="promo"
                     className="block rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] p-4 shadow-[var(--shadow-card)] transition-colors duration-200 hover:border-[var(--color-accent)]">
                     <h3 className="text-[13px] font-medium text-[var(--color-heading)] leading-snug mb-1">{promo.title}</h3>
                     {promo.description && (
@@ -305,6 +307,8 @@ export default function Layout({
       {FOOTER_INJECT && (
         <div dangerouslySetInnerHTML={{ __html: FOOTER_INJECT }} />
       )}
+
+      <Animations />
     </>
   );
 }

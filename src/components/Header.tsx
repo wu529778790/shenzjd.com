@@ -10,6 +10,7 @@ export default function Header({ channel }: { channel: ChannelInfo }) {
 
   return (
     <div
+      data-animate="post"
       className="mb-6 break-words rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-card)] px-5 py-4 text-[14px] leading-relaxed text-[var(--color-muted)] shadow-[var(--shadow-card)] content"
       dangerouslySetInnerHTML={{ __html: channel.descriptionHTML }}
     />

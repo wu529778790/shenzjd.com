@@ -726,3 +726,17 @@
     }
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-animate] {
+    opacity: 0;
+  }
+
+  [data-animate="post"] {
+    transform: translateY(12px);
+  }
+
+  [data-animate="promo"] {
+    transform: translateX(12px);
+  }
+}
