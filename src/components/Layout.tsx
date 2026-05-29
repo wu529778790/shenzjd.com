@@ -35,10 +35,6 @@ export default function Layout({
   pathname,
   children,
 }: LayoutProps) {
-  const searchAction = GOOGLE_SEARCH_SITE
-    ? "https://www.google.com/search"
-    : `${siteUrl}search/result`;
-
   const currentPathname = normalizePathname(pathname);
   const isAbsolute = siteUrl.startsWith('http');
   const siteRootPathname = normalizePathname(isAbsolute ? new URL(siteUrl).pathname : siteUrl);
@@ -111,17 +107,18 @@ export default function Layout({
           <div className="ml-auto flex items-center gap-1">
             {/* Desktop search */}
             <form
-              className="hidden sm:block"
-              action={searchAction}
+              className="hidden sm:flex items-center gap-1"
+              action={`${siteUrl}search/result`}
               method="get"
               role="search">
+              <button type="submit" className="sr-only">Search</button>
               {GOOGLE_SEARCH_SITE && (
                 <input type="hidden" name="as_sitesearch" value={GOOGLE_SEARCH_SITE} />
               )}
               <label className="sr-only" htmlFor="nav-search">Search</label>
               <input
                 id="nav-search"
-                className="h-8 w-[160px] rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] transition-all duration-200 focus:w-[220px] focus:border-[var(--color-accent)]"
+                className="h-8 w-[140px] rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] transition-all duration-200 focus:w-[196px] focus:border-[var(--color-accent)]"
                 type="search"
                 name="q"
                 placeholder="Search..."
@@ -129,6 +126,15 @@ export default function Layout({
                 inputMode="search"
                 spellCheck={false}
               />
+              {GOOGLE_SEARCH_SITE && (
+                <button
+                  type="submit"
+                  formAction="https://www.google.com/search"
+                  className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[11px] font-bold text-[var(--color-muted)] transition-colors duration-200 hover:bg-[var(--color-line)] hover:text-[var(--color-heading)]"
+                  title="Search with Google">
+                  G
+                </button>
+              )}
             </form>
 
             {GITHUB && (
@@ -191,23 +197,35 @@ export default function Layout({
                   ))}
                   <form
                     className="mt-1 border-t border-[var(--color-line)] pt-2"
-                    action={searchAction}
+                    action={`${siteUrl}search/result`}
                     method="get"
                     role="search">
+                    <button type="submit" className="sr-only">Search</button>
                     {GOOGLE_SEARCH_SITE && (
                       <input type="hidden" name="as_sitesearch" value={GOOGLE_SEARCH_SITE} />
                     )}
                     <label className="sr-only" htmlFor="nav-search-mobile">Search</label>
-                    <input
-                      id="nav-search-mobile"
-                      className="box-border h-9 w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-paper)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)]"
-                      type="search"
-                      name="q"
-                      placeholder="Search..."
-                      autoComplete="off"
-                      inputMode="search"
-                      spellCheck={false}
-                    />
+                    <div className="flex items-center gap-1">
+                      <input
+                        id="nav-search-mobile"
+                        className="box-border h-9 flex-1 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-paper)] px-3 text-[13px] text-[var(--color-ink)] outline-none placeholder:text-[var(--color-muted)] focus-visible:border-[var(--color-accent)]"
+                        type="search"
+                        name="q"
+                        placeholder="Search..."
+                        autoComplete="off"
+                        inputMode="search"
+                        spellCheck={false}
+                      />
+                      {GOOGLE_SEARCH_SITE && (
+                        <button
+                          type="submit"
+                          formAction="https://www.google.com/search"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-paper)] text-[11px] font-bold text-[var(--color-muted)] transition-colors duration-200 hover:bg-[var(--color-line)] hover:text-[var(--color-heading)]"
+                          title="Search with Google">
+                          G
+                        </button>
+                      )}
+                    </div>
                   </form>
                 </nav>
               </div>
