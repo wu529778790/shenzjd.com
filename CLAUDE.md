@@ -39,9 +39,10 @@ TypeScript check: `npx tsc --noEmit`
 | `/search/[q]` | Search results via Telegram's built-in search |
 | `/tags` | Tag cloud (tags from `TAGS` env var) |
 | `/links` | Link list (from `LINKS` env var) |
-| `/rss.xml` | RSS 2.0 feed (supports `?tag=` filter) |
-| `/rss.json` | JSON Feed 1.1 |
-| `/sitemap.xml` | XML sitemap |
+| `/rss.xml` | RSS 2.0 feed (not yet implemented) |
+| `/rss.json` | JSON Feed 1.1 (not yet implemented) |
+| `/sitemap.xml` | XML sitemap index |
+| `/sitemap/[cursor]` | Paginated sitemap pages |
 | `/static/[...url]` | Proxy for Telegram CDN assets (whitelisted domains only) |
 
 ### Component Hierarchy
@@ -65,7 +66,7 @@ All pages follow the same pattern: fetch data → wrap in `<Layout>` → render 
 
 Required: `CHANNEL` (Telegram channel username).
 
-Key optional vars in `.env.example`: `SITE_URL`, `LOCALE`, `TIMEZONE`, `STATIC_PROXY`, `TELEGRAM_HOST`, `TAGS`, `LINKS`, `NAVS` (semicolon-delimited), `COMMENTS`, `REACTIONS`, `RSS_BEAUTIFY`, social media usernames, `HEADER_INJECT`/`FOOTER_INJECT` (raw HTML), SEO flags (`NO_INDEX`, `NO_FOLLOW`).
+Key optional vars in `.env.example`: `SITE_URL`, `LOCALE`, `TIMEZONE`, `STATIC_PROXY`, `TELEGRAM_HOST`, `TAGS`, `LINKS`, `NAVS` (semicolon-delimited), `COMMENTS`, `REACTIONS`, `HIDE_DESCRIPTION`, `GOOGLE_SEARCH_SITE`, `PROMOS`, social media usernames, `HEADER_INJECT`/`FOOTER_INJECT` (raw HTML), SEO flags (`NO_INDEX`, `NO_FOLLOW`).
 
 ### Static Asset Proxy
 

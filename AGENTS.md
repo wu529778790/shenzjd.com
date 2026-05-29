@@ -31,7 +31,9 @@ Next.js 16 App Router microblog that renders a Telegram channel's posts as a web
 - `/search/[q]` — search
 - `/tags` — tag cloud (from `TAGS` env)
 - `/links` — link list (from `LINKS` env)
-- `/rss.xml` / `/rss.json` — feeds
+- `/rss.xml` / `/rss.json` — feeds (not yet implemented)
+- `/sitemap.xml` — sitemap index with paginated sub-sitemaps
+- `/sitemap/[cursor]` — paginated sitemap pages
 - `/static/[...url]` — proxy for Telegram CDN (whitelisted domains only)
 
 ### Component pattern
@@ -65,4 +67,4 @@ All pages: fetch data → wrap in `<Layout>` → render with `<List>` or `<Heade
 
 - This uses **npm** (package-lock.json), not pnpm — `pnpm-workspace.yaml` only exists for `ignoredBuiltDependencies`
 - No test suite exists
-- `sanitized-html` is a dependency but Telegram HTML is rendered via `dangerouslySetInnerHTML` after Cheerio processing
+- Telegram HTML is rendered via `dangerouslySetInnerHTML` after Cheerio processing
