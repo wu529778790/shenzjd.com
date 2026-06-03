@@ -1,8 +1,15 @@
 import { getChannelInfo } from '../../lib/sources'
 import { getEnv } from '../../lib/env'
 
-const SITE_URL = getEnv('SITE_URL') ?? '/'
 const LOCALE = getEnv('LOCALE') ?? 'en'
+
+function getOrigin(request: Request): string {
+  const siteUrl = getEnv('SITE_URL')
+  if (siteUrl) return siteUrl
+  const host = request.headers.get('host')
+  if (host) return `https://${host}`
+  return '/'
+}
 
 function escapeXml(str: string): string {
   return str
@@ -13,14 +20,15 @@ function escapeXml(str: string): string {
     .replace(/'/g, '&apos;')
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const origin = getOrigin(request)
   const channel = await getChannelInfo()
   const posts = channel.posts || []
 
   const items = posts.map(post => {
     const pubDate = new Date(post.datetime).toUTCString()
     const description = post.description || post.text || ''
-    const link = `${SITE_URL}posts/${post.id}`
+    const link = `${origin}/posts/${post.id}`
 
     return `    <item>
       <title>${escapeXml(post.title || channel.title)}</title>
@@ -35,11 +43,11 @@ export async function GET() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(channel.title)}</title>
-    <link>${SITE_URL}</link>
+    <link>${origin}</link>
     <description>${escapeXml(channel.description)}</description>
     <language>${LOCALE}</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="${SITE_URL}rss.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${origin}/rss.xml" rel="self" type="application/rss+xml" />
 ${items}
   </channel>
 </rss>`
