@@ -30,10 +30,10 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
   return (
     <article
       data-animate="post"
-      className={`group rounded-[var(--radius-md)] bg-[var(--color-card)] p-5 transition-all duration-200 sm:p-6 ${isItem ? '' : 'mb-4'}`}
+      className={`group rounded-[var(--radius-md)] bg-[var(--color-card)] px-4 py-3 transition-all duration-200 sm:px-5 sm:py-4 ${isItem ? '' : 'mb-3'}`}
       style={{ viewTransitionName: `post-${post.id}` } as React.CSSProperties}>
       {/* Timestamp */}
-      <header className="mb-3 flex items-center leading-none">
+      <header className="mb-2 flex items-center leading-none">
         <span className="h-1 w-1 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
         <p className="m-0 flex-1 pl-2 text-[12px] font-medium tracking-wide text-[var(--color-muted)]">
           <a

@@ -42,7 +42,7 @@ export default function List({
     <div>
       {pageHeading && <h1 className="sr-only">{pageHeading}</h1>}
       {children}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {posts.map(post => (
           <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} />
         ))}
