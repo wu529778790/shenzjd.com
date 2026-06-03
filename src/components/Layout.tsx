@@ -255,25 +255,6 @@ export default function Layout({
           {/* Right: sidebar — desktop only */}
           <aside className="hidden lg:block w-[160px] shrink-0" aria-label="Sidebar">
             <div className="sticky top-20 space-y-6">
-              {/* Channel profile card */}
-              <div className="space-y-3">
-                <a href={siteUrl} className="flex items-center gap-3 no-underline group">
-                  <img
-                    src={channel?.avatar?.startsWith('http') ? `/static/${channel?.avatar}` : '/void.png'}
-                    alt={channel?.title}
-                    width="48"
-                    height="48"
-                    className="h-12 w-12 rounded-full object-cover transition-transform duration-200 group-hover:scale-105"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-[15px] font-bold text-[var(--color-heading)] leading-tight truncate">{channel?.title}</p>
-                    {channel?.description && (
-                      <p className="text-[12px] text-[var(--color-muted)] leading-snug line-clamp-2 mt-0.5">{channel.description}</p>
-                    )}
-                  </div>
-                </a>
-              </div>
-
               {/* Navigation */}
               <nav className="space-y-0.5" aria-label="Sidebar navigation">
                 <a
