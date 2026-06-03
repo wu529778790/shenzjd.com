@@ -13,7 +13,7 @@ const MONTH_MAP: Record<string, number> = {
 }
 
 const CACHE_TTL = 1000 * 60 * 60 * 24 // 24 hours
-const STALE_THRESHOLD = 1000 * 60 * 30 // 30 minutes before expiry
+const REFRESH_INTERVAL = 1000 * 60 * 30 // refresh every 30 minutes
 
 const cache = new LRUCache<string, CacheValue>({
   ttl: CACHE_TTL,
@@ -39,7 +39,7 @@ function getCached<T extends CacheValue>(
   if (!cached || !typeGuard(cached)) return null
 
   const refreshed = lastRefresh.get(cacheKey) ?? 0
-  const stale = Date.now() - refreshed > CACHE_TTL - STALE_THRESHOLD
+  const stale = Date.now() - refreshed > REFRESH_INTERVAL
   return { value: cached as T, stale }
 }
 
