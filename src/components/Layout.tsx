@@ -72,7 +72,7 @@ export default function Layout({
 
       {/* Top navigation bar — simplified: logo + search + theme */}
       <header className="sticky top-0 z-[100] border-b border-[var(--color-line)] bg-[var(--color-paper)]/85 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-[1060px] items-center px-4 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-[760px] items-center px-4 sm:px-6">
           {/* Site title */}
           <a
             href={siteUrl}
@@ -161,7 +161,7 @@ export default function Layout({
                 </svg>
               </summary>
               <div className="absolute inset-x-0 top-12 border-t border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-medium)]">
-                <nav aria-label="Mobile navigation" className="mx-auto flex max-w-[1060px] flex-col px-4 py-2">
+                <nav aria-label="Mobile navigation" className="mx-auto flex max-w-[760px] flex-col px-4 py-2">
                   {/* Channel info on mobile */}
                   <div className="flex items-center gap-3 px-3 py-2">
                     <img
@@ -245,15 +245,15 @@ export default function Layout({
       </header>
 
       {/* Main content: articles left, sidebar right */}
-      <main id="main-content" className="relative mx-auto max-w-[1060px] px-4 py-6 sm:px-6 sm:py-8">
+      <main id="main-content" className="relative mx-auto max-w-[760px] px-4 py-6 sm:px-6 sm:py-8">
         <div className="lg:flex lg:justify-center lg:gap-8">
           {/* Left: article stream */}
-          <div className="min-w-0 mx-auto max-w-[600px] lg:mx-0 lg:max-w-none lg:flex-1">
+          <div className="min-w-0 mx-auto max-w-[500px] lg:mx-0 lg:max-w-none lg:flex-1">
             {children}
           </div>
 
           {/* Right: sidebar — desktop only */}
-          <aside className="hidden lg:block w-[200px] shrink-0" aria-label="Sidebar">
+          <aside className="hidden lg:block w-[160px] shrink-0" aria-label="Sidebar">
             <div className="sticky top-20 space-y-6">
               {/* Channel profile card */}
               <div className="space-y-3">
