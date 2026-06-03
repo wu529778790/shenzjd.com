@@ -253,7 +253,7 @@ export default function Layout({
           </div>
 
           {/* Right: sidebar — desktop only */}
-          <aside className="hidden lg:block w-[260px] shrink-0" aria-label="Sidebar">
+          <aside className="hidden lg:block w-[200px] shrink-0" aria-label="Sidebar">
             <div className="sticky top-20 space-y-6">
               {/* Channel profile card */}
               <div className="space-y-3">
