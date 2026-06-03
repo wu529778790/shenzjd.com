@@ -165,7 +165,9 @@ async function fetchTimeline(screenName: string, maxPosition?: string): Promise<
     query: maxPosition ? { maxPosition } : undefined,
     headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
     retry: 3,
-    retryDelay: 100,
+    retryDelay: 1000,
+    timeout: 20000,
+    connectTimeout: 10000,
   })
 
   const match = html.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/)

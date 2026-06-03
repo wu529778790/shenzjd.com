@@ -425,7 +425,9 @@ async function loadChannelDocument(
       q: q || undefined,
     },
     retry: 3,
-    retryDelay: 100,
+    retryDelay: 1000,
+    timeout: 20000,
+    connectTimeout: 10000,
   })
 
   return {
