@@ -99,7 +99,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-muted)] transition-colors duration-200 hover:bg-[var(--color-line)] hover:text-[var(--color-heading)]"
+      className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-muted)] transition-all duration-200 hover:bg-[var(--color-line)] hover:text-[var(--color-heading)]"
       title={labels[theme]}
       aria-label={labels[theme]}
     >

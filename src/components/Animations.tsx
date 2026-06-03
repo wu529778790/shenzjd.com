@@ -16,10 +16,10 @@ export default function Animations() {
     if (posts.length) {
       animate('[data-animate="post"]', {
         opacity: [0, 1],
-        translateY: [12, 0],
-        duration: 400,
-        delay: stagger(60, { start: 80 }),
-        ease: 'outQuart',
+        translateY: [16, 0],
+        duration: 350,
+        delay: stagger(50, { start: 60 }),
+        ease: 'outQuad',
         onComplete() {
           posts.forEach((el) => el.removeAttribute('data-animate'))
         },
@@ -30,10 +30,10 @@ export default function Animations() {
     if (promos.length) {
       animate('[data-animate="promo"]', {
         opacity: [0, 1],
-        translateX: [12, 0],
-        duration: 400,
-        delay: stagger(80, { start: 200 }),
-        ease: 'outQuart',
+        translateY: [8, 0],
+        duration: 350,
+        delay: stagger(60, { start: 150 }),
+        ease: 'outQuad',
         onComplete() {
           promos.forEach((el) => el.removeAttribute('data-animate'))
         },
