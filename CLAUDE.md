@@ -30,9 +30,8 @@ TypeScript check: `npx tsc --noEmit`
 1. `src/lib/sources/telegram.ts` fetches raw HTML from `t.me/s/{CHANNEL}` (or embed endpoints for individual posts) using `ofetch`
 2. Cheerio parses the HTML, extracting post content, images, videos, stickers, reactions, link previews, and code blocks
 3. Code blocks are auto-detected with `flourite` and syntax-highlighted with `prismjs`
-4. `src/lib/sources/x.ts` fetches from Twitter/X syndication endpoint, merges with Telegram posts
-5. Results are cached with a **stale-while-revalidate** strategy: 24h TTL, 30min refresh interval. Cache hits return immediately; if data is stale (>30min), a background refresh runs (with concurrency lock per key). Values are always `structuredClone`d on read to prevent cross-request mutation
-6. `src/lib/sources/index.ts` is a facade that merges Telegram and X sources, routes posts by prefix
+4. Results are cached with a **stale-while-revalidate** strategy: 24h TTL, 30min refresh interval. Cache hits return immediately; if data is stale (>30min), a background refresh runs (with concurrency lock per key). Values are always `structuredClone`d on read to prevent cross-request mutation
+5. `src/lib/sources/index.ts` is a facade that routes posts to Telegram
 
 ### Routing
 
@@ -58,7 +57,7 @@ All pages follow the same pattern: fetch data → wrap in `<Layout>` → render 
 - **Layout** (`src/components/Layout.tsx`): sidebar + content column, mobile hamburger nav (inline `<script>` toggle), search form, back-to-top button, header/footer inject zones
 - **List** (`src/components/List.tsx`): renders `<ol>` of `<Item>` components with before/after pagination links
 - **Item** (`src/components/Item.tsx`): single post — timestamp, content (via `dangerouslySetInnerHTML`), reactions, tags, optional Telegram comments widget
-- **Header** (`src/components/Header.tsx`): avatar, title, social links (RSS, Twitter, GitHub, Telegram, etc.), channel description
+- **Header** (`src/components/Header.tsx`): avatar, title, social links (RSS, GitHub, Telegram, etc.), channel description
 - **ThemeToggle** (`src/components/ThemeToggle.tsx`): client component — cycles light/dark/system via `localStorage`, toggles `.dark` class
 - **Animations** (`src/components/Animations.tsx`): client component — anime.js entry animations for post cards, respects `prefers-reduced-motion`
 
@@ -94,5 +93,4 @@ Parsing formats (semicolon/comma-delimited at module load time):
 - Cache values are always cloned via `structuredClone` before return to prevent cross-request mutation
 - `getEnv` / `getRequiredEnv` wrappers in `src/lib/env.ts` for accessing `process.env`
 - Social links, nav items, tags, and links are parsed from semicolon/comma-delimited env strings at module load time
-- X/Twitter posts use `x-` prefix in their IDs (defined as `X_ID_PREFIX` in `x.ts`)
 - Fetch config: `retry: 3`, `retryDelay: 1000`, `timeout: 20000` — Telegram connections can be unreliable from China

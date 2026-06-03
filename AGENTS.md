@@ -19,10 +19,9 @@ Next.js 16 App Router microblog that renders a Telegram channel's posts as a web
 ### Data flow
 
 1. `src/lib/sources/telegram.ts` — fetches raw HTML from `t.me/s/{CHANNEL}` via `ofetch`, parses with Cheerio (posts, images, videos, stickers, reactions, link previews, code blocks)
-2. `src/lib/sources/x.ts` — fetches from Twitter/X syndication endpoint, merges with Telegram posts
-3. Code blocks auto-detected with `flourite`, syntax-highlighted with `prismjs`
-4. Results cached with stale-while-revalidate strategy: 24h TTL, 30min refresh interval, 50MB max size, LRU eviction — values are **always** `structuredClone`'d on read to prevent cross-request mutation
-5. `src/lib/sources/index.ts` — facade that merges Telegram and X sources, routes posts by ID prefix
+2. Code blocks auto-detected with `flourite`, syntax-highlighted with `prismjs`
+3. Results cached with stale-while-revalidate strategy: 24h TTL, 30min refresh interval, 50MB max size, LRU eviction — values are **always** `structuredClone`'d on read to prevent cross-request mutation
+4. `src/lib/sources/index.ts` — facade that routes posts to Telegram
 
 ### Key routes
 
