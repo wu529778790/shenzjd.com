@@ -3,8 +3,7 @@ import { getChannelInfo } from '../../../lib/sources'
 function getOrigin(request: Request, url: URL): string {
   const host = request.headers.get('host')
   if (host) {
-    const proto = request.headers.get('x-forwarded-proto') ?? 'https'
-    return `${proto}://${host}`
+    return `https://${host}`
   }
   return url.origin
 }

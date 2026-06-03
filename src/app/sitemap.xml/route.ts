@@ -5,11 +5,10 @@ function getOrigin(request: Request, url: URL): string {
   const siteUrl = getEnv('SITE_URL')
   if (siteUrl) return siteUrl
 
-  // Derive from Host header (works behind reverse proxy / Docker)
+  // Derive from Host header (works behind reverse proxy / Docker / Cloudflare)
   const host = request.headers.get('host')
   if (host) {
-    const proto = request.headers.get('x-forwarded-proto') ?? 'https'
-    return `${proto}://${host}`
+    return `https://${host}`
   }
 
   return url.origin
