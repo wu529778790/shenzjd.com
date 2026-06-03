@@ -71,7 +71,7 @@ export default function Layout({
 
       {/* Top navigation bar */}
       <header className="sticky top-0 z-[100] border-b border-[var(--color-line)] bg-[var(--color-paper)]/85 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-[960px] items-center px-4 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-[800px] items-center px-4 sm:px-6">
           {/* Site title */}
           <a
             href={siteUrl}
@@ -189,7 +189,7 @@ export default function Layout({
                 </svg>
               </summary>
               <div className="absolute inset-x-0 top-12 border-t border-[var(--color-line)] bg-[var(--color-surface)] shadow-[var(--shadow-medium)]">
-                <nav aria-label="Mobile navigation" className="mx-auto flex max-w-[960px] flex-col px-4 py-2">
+                <nav aria-label="Mobile navigation" className="mx-auto flex max-w-[800px] flex-col px-4 py-2">
                   {TAGS && (
                     <a
                       href={`${siteUrl}tags`}
@@ -254,9 +254,9 @@ export default function Layout({
         </div>
       </header>
 
-      <main id="main-content" className="relative mx-auto max-w-[960px] px-4 py-6 sm:px-6 sm:py-8">
+      <main id="main-content" className="relative mx-auto max-w-[800px] px-4 py-6 sm:px-6 sm:py-8">
         <div className="lg:flex lg:gap-6">
-          <div className={`min-w-0 mx-auto max-w-[680px] ${promos.length > 0 ? "lg:mx-0 lg:max-w-[600px]" : ""}`}>
+          <div className={`min-w-0 mx-auto max-w-[580px] ${promos.length > 0 ? "lg:mx-0 lg:max-w-[520px]" : ""}`}>
             {children}
           </div>
           {promos.length > 0 && (
