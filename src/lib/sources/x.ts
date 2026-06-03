@@ -12,11 +12,16 @@ const MONTH_MAP: Record<string, number> = {
   Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
 }
 
+const CACHE_TTL = 1000 * 60 * 60 * 24 // 24 hours
+const STALE_THRESHOLD = 1000 * 60 * 30 // 30 minutes before expiry
+
 const cache = new LRUCache<string, CacheValue>({
-  ttl: 1000 * 60 * 5,
+  ttl: CACHE_TTL,
   maxSize: 50 * 1024 * 1024,
   sizeCalculation: item => JSON.stringify(item).length,
 })
+
+const lastRefresh = new Map<string, number>()
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
   return structuredClone(value)
@@ -24,6 +29,35 @@ function cloneCacheValue<T extends CacheValue>(value: T): T {
 
 function isChannelInfo(value: CacheValue): value is ChannelInfo {
   return 'posts' in value
+}
+
+function getCached<T extends CacheValue>(
+  cacheKey: string,
+  typeGuard: (v: CacheValue) => v is T,
+): { value: T; stale: boolean } | null {
+  const cached = cache.get(cacheKey)
+  if (!cached || !typeGuard(cached)) return null
+
+  const refreshed = lastRefresh.get(cacheKey) ?? 0
+  const stale = Date.now() - refreshed > CACHE_TTL - STALE_THRESHOLD
+  return { value: cached as T, stale }
+}
+
+function markRefreshed(cacheKey: string): void {
+  lastRefresh.set(cacheKey, Date.now())
+}
+
+function backgroundRefresh<T extends CacheValue>(
+  cacheKey: string,
+  fetcher: () => Promise<T>,
+  typeGuard: (v: CacheValue) => v is T,
+): void {
+  fetcher()
+    .then(fresh => {
+      cache.set(cacheKey, fresh)
+      markRefreshed(cacheKey)
+    })
+    .catch(() => {})
 }
 
 interface TwitterMedia {
@@ -167,7 +201,6 @@ async function fetchTimeline(screenName: string, maxPosition?: string): Promise<
     retry: 3,
     retryDelay: 1000,
     timeout: 20000,
-    connectTimeout: 10000,
   })
 
   const match = html.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/)
@@ -194,9 +227,30 @@ function extractUserInfo(tweets: TweetData[]): { avatar: string; name: string } 
 export async function getXChannelInfo(params: GetChannelInfoParams = {}): Promise<ChannelInfo> {
   const { before, after, q } = params
   const cacheKey = JSON.stringify({ scope: 'x-channel', before: before ?? '', after: after ?? '', q: q ?? '' })
-  const cachedResult = cache.get(cacheKey)
-  if (cachedResult && isChannelInfo(cachedResult)) {
-    return cloneCacheValue(cachedResult)
+  const hit = getCached(cacheKey, isChannelInfo)
+  if (hit) {
+    if (hit.stale) {
+      backgroundRefresh<ChannelInfo>(cacheKey, async () => {
+        const screenName = getRequiredEnv('X_ACCOUNT')
+        const tweets = await fetchTimeline(screenName)
+        let posts = tweets.map((t, i) => tweetToPost(t, i))
+        if (before) posts = posts.filter(p => p.datetime < before)
+        if (after) posts = posts.filter(p => p.datetime > after)
+        if (q) {
+          const query = q.toLowerCase()
+          posts = posts.filter(p => p.text.toLowerCase().includes(query) || p.tags.some(tag => tag.toLowerCase() === q.toLowerCase()))
+        }
+        const userInfo = extractUserInfo(tweets)
+        return {
+          posts,
+          title: `${userInfo.name} (@${screenName})`,
+          description: `X posts from @${screenName}`,
+          descriptionHTML: null,
+          avatar: userInfo.avatar || undefined,
+        }
+      }, isChannelInfo)
+    }
+    return cloneCacheValue(hit.value)
   }
 
   const screenName = getRequiredEnv('X_ACCOUNT')
@@ -227,15 +281,25 @@ export async function getXChannelInfo(params: GetChannelInfoParams = {}): Promis
   }
 
   cache.set(cacheKey, channelInfo)
+  markRefreshed(cacheKey)
   return cloneCacheValue(channelInfo)
 }
 
 export async function getXChannelPost(id: string): Promise<Post> {
   const rawId = id.startsWith(X_ID_PREFIX) ? id.slice(X_ID_PREFIX.length) : id
   const cacheKey = JSON.stringify({ scope: 'x-post', id: rawId })
-  const cachedResult = cache.get(cacheKey)
-  if (cachedResult && !isChannelInfo(cachedResult)) {
-    return cloneCacheValue(cachedResult)
+  const hit = getCached(cacheKey, (v): v is Post => !isChannelInfo(v))
+  if (hit) {
+    if (hit.stale) {
+      backgroundRefresh(cacheKey, async () => {
+        const screenName = getRequiredEnv('X_ACCOUNT')
+        const tweets = await fetchTimeline(screenName)
+        const tweet = tweets.find(t => t.id_str === rawId)
+        if (!tweet) throw new Error(`X post not found: ${rawId}`)
+        return tweetToPost(tweet)
+      }, (v): v is Post => !isChannelInfo(v))
+    }
+    return cloneCacheValue(hit.value)
   }
 
   const screenName = getRequiredEnv('X_ACCOUNT')
@@ -245,5 +309,6 @@ export async function getXChannelPost(id: string): Promise<Post> {
 
   const post = tweetToPost(tweet)
   cache.set(cacheKey, post)
+  markRefreshed(cacheKey)
   return cloneCacheValue(post)
 }

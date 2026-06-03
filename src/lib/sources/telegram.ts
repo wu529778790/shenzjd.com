@@ -53,14 +53,48 @@ interface LoadedChannelDocument {
   reactionsEnabled?: string
 }
 
+const CACHE_TTL = 1000 * 60 * 60 * 24 // 24 hours
+const STALE_THRESHOLD = 1000 * 60 * 30 // 30 minutes before expiry
+
 const cache = new LRUCache<string, CacheValue>({
-  ttl: 1000 * 60 * 5,
+  ttl: CACHE_TTL,
   maxSize: 50 * 1024 * 1024,
   sizeCalculation: item => JSON.stringify(item).length,
 })
 
+const lastRefresh = new Map<string, number>()
+
 function cloneCacheValue<T extends CacheValue>(value: T): T {
   return structuredClone(value)
+}
+
+function getCached<T extends CacheValue>(
+  cacheKey: string,
+  typeGuard: (v: CacheValue) => v is T,
+): { value: T; stale: boolean } | null {
+  const cached = cache.get(cacheKey)
+  if (!cached || !typeGuard(cached)) return null
+
+  const refreshed = lastRefresh.get(cacheKey) ?? 0
+  const stale = Date.now() - refreshed > CACHE_TTL - STALE_THRESHOLD
+  return { value: cached as T, stale }
+}
+
+function markRefreshed(cacheKey: string): void {
+  lastRefresh.set(cacheKey, Date.now())
+}
+
+function backgroundRefresh<T extends CacheValue>(
+  cacheKey: string,
+  fetcher: () => Promise<T>,
+  typeGuard: (v: CacheValue) => v is T,
+): void {
+  fetcher()
+    .then(fresh => {
+      cache.set(cacheKey, fresh)
+      markRefreshed(cacheKey)
+    })
+    .catch(() => {})
 }
 
 function isChannelInfo(value: CacheValue): value is ChannelInfo {
@@ -427,7 +461,6 @@ async function loadChannelDocument(
     retry: 3,
     retryDelay: 1000,
     timeout: 20000,
-    connectTimeout: 10000,
   })
 
   return {
@@ -440,25 +473,50 @@ async function loadChannelDocument(
 
 export async function getChannelPost(id: string): Promise<Post> {
   const cacheKey = JSON.stringify({ scope: 'post', id })
-  const cachedResult = cache.get(cacheKey)
-  if (cachedResult && !isChannelInfo(cachedResult)) {
-    console.info('Match Cache', { id })
-    return cloneCacheValue(cachedResult)
+  const hit = getCached(cacheKey, (v): v is Post => !isChannelInfo(v))
+  if (hit) {
+    console.info('Match Cache', { id, stale: hit.stale })
+    if (hit.stale) {
+      backgroundRefresh(cacheKey, async () => {
+        const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ id })
+        return extractPost($, null, { channel, staticProxy, reactionsEnabled })
+      }, (v): v is Post => !isChannelInfo(v))
+    }
+    return cloneCacheValue(hit.value)
   }
 
   const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ id })
   const post = await extractPost($, null, { channel, staticProxy, reactionsEnabled })
   cache.set(cacheKey, post)
+  markRefreshed(cacheKey)
   return cloneCacheValue(post)
 }
 
 export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise<ChannelInfo> {
   const { before = '', after = '', q = '' } = params
   const cacheKey = JSON.stringify({ scope: 'channel', before, after, q })
-  const cachedResult = cache.get(cacheKey)
-  if (cachedResult && isChannelInfo(cachedResult)) {
-    console.info('Match Cache', { before, after, q })
-    return cloneCacheValue(cachedResult)
+  const hit = getCached(cacheKey, isChannelInfo)
+  if (hit) {
+    console.info('Match Cache', { before, after, q, stale: hit.stale })
+    if (hit.stale) {
+      backgroundRefresh(cacheKey, async () => {
+        const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ before, after, q })
+        const postNodes = $('.tgme_channel_history .tgme_widget_message_wrap').toArray()
+        const posts = (await Promise.all(
+          postNodes.map((item, index) => extractPost($, item, { channel, staticProxy, index, reactionsEnabled })),
+        ))
+          .reverse()
+          .filter(post => post.type === 'text' && Boolean(post.id) && Boolean(post.content))
+        return {
+          posts,
+          title: $('.tgme_channel_info_header_title').text(),
+          description: $('.tgme_channel_info_description').text(),
+          descriptionHTML: (await modifyHTMLContent($, $('.tgme_channel_info_description'), { staticProxy })).html(),
+          avatar: $('.tgme_page_photo_image img').attr('src'),
+        }
+      }, isChannelInfo)
+    }
+    return cloneCacheValue(hit.value)
   }
 
   const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ before, after, q })
@@ -478,5 +536,6 @@ export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise
   }
 
   cache.set(cacheKey, channelInfo)
+  markRefreshed(cacheKey)
   return cloneCacheValue(channelInfo)
 }
