@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     if (!post) return {}
 
     const title = post.title || channelInfo.title
-    const description = post.description || post.text?.slice(0, 160) || undefined
+    const description = post.text?.slice(0, 160) || undefined
     const url = `${siteUrl}posts/${post.id}`
 
     // Extract first image from content for OG

@@ -55,19 +55,17 @@ export function sanitize(html: string): string {
 
 /**
  * Sanitize raw HTML injection from env vars (HEADER_INJECT, FOOTER_INJECT).
- * More permissive than content sanitization but still strips scripts.
+ * Only allows safe tags — no scripts, no event handlers.
  */
 export function sanitizeInjection(html: string): string {
   return sanitizeHtml(html, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-      'style', 'link', 'meta', 'script',
-    ]),
+    allowedTags: [
+      'link', 'meta', 'style',
+    ],
     allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
       'link': ['rel', 'href', 'type', 'integrity', 'crossorigin'],
       'meta': ['name', 'content', 'property', 'charset'],
-      'script': ['src', 'type', 'async', 'defer', 'integrity', 'crossorigin'],
-      '*': ['class', 'id', 'style'],
+      '*': ['class', 'id'],
     },
     allowedSchemes: ['http', 'https', 'mailto'],
   })

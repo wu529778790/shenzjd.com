@@ -42,20 +42,28 @@ export default async function HomePage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
 
   let channel
+  let error: string | null = null
   try {
     channel = await getChannelInfo()
   } catch (err) {
-    console.error('Failed to fetch channel info, using empty state:', err)
+    console.error('Failed to fetch channel info:', err)
     channel = getEmptyChannel()
+    error = '内容加载失败，请稍后刷新。'
   }
 
   return (
     <Layout channel={channel} siteUrl={siteUrl} pathname="/">
-      <List
-        channel={channel}
-        siteUrl={siteUrl}
-        pageHeading={channel.title}
-      />
+      {error ? (
+        <div className="rounded-[var(--radius-md)] bg-[var(--color-card)] px-5 py-12 text-center">
+          <p className="ui-font text-[14px] text-[var(--color-muted)]">{error}</p>
+        </div>
+      ) : (
+        <List
+          channel={channel}
+          siteUrl={siteUrl}
+          pageHeading={channel.title}
+        />
+      )}
     </Layout>
   )
 }

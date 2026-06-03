@@ -2,6 +2,7 @@ import type { Post } from '../types'
 import dayjs from '../lib/dayjs'
 import { getEnv } from '../lib/env'
 import { sanitize } from '../lib/sanitize'
+import LazyTelegramWidget from './LazyTelegramWidget'
 
 const locale = getEnv('LOCALE')
 const timezone = getEnv('TIMEZONE')
@@ -94,13 +95,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
       {/* Comments */}
       {COMMENTS && isItem && channelName && (
         <section className="mt-4 border-t border-[var(--color-line)] pt-4" aria-label="Comments">
-          <script
-            async
-            src="https://telegram.org/js/telegram-widget.js"
-            data-telegram-discussion={`${channelName}/${post.id}`}
-            data-comments-limit="50"
-            data-colorful="1"
-          />
+          <LazyTelegramWidget channelName={channelName} postId={post.id} />
         </section>
       )}
     </article>

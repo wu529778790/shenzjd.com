@@ -102,11 +102,11 @@ describe('sanitize', () => {
 })
 
 describe('sanitizeInjection', () => {
-  it('allows script tags', () => {
-    const input = '<script src="https://analytics.com/script.js"></script>'
+  it('strips script tags', () => {
+    const input = '<script src="https://evil.com/steal.js"></script>'
     const result = sanitizeInjection(input)
-    expect(result).toContain('<script')
-    expect(result).toContain('src="https://analytics.com/script.js"')
+    expect(result).not.toContain('<script')
+    expect(result).not.toContain('evil.com')
   })
 
   it('allows style tags', () => {
@@ -126,5 +126,18 @@ describe('sanitizeInjection', () => {
     const result = sanitizeInjection(input)
     expect(result).toContain('<link')
     expect(result).toContain('href="/styles.css"')
+  })
+
+  it('strips event handlers on allowed tags', () => {
+    const input = '<link rel="stylesheet" href="/x.css" onload="alert(1)">'
+    const result = sanitizeInjection(input)
+    expect(result).not.toContain('onload')
+    expect(result).not.toContain('alert')
+  })
+
+  it('strips data: URIs', () => {
+    const input = '<img src="data:text/html,<script>alert(1)</script>">'
+    const result = sanitizeInjection(input)
+    expect(result).not.toContain('data:')
   })
 })
