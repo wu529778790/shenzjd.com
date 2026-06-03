@@ -33,9 +33,9 @@ const icons = {
 }
 
 const labels: Record<Theme, string> = {
-  dark: 'Light mode',
-  light: 'System preference',
-  system: 'Dark mode',
+  dark: 'Dark mode',
+  light: 'Light mode',
+  system: 'System theme',
 }
 
 export default function ThemeToggle() {
@@ -88,7 +88,7 @@ export default function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-muted)]"
+        className="ui-font flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-muted)]"
         aria-label="Toggle theme"
       >
         <span className="inline-block h-4 w-4" />
@@ -99,7 +99,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-muted)] transition-all duration-200 hover:bg-[var(--color-line)] hover:text-[var(--color-heading)]"
+      className="ui-font flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-muted)] transition-all duration-200 hover:bg-[var(--color-line)] hover:text-[var(--color-heading)]"
       title={labels[theme]}
       aria-label={labels[theme]}
     >

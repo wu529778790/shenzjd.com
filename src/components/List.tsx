@@ -43,6 +43,11 @@ export default function List({
       {pageHeading && <h1 className="sr-only">{pageHeading}</h1>}
       {children}
       <div className="flex flex-col gap-3">
+        {posts.length === 0 && (
+          <div className="py-12 text-center">
+            <p className="ui-font text-[14px] text-[var(--color-muted)]">No posts yet.</p>
+          </div>
+        )}
         {posts.map(post => (
           <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} />
         ))}
@@ -50,26 +55,26 @@ export default function List({
       <nav className="mt-6 flex items-center justify-between" aria-label="Pagination">
         {before && prevCursor ? (
           pageType === 'home' ? (
-            <span className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] px-4 py-2 text-[13px] font-medium text-[var(--color-line-strong)] cursor-default select-none">
+            <span className="ui-font inline-flex min-h-[44px] items-center justify-center rounded-[var(--radius-md)] px-4 py-2 text-[13px] font-medium text-[var(--color-line-strong)] cursor-default select-none">
               &larr; 上一页
             </span>
           ) : (
             <a
               href={`${siteUrl}before/${prevCursor}`}
               title="上一页"
-              className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:translate-y-px">
+              className="ui-font inline-flex min-h-[44px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:translate-y-px">
               &larr; 上一页
             </a>
           )
         ) : (
-          <span className="inline-block w-[36px]" aria-hidden="true">&nbsp;</span>
+          <span className="inline-block w-[44px]" aria-hidden="true">&nbsp;</span>
         )}
         <div className="flex-1" />
         {after && nextCursor ? (
           <a
             href={`${siteUrl}before/${nextCursor}`}
             title="下一页"
-            className="inline-flex min-h-[36px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:translate-y-px">
+            className="ui-font inline-flex min-h-[44px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:translate-y-px">
             下一页 &rarr;
           </a>
         ) : (

@@ -19,7 +19,7 @@ export default function TagCloud({ title, items }: { title: string; items: TagIt
             title={item.title || item.label}
             target={item.external ? '_blank' : undefined}
             rel={item.external ? 'noopener noreferrer' : undefined}
-            className="mb-3 inline-block w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-heading)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline">
+            className="ui-font mb-3 inline-block w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-heading)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline">
             {item.label}
           </a>
         ))}

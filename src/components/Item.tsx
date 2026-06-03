@@ -35,7 +35,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
       {/* Timestamp */}
       <header className="mb-2 flex items-center leading-none">
         <span className="h-1 w-1 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
-        <p className="m-0 flex-1 pl-2 text-[12px] font-medium tracking-wide text-[var(--color-muted)]">
+        <p className="ui-font m-0 flex-1 pl-2 text-[12px] font-medium tracking-wide text-[var(--color-muted)]">
           <a
             href={`${siteUrl}posts/${post.id}`}
             title={post.datetime}
@@ -60,7 +60,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
             {post.reactions.map((reaction, i) => (
               <span
                 key={i}
-                className={`inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] px-2.5 py-1 text-[12px] text-[var(--color-muted)] transition-colors duration-200 hover:border-[var(--color-accent-light)] hover:bg-[var(--color-accent-light)] ${reaction.isPaid ? 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300' : ''}`}>
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] transition-colors duration-200 ${reaction.isPaid ? 'border-[var(--color-paid-border)] bg-[var(--color-paid-bg)] text-[var(--color-paid-text)]' : 'border-[var(--color-line)] bg-[var(--color-paper)] text-[var(--color-muted)] hover:border-[var(--color-accent-light)] hover:bg-[var(--color-accent-light)]'}`}>
                 <span className="inline-flex items-center leading-none">
                   {reaction.isPaid ? '⭐' : reaction.emojiImage ? (
                     <img src={reaction.emojiImage} alt={reaction.emoji || 'emoji'} loading="lazy" width="16" height="16" className="block h-4 w-4" />
@@ -83,7 +83,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
               key={tag}
               href={getTagHref(tag)}
               title={tag}
-              className="inline-block rounded-[var(--radius-full)] bg-[var(--color-tag-bg)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:bg-[var(--color-tag-hover)] hover:text-[var(--color-paper)] hover:no-underline">
+              className="ui-font inline-block rounded-[var(--radius-full)] bg-[var(--color-tag-bg)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:bg-[var(--color-tag-hover)] hover:text-[var(--color-paper)] hover:no-underline">
               {tag}
             </a>
           ))}
