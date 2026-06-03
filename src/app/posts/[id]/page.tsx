@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { getChannelInfo, getChannelPost } from '../../../lib/sources'
 import { getEnv } from '../../../lib/env'
@@ -11,6 +12,38 @@ const breadcrumbListClass = 'm-0 flex list-none items-center p-0'
 const breadcrumbLinkClass = 'inline-flex items-center no-underline'
 const breadcrumbAvatarClass = 'block h-5 w-5 rounded-full border-2 border-[var(--color-card)] object-cover shadow-soft'
 const breadcrumbTitleClass = 'ml-[10px] flex-1 text-[14px] text-[var(--color-heading)]'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const siteUrl = getEnv('SITE_URL') ?? '/'
+  const channelInfo = await getChannelInfo()
+  const post = await getChannelPost(id)
+  if (!post) return {}
+
+  const title = post.title || channelInfo.title
+  const description = post.description || post.text?.slice(0, 160) || undefined
+  const url = `${siteUrl}posts/${post.id}`
+
+  // Extract first image from content for OG
+  const imgMatch = post.content.match(/src="([^"]+)"/)
+  const ogImage = imgMatch ? `/static/${imgMatch[1]}` : channelInfo.avatar ? `/static/${channelInfo.avatar}` : undefined
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'article',
+      publishedTime: post.datetime,
+      images: ogImage ? [{ url: ogImage, width: 800, height: 600 }] : undefined,
+    },
+    alternates: {
+      canonical: url,
+    },
+  }
+}
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

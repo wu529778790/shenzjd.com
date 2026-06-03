@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getChannelInfo } from '../../lib/sources'
 import { getEnv } from '../../lib/env'
@@ -6,6 +7,14 @@ import Header from '../../components/Header'
 import TagCloud from '../../components/TagCloud'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = getEnv('SITE_URL') ?? '/'
+  return {
+    title: 'Links',
+    alternates: { canonical: `${siteUrl}links` },
+  }
+}
 
 export default async function LinksPage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
