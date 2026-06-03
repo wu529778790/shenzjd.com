@@ -5,10 +5,27 @@ import List from '../../../components/List'
 
 export const dynamic = 'force-dynamic'
 
+function getEmptyChannel() {
+  return {
+    posts: [],
+    title: getEnv('CHANNEL') ?? '',
+    description: '',
+    descriptionHTML: null,
+    avatar: undefined,
+  }
+}
+
 export default async function AfterPage({ params }: { params: Promise<{ cursor: string }> }) {
   const { cursor } = await params
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const channel = await getChannelInfo({ after: cursor })
+
+  let channel
+  try {
+    channel = await getChannelInfo({ after: cursor })
+  } catch (err) {
+    console.error('Failed to fetch newer posts, using empty state:', err)
+    channel = getEmptyChannel()
+  }
 
   return (
     <Layout channel={channel} siteUrl={siteUrl} pathname={`/after/${cursor}`}>

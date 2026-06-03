@@ -19,7 +19,20 @@ export default async function SearchPage({ params }: { params: Promise<{ q: stri
   const { q } = await params
   const decodedQ = decodeURIComponent(q || '')
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const channel = await getChannelInfo({ q: decodedQ })
+
+  let channel
+  try {
+    channel = await getChannelInfo({ q: decodedQ })
+  } catch (err) {
+    console.error('Failed to fetch search results, using empty state:', err)
+    channel = {
+      posts: [],
+      title: getEnv('CHANNEL') ?? '',
+      description: '',
+      descriptionHTML: null,
+      avatar: undefined,
+    }
+  }
 
   channel.seo = { title: decodedQ, noindex: true }
 

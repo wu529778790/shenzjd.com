@@ -6,27 +6,48 @@ import List from '../components/List'
 
 export const dynamic = 'force-dynamic'
 
-export async function generateMetadata(): Promise<Metadata> {
-  const channel = await getChannelInfo()
-  const siteUrl = getEnv('SITE_URL') ?? '/'
+function getEmptyChannel() {
   return {
-    title: channel.title,
-    description: channel.description || undefined,
-    openGraph: {
+    posts: [],
+    title: getEnv('CHANNEL') ?? '',
+    description: '',
+    descriptionHTML: null,
+    avatar: undefined,
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const channel = await getChannelInfo()
+    const siteUrl = getEnv('SITE_URL') ?? '/'
+    return {
       title: channel.title,
       description: channel.description || undefined,
-      url: siteUrl,
-      images: channel.avatar ? [{ url: `/static/${channel.avatar}`, width: 200, height: 200 }] : undefined,
-    },
-    alternates: {
-      canonical: siteUrl,
-    },
+      openGraph: {
+        title: channel.title,
+        description: channel.description || undefined,
+        url: siteUrl,
+        images: channel.avatar ? [{ url: `/static/${channel.avatar}`, width: 200, height: 200 }] : undefined,
+      },
+      alternates: {
+        canonical: siteUrl,
+      },
+    }
+  } catch {
+    return {}
   }
 }
 
 export default async function HomePage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const channel = await getChannelInfo()
+
+  let channel
+  try {
+    channel = await getChannelInfo()
+  } catch (err) {
+    console.error('Failed to fetch channel info, using empty state:', err)
+    channel = getEmptyChannel()
+  }
 
   return (
     <Layout channel={channel} siteUrl={siteUrl} pathname="/">

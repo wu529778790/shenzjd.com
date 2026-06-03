@@ -1,5 +1,6 @@
 import type { ChannelInfo } from '../types'
 import { getEnv } from '../lib/env'
+import { sanitize } from '../lib/sanitize'
 
 const HIDE_DESCRIPTION = getEnv('HIDE_DESCRIPTION')
 
@@ -12,7 +13,7 @@ export default function Header({ channel }: { channel: ChannelInfo }) {
     <div
       data-animate="post"
       className="mb-6 break-words rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-5 py-4 text-[14px] leading-relaxed text-[var(--color-muted)] content"
-      dangerouslySetInnerHTML={{ __html: channel.descriptionHTML }}
+      dangerouslySetInnerHTML={{ __html: sanitize(channel.descriptionHTML) }}
     />
   )
 }

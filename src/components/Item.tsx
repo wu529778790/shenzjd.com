@@ -1,6 +1,7 @@
 import type { Post } from '../types'
 import dayjs from '../lib/dayjs'
 import { getEnv } from '../lib/env'
+import { sanitize } from '../lib/sanitize'
 
 const locale = getEnv('LOCALE')
 const timezone = getEnv('TIMEZONE')
@@ -49,7 +50,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
       {hasContent && (
         <div
           className="text-[15px] leading-[1.85] text-[var(--color-ink)] content"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitize(post.content) }}
         />
       )}
 

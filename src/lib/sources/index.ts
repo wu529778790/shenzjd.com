@@ -22,20 +22,35 @@ function mergeChannels(telegram: ChannelInfo, x: ChannelInfo | null): ChannelInf
 export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise<ChannelInfo> {
   const hasXAccount = Boolean(process.env.X_ACCOUNT)
 
-  const [telegram, x] = await Promise.all([
+  const results = await Promise.allSettled([
     getTelegramChannelInfo(params),
-    hasXAccount ? getXChannelInfo(params).catch((err: unknown) => {
-      console.error('Failed to fetch X channel info:', err)
-      return null
-    }) : null,
+    hasXAccount ? getXChannelInfo(params) : Promise.resolve(null),
   ])
+
+  const telegram = results[0].status === 'fulfilled' ? results[0].value : null
+  const x = results[1].status === 'fulfilled' ? results[1].value : null
+
+  if (!telegram) {
+    // Telegram is the primary source — if it fails, propagate the error
+    const err = results[0].status === 'rejected' ? results[0].reason : new Error('Telegram returned null')
+    throw err
+  }
+
+  if (results[1].status === 'rejected') {
+    console.error('Failed to fetch X channel info:', results[1].reason)
+  }
 
   return mergeChannels(telegram, x)
 }
 
 export async function getChannelPost(id: string): Promise<Post> {
   if (id.startsWith(X_ID_PREFIX)) {
-    return getXChannelPost(id)
+    try {
+      return await getXChannelPost(id)
+    } catch (err) {
+      console.error('Failed to fetch X post:', err)
+      throw err
+    }
   }
   return getTelegramChannelPost(id)
 }

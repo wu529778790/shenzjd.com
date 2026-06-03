@@ -14,34 +14,38 @@ const breadcrumbAvatarClass = 'block h-5 w-5 rounded-full border-2 border-[var(-
 const breadcrumbTitleClass = 'ml-[10px] flex-1 text-[14px] text-[var(--color-heading)]'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params
-  const siteUrl = getEnv('SITE_URL') ?? '/'
-  const channelInfo = await getChannelInfo()
-  const post = await getChannelPost(id)
-  if (!post) return {}
+  try {
+    const { id } = await params
+    const siteUrl = getEnv('SITE_URL') ?? '/'
+    const channelInfo = await getChannelInfo()
+    const post = await getChannelPost(id)
+    if (!post) return {}
 
-  const title = post.title || channelInfo.title
-  const description = post.description || post.text?.slice(0, 160) || undefined
-  const url = `${siteUrl}posts/${post.id}`
+    const title = post.title || channelInfo.title
+    const description = post.description || post.text?.slice(0, 160) || undefined
+    const url = `${siteUrl}posts/${post.id}`
 
-  // Extract first image from content for OG
-  const imgMatch = post.content.match(/src="([^"]+)"/)
-  const ogImage = imgMatch ? `/static/${imgMatch[1]}` : channelInfo.avatar ? `/static/${channelInfo.avatar}` : undefined
+    // Extract first image from content for OG
+    const imgMatch = post.content.match(/src="([^"]+)"/)
+    const ogImage = imgMatch ? `/static/${imgMatch[1]}` : channelInfo.avatar ? `/static/${channelInfo.avatar}` : undefined
 
-  return {
-    title,
-    description,
-    openGraph: {
+    return {
       title,
       description,
-      url,
-      type: 'article',
-      publishedTime: post.datetime,
-      images: ogImage ? [{ url: ogImage, width: 800, height: 600 }] : undefined,
-    },
-    alternates: {
-      canonical: url,
-    },
+      openGraph: {
+        title,
+        description,
+        url,
+        type: 'article',
+        publishedTime: post.datetime,
+        images: ogImage ? [{ url: ogImage, width: 800, height: 600 }] : undefined,
+      },
+      alternates: {
+        canonical: url,
+      },
+    }
+  } catch {
+    return {}
   }
 }
 
@@ -52,8 +56,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   const siteUrl = getEnv('SITE_URL') ?? '/'
   const staticProxy = getEnv('STATIC_PROXY') ?? '/static/'
 
-  const channelInfo = await getChannelInfo()
-  const post = await getChannelPost(id)
+  let channelInfo, post
+  try {
+    channelInfo = await getChannelInfo()
+    post = await getChannelPost(id)
+  } catch (err) {
+    console.error('Failed to fetch post data:', err)
+    notFound()
+  }
 
   if (!post) notFound()
 

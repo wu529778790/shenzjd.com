@@ -54,16 +54,12 @@ interface LoadedChannelDocument {
 }
 
 const CACHE_TTL = 1000 * 60 * 60 * 24 // 24 hours
-const REFRESH_INTERVAL = 1000 * 60 * 30 // refresh every 30 minutes
 
 const cache = new LRUCache<string, CacheValue>({
   ttl: CACHE_TTL,
   maxSize: 50 * 1024 * 1024,
   sizeCalculation: item => JSON.stringify(item).length,
 })
-
-const lastRefresh = new Map<string, number>()
-const refreshing = new Set<string>()
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
   return structuredClone(value)
@@ -72,33 +68,10 @@ function cloneCacheValue<T extends CacheValue>(value: T): T {
 function getCached<T extends CacheValue>(
   cacheKey: string,
   typeGuard: (v: CacheValue) => v is T,
-): { value: T; stale: boolean } | null {
+): T | null {
   const cached = cache.get(cacheKey)
   if (!cached || !typeGuard(cached)) return null
-
-  const refreshed = lastRefresh.get(cacheKey) ?? 0
-  const stale = Date.now() - refreshed > REFRESH_INTERVAL
-  return { value: cached as T, stale }
-}
-
-function markRefreshed(cacheKey: string): void {
-  lastRefresh.set(cacheKey, Date.now())
-}
-
-function backgroundRefresh<T extends CacheValue>(
-  cacheKey: string,
-  fetcher: () => Promise<T>,
-  typeGuard: (v: CacheValue) => v is T,
-): void {
-  if (refreshing.has(cacheKey)) return
-  refreshing.add(cacheKey)
-  fetcher()
-    .then(fresh => {
-      cache.set(cacheKey, fresh)
-      markRefreshed(cacheKey)
-    })
-    .catch(() => {})
-    .finally(() => refreshing.delete(cacheKey))
+  return cached as T
 }
 
 function isChannelInfo(value: CacheValue): value is ChannelInfo {
@@ -479,20 +452,13 @@ export async function getChannelPost(id: string): Promise<Post> {
   const cacheKey = JSON.stringify({ scope: 'post', id })
   const hit = getCached(cacheKey, (v): v is Post => !isChannelInfo(v))
   if (hit) {
-    console.info('Match Cache', { id, stale: hit.stale })
-    if (hit.stale) {
-      backgroundRefresh(cacheKey, async () => {
-        const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ id })
-        return extractPost($, null, { channel, staticProxy, reactionsEnabled })
-      }, (v): v is Post => !isChannelInfo(v))
-    }
-    return cloneCacheValue(hit.value)
+    console.info('Cache hit', { id })
+    return cloneCacheValue(hit)
   }
 
   const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ id })
   const post = await extractPost($, null, { channel, staticProxy, reactionsEnabled })
   cache.set(cacheKey, post)
-  markRefreshed(cacheKey)
   return cloneCacheValue(post)
 }
 
@@ -501,26 +467,8 @@ export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise
   const cacheKey = JSON.stringify({ scope: 'channel', before, after, q })
   const hit = getCached(cacheKey, isChannelInfo)
   if (hit) {
-    console.info('Match Cache', { before, after, q, stale: hit.stale })
-    if (hit.stale) {
-      backgroundRefresh(cacheKey, async () => {
-        const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ before, after, q })
-        const postNodes = $('.tgme_channel_history .tgme_widget_message_wrap').toArray()
-        const posts = (await Promise.all(
-          postNodes.map((item, index) => extractPost($, item, { channel, staticProxy, index, reactionsEnabled })),
-        ))
-          .reverse()
-          .filter(post => post.type === 'text' && Boolean(post.id) && Boolean(post.content))
-        return {
-          posts,
-          title: $('.tgme_channel_info_header_title').text(),
-          description: $('.tgme_channel_info_description').text(),
-          descriptionHTML: (await modifyHTMLContent($, $('.tgme_channel_info_description'), { staticProxy })).html(),
-          avatar: $('.tgme_page_photo_image img').attr('src'),
-        }
-      }, isChannelInfo)
-    }
-    return cloneCacheValue(hit.value)
+    console.info('Cache hit', { before, after, q })
+    return cloneCacheValue(hit)
   }
 
   const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ before, after, q })
@@ -540,6 +488,5 @@ export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise
   }
 
   cache.set(cacheKey, channelInfo)
-  markRefreshed(cacheKey)
   return cloneCacheValue(channelInfo)
 }
