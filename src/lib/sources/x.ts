@@ -199,22 +199,31 @@ function tweetToPost(tweet: TweetData, index = 0): Post {
 
 async function fetchTimeline(screenName: string, maxPosition?: string): Promise<TweetData[]> {
   const url = `https://syndication.twitter.com/srv/timeline-profile/screen-name/${screenName}`
-  const html = await $fetch<string>(url, {
-    query: maxPosition ? { maxPosition } : undefined,
-    headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
-    retry: 3,
-    retryDelay: 1000,
-    timeout: 20000,
-  })
+  try {
+    const html = await $fetch<string>(url, {
+      query: maxPosition ? { maxPosition } : undefined,
+      headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
+      retry: 2,
+      retryDelay: 2000,
+      timeout: 15000,
+    })
 
-  const match = html.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/)
-  if (!match) return []
+    const match = html.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/)
+    if (!match) return []
 
-  const data = JSON.parse(match[1])
-  const entries = data?.props?.pageProps?.timeline?.entries ?? []
-  return entries
-    .filter((e: { type: string }) => e.type === 'tweet')
-    .map((e: { content: { tweet: TweetData } }) => e.content.tweet)
+    const data = JSON.parse(match[1])
+    const entries = data?.props?.pageProps?.timeline?.entries ?? []
+    return entries
+      .filter((e: { type: string }) => e.type === 'tweet')
+      .map((e: { content: { tweet: TweetData } }) => e.content.tweet)
+  } catch (err: unknown) {
+    const status = (err as { response?: { status?: number } })?.response?.status
+    if (status === 429) {
+      console.warn('X timeline rate limited, returning empty')
+      return []
+    }
+    throw err
+  }
 }
 
 function extractUserInfo(tweets: TweetData[]): { avatar: string; name: string } {
