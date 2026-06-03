@@ -246,9 +246,9 @@ export default function Layout({
 
       {/* Main content: articles left, sidebar right */}
       <main id="main-content" className="relative mx-auto max-w-[1060px] px-4 py-6 sm:px-6 sm:py-8">
-        <div className="lg:flex lg:gap-8">
+        <div className="lg:flex lg:justify-center lg:gap-8">
           {/* Left: article stream */}
-          <div className="min-w-0 flex-1 mx-auto max-w-[600px] lg:mx-0">
+          <div className="min-w-0 mx-auto max-w-[600px] lg:mx-0 lg:max-w-none lg:flex-1">
             {children}
           </div>
 
