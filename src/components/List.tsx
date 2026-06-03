@@ -1,5 +1,4 @@
 import type { ChannelInfo } from '../types'
-import Header from './Header'
 import Item from './Item'
 
 interface ListProps {
@@ -42,7 +41,7 @@ export default function List({
   return (
     <div>
       {pageHeading && <h1 className="sr-only">{pageHeading}</h1>}
-      {children ?? <Header channel={channel} />}
+      {children}
       <div className="flex flex-col gap-4">
         {posts.map(post => (
           <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} />
