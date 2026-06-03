@@ -304,7 +304,12 @@ async function modifyHTMLContent($: CheerioAPI, content: MessageSelection, optio
       pre.find('br').replaceWith('\n')
       const code = pre.text()
       const language = flourite(code, { shiki: true, noUnknown: true }).language || 'text'
-      const highlightedCode = prism.highlight(code, prism.languages[language], language)
+      const grammar = prism.languages[language]
+      if (!grammar) {
+        pre.html(`<code class="language-plaintext">${code}</code>`)
+        continue
+      }
+      const highlightedCode = prism.highlight(code, grammar, language)
       pre.html(`<code class="language-${language}">${highlightedCode}</code>`)
     }
     catch (error) {
