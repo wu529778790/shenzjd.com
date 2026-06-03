@@ -22,6 +22,7 @@ const cache = new LRUCache<string, CacheValue>({
 })
 
 const lastRefresh = new Map<string, number>()
+const refreshing = new Set<string>()
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
   return structuredClone(value)
@@ -52,12 +53,15 @@ function backgroundRefresh<T extends CacheValue>(
   fetcher: () => Promise<T>,
   typeGuard: (v: CacheValue) => v is T,
 ): void {
+  if (refreshing.has(cacheKey)) return
+  refreshing.add(cacheKey)
   fetcher()
     .then(fresh => {
       cache.set(cacheKey, fresh)
       markRefreshed(cacheKey)
     })
     .catch(() => {})
+    .finally(() => refreshing.delete(cacheKey))
 }
 
 interface TwitterMedia {
