@@ -4,6 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 @AGENTS.md
 
+## Design & Product Context
+
+- `PRODUCT.md` — user personas, brand personality, design principles (content-first, warm restraint, progressive disclosure, readable rhythm), accessibility requirements
+- `SHAPE-BRIEF.md` — detailed UI/UX brief: color strategy, layout strategy, key states, interaction model
+
 ## Commands
 
 ```bash
@@ -35,8 +40,8 @@ TypeScript check: `npx tsc --noEmit`
 |---|---|
 | `/` | Home — channel posts with pagination |
 | `/posts/[id]` | Single post detail with Telegram comments widget |
-| `/before/[cursor]` | Older posts (cursor = ISO timestamp) |
-| `/after/[cursor]` | Newer posts (cursor = ISO timestamp) |
+| `/before/[cursor]` | Older posts (cursor = numeric message ID) |
+| `/after/[cursor]` | Newer posts (cursor = numeric message ID) |
 | `/search/[q]` | Search results via Telegram's built-in search |
 | `/tags` | Tag cloud (tags from `TAGS` env var) |
 | `/links` | Link list (from `LINKS` env var) |
@@ -51,23 +56,32 @@ TypeScript check: `npx tsc --noEmit`
 All pages follow the same pattern: fetch data → wrap in `<Layout>` → render with `<List>` or `<Header>`+`<TagCloud>`.
 
 - **Layout** (`src/components/Layout.tsx`): sidebar + content column, mobile hamburger nav (inline `<script>` toggle), search form, back-to-top button, header/footer inject zones
-- **List** (`src/components/List.tsx`): renders `<ol>` of `<Item>` components with before/after pagination links (timestamp-based cursors)
+- **List** (`src/components/List.tsx`): renders `<ol>` of `<Item>` components with before/after pagination links
 - **Item** (`src/components/Item.tsx`): single post — timestamp, content (via `dangerouslySetInnerHTML`), reactions, tags, optional Telegram comments widget
 - **Header** (`src/components/Header.tsx`): avatar, title, social links (RSS, Twitter, GitHub, Telegram, etc.), channel description
+- **ThemeToggle** (`src/components/ThemeToggle.tsx`): client component — cycles light/dark/system via `localStorage`, toggles `.dark` class
+- **Animations** (`src/components/Animations.tsx`): client component — anime.js entry animations for post cards, respects `prefers-reduced-motion`
 
 ### Styling
 
-- Tailwind CSS v4 via `@tailwindcss/postcss`
-- Design tokens defined in `globals.css` `@theme` block: warm paper palette (`--color-paper: #faf6f0`), 4pt spacing grid, elevation shadows
+- Tailwind CSS v4 via `@tailwindcss/postcss` — no `tailwind.config.js`; all config is in `globals.css` `@theme` block
+- Design tokens defined in `globals.css`: warm paper palette (`--color-paper: #faf6f0`), 4pt spacing grid, elevation shadows
 - Body uses serif font (`Georgia` family); headings use system sans-serif
 - `.content` class handles Telegram HTML styling (blockquotes, expandable sections, spoilers, image grids, link previews, code blocks, stickers, modals via Popover API)
+- Dark mode: `.dark` class toggled by `ThemeToggle`; inline `<script>` in `layout.tsx` reads `localStorage` before hydration to prevent flash
+- View transitions enabled (`@view-transition { navigation: auto }`) with `viewTransitionName` on title and post cards
 - Mobile breakpoint: `37.5rem` (600px)
 
 ### Environment Variables
 
 Required: `CHANNEL` (Telegram channel username).
 
-Key optional vars in `.env.example`: `SITE_URL`, `LOCALE`, `TIMEZONE`, `STATIC_PROXY`, `TELEGRAM_HOST`, `TAGS`, `LINKS`, `NAVS` (semicolon-delimited), `COMMENTS`, `REACTIONS`, `HIDE_DESCRIPTION`, `GOOGLE_SEARCH_SITE`, `PROMOS`, social media usernames, `HEADER_INJECT`/`FOOTER_INJECT` (raw HTML), SEO flags (`NO_INDEX`, `NO_FOLLOW`).
+Key optional vars in `.env.example`: `SITE_URL`, `LOCALE`, `TIMEZONE`, `STATIC_PROXY`, `TELEGRAM_HOST`, `COMMENTS`, `REACTIONS`, `HIDE_DESCRIPTION`, `GOOGLE_SEARCH_SITE`, social media usernames, `HEADER_INJECT`/`FOOTER_INJECT` (raw HTML), SEO flags (`NO_INDEX`, `NO_FOLLOW`).
+
+Parsing formats (semicolon/comma-delimited at module load time):
+- `TAGS` — comma-delimited: `tag1,tag2,tag3`
+- `LINKS` / `NAVS` — semicolon-delimited items, comma-separated key-value: `title,url;title,url`
+- `PROMOS` — pipe between fields, semicolon between items: `title|description|url;title|description|url`
 
 ### Static Asset Proxy
 
@@ -75,6 +89,7 @@ Key optional vars in `.env.example`: `SITE_URL`, `LOCALE`, `TIMEZONE`, `STATIC_P
 
 ### Key Patterns
 
+- Path alias: `@/*` → `./src/*`
 - `params` in page components are `Promise<...>` (Next.js 16 convention — must `await`)
 - Cache values are always cloned via `structuredClone` before return to prevent cross-request mutation
 - `getEnv` / `getRequiredEnv` wrappers in `src/lib/env.ts` for accessing `process.env`

@@ -19,19 +19,19 @@ Next.js 16 App Router microblog that renders a Telegram channel's posts as a web
 ### Data flow
 
 1. `src/lib/sources/telegram.ts` — fetches raw HTML from `t.me/s/{CHANNEL}` via `ofetch`, parses with Cheerio (posts, images, videos, stickers, reactions, link previews, code blocks)
-2. Code blocks auto-detected with `flourite`, syntax-highlighted with `prismjs`
-3. Results cached in LRU cache (50MB, 5min TTL) — values are **always** `structuredClone`'d on read to prevent cross-request mutation
-4. `src/lib/sources/index.ts` re-exports Telegram source as a facade for future multi-source support
+2. `src/lib/sources/x.ts` — fetches from Twitter/X syndication endpoint, merges with Telegram posts
+3. Code blocks auto-detected with `flourite`, syntax-highlighted with `prismjs`
+4. Results cached with stale-while-revalidate strategy: 24h TTL, 30min refresh interval, 50MB max size, LRU eviction — values are **always** `structuredClone`'d on read to prevent cross-request mutation
+5. `src/lib/sources/index.ts` — facade that merges Telegram and X sources, routes posts by ID prefix
 
 ### Key routes
 
 - `/` — home (posts + pagination)
 - `/posts/[id]` — single post with Telegram comments widget
-- `/before/[cursor]` / `/after/[cursor]` — older/newer posts (cursor = ISO timestamp)
+- `/before/[cursor]` / `/after/[cursor]` — older/newer posts (cursor = numeric message ID)
 - `/search/[q]` — search
 - `/tags` — tag cloud (from `TAGS` env)
 - `/links` — link list (from `LINKS` env)
-- `/rss.xml` / `/rss.json` — feeds (not yet implemented)
 - `/sitemap.xml` — sitemap index with paginated sub-sitemaps
 - `/sitemap/[cursor]` — paginated sitemap pages
 - `/static/[...url]` — proxy for Telegram CDN (whitelisted domains only)
