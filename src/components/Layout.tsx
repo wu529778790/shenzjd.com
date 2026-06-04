@@ -42,18 +42,6 @@ export default function Layout({
         </div>
       </main>
 
-      <footer className="ui-font border-t border-[var(--color-line)] py-8 text-center text-[11px] text-[var(--color-footer)]">
-        Powered by{" "}
-        <a
-          href="https://github.com/wu529778790/shenzjd.com"
-          title="shenzjd.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[var(--color-muted)] hover:text-[var(--color-heading)] transition-colors duration-200">
-          shenzjd.com
-        </a>
-      </footer>
-
       <a
         href="#main-content"
         id="back-to-top"
