@@ -127,6 +127,7 @@ export default function Sidebar({ channel, siteUrl, pathname }: SidebarProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-animate="promo"
+                style={{ '--animate-delay': `${150 + i * 60}ms` } as React.CSSProperties}
                 className="block rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] p-3 transition-colors duration-200 hover:border-[var(--color-accent)]">
                 <h3 className="ui-font text-[12px] font-medium text-[var(--color-heading)] leading-snug mb-0.5">{promo.title}</h3>
                 {promo.description && (

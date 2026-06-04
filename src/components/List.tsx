@@ -48,8 +48,8 @@ export default function List({
             <p className="ui-font text-[14px] text-[var(--color-muted)]">No posts yet.</p>
           </div>
         )}
-        {posts.map(post => (
-          <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} />
+        {posts.map((post, index) => (
+          <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} index={index} />
         ))}
       </div>
       <nav className="mt-6 flex items-center justify-between" aria-label="Pagination">

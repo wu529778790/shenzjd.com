@@ -18,9 +18,10 @@ interface ItemProps {
   isItem?: boolean
   siteUrl: string
   channelName?: string
+  index?: number
 }
 
-export default function Item({ post, isItem = false, siteUrl, channelName }: ItemProps) {
+export default function Item({ post, isItem = false, siteUrl, channelName, index = 0 }: ItemProps) {
   const datetime = dayjs(post.datetime).tz(timezone)
   const timeago = datetime.isBefore(dayjs().subtract(1, 'w'))
     ? datetime.format('HH:mm · ll · ddd')
@@ -33,7 +34,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName }: Ite
     <article
       data-animate="post"
       className={`group rounded-[var(--radius-md)] bg-[var(--color-card)] px-4 py-3 transition-all duration-200 sm:px-5 sm:py-4 ${isItem ? '' : 'mb-3'}`}
-      style={{ viewTransitionName: `post-${post.id}` } as React.CSSProperties}>
+      style={{ viewTransitionName: `post-${post.id}`, '--animate-delay': `${60 + index * 50}ms` } as React.CSSProperties}>
       {/* Timestamp */}
       <header className="mb-2 flex items-center leading-none">
         <span className="h-1 w-1 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />

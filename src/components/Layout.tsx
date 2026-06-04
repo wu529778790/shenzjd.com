@@ -1,7 +1,6 @@
 import type { ChannelInfo } from "../types";
 import { getEnv } from "../lib/env";
 import { sanitizeInjection } from "../lib/sanitize";
-import Animations from "./Animations";
 import MobileNav from "./MobileNav";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
@@ -69,8 +68,6 @@ export default function Layout({
       {FOOTER_INJECT && (
         <div dangerouslySetInnerHTML={{ __html: sanitizeInjection(FOOTER_INJECT) }} />
       )}
-
-      <Animations />
     </>
   );
 }
