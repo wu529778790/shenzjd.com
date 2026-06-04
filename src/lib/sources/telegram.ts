@@ -53,12 +53,13 @@ interface LoadedChannelDocument {
   reactionsEnabled?: string
 }
 
-const CACHE_TTL = 1000 * 60 * 60 * 24 // 24 hours
+const CACHE_TTL = 1000 * 60 * 5 // 5 minutes
 
 const cache = new LRUCache<string, CacheValue>({
   ttl: CACHE_TTL,
-  maxSize: 50 * 1024 * 1024,
-  sizeCalculation: item => JSON.stringify(item).length,
+  max: 20,
+  allowStale: true,
+  updateAgeOnGet: true,
 })
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
