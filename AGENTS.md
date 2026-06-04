@@ -9,7 +9,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ```bash
 npm run dev       # Dev server on localhost:3000
 npm run build     # Production build
-npx tsc --noEmit  # Type check (no linter/formatter/test suite configured)
+npm run test      # Run tests (vitest)
+npm run test:watch  # Watch mode
+npx tsc --noEmit  # Type check (no linter/formatter configured)
 ```
 
 ## Architecture
@@ -20,7 +22,7 @@ Next.js 16 App Router microblog that renders a Telegram channel's posts as a web
 
 1. `src/lib/sources/telegram.ts` — fetches raw HTML from `t.me/s/{CHANNEL}` via `ofetch`, parses with Cheerio (posts, images, videos, stickers, reactions, link previews, code blocks)
 2. Code blocks auto-detected with `flourite`, syntax-highlighted with `prismjs`
-3. Results cached with stale-while-revalidate strategy: 24h TTL, 30min refresh interval, 50MB max size, LRU eviction — values are **always** `structuredClone`'d on read to prevent cross-request mutation
+3. Results cached with LRU cache: **5min TTL**, `max: 20` entries, `allowStale: true`, `updateAgeOnGet: true` — values are **always** `structuredClone`'d on read to prevent cross-request mutation. No concurrency lock per key
 4. `src/lib/sources/index.ts` — facade that routes posts to Telegram
 
 ### Key routes
@@ -50,6 +52,7 @@ All pages: fetch data → wrap in `<Layout>` → render with `<List>` or `<Heade
 - Design tokens in `src/app/globals.css` `@theme` block: warm paper palette, 4pt spacing grid
 - Mobile breakpoint: `37.5rem` (600px)
 - `.content` class handles all Telegram HTML styling (blockquotes, spoilers, image grids, code blocks, etc.)
+- CSS-only animations (anime.js removed)
 
 ## Environment
 
@@ -64,6 +67,7 @@ All pages: fetch data → wrap in `<Layout>` → render with `<List>` or `<Heade
 
 ## Gotchas
 
-- This uses **npm** (package-lock.json), not pnpm — `pnpm-workspace.yaml` only exists for `ignoredBuiltDependencies`
-- No test suite exists
+- This uses **npm** (package-lock.json), not pnpm
 - Telegram HTML is rendered via `dangerouslySetInnerHTML` after Cheerio processing
+- Turbopack root set in next.config.ts to prevent scanning home directory
+- Tests use vitest: `npm run test`
