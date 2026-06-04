@@ -86,7 +86,7 @@ export default function Sidebar({ channel, siteUrl, pathname }: SidebarProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="ui-font flex items-center rounded-[var(--radius-sm)] px-3 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-colors duration-200 hover:bg-[var(--color-line)] hover:text-[var(--color-heading)]">
-              <span className="mr-2.5 h-1 w-1 rounded-full bg-[var(--color-accent)] opacity-50" />
+              <svg className="mr-2.5 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
               {nav.title}
             </a>
           ))}
