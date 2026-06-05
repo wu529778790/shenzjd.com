@@ -6,18 +6,6 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: resolve(__dirname),
   },
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 't.me',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.t.me',
-      },
-    ],
-  },
   async headers() {
     return [
       {
