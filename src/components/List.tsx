@@ -1,4 +1,5 @@
 import type { ChannelInfo } from '../types'
+import { getEnv } from '../lib/env'
 import Item from './Item'
 
 interface ListProps {
@@ -49,7 +50,7 @@ export default function List({
           </div>
         )}
         {posts.map((post, index) => (
-          <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={process.env.CHANNEL} index={index} />
+          <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={getEnv('CHANNEL')} index={index} />
         ))}
       </div>
       <nav className="mt-6 flex items-center justify-between" aria-label="Pagination">
