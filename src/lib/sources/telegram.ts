@@ -57,13 +57,28 @@ const CACHE_TTL = 1000 * 60 * 5 // 5 minutes
 
 const cache = new LRUCache<string, CacheValue>({
   ttl: CACHE_TTL,
-  max: 20,
+  max: 100,
+  allowStale: true,
+  updateAgeOnGet: true,
+})
+
+const searchCache = new LRUCache<string, CacheValue>({
+  ttl: 1000 * 60, // 60 seconds — search results are less cacheable
+  max: 50,
   allowStale: true,
   updateAgeOnGet: true,
 })
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
-  return structuredClone(value)
+  // Shallow copy prevents cross-request mutation of the posts array
+  // while avoiding the CPU cost of deep-cloning large HTML strings
+  if (Array.isArray((value as any).posts)) {
+    return {
+      ...value,
+      posts: (value as any).posts.map((p: any) => ({ ...p })),
+    } as T
+  }
+  return { ...value } as T
 }
 
 function getCached<T extends CacheValue>(
@@ -460,14 +475,15 @@ export async function getChannelPost(id: string): Promise<Post> {
   const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ id })
   const post = await extractPost($, null, { channel, staticProxy, reactionsEnabled })
   cache.set(cacheKey, post)
-  return cloneCacheValue(post)
+  return post
 }
 
 export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise<ChannelInfo> {
   const { before = '', after = '', q = '' } = params
   const cacheKey = JSON.stringify({ scope: 'channel', before, after, q })
-  const hit = getCached(cacheKey, isChannelInfo)
-  if (hit) {
+  const activeCache = q ? searchCache : cache
+  const hit = activeCache.get(cacheKey)
+  if (hit && isChannelInfo(hit)) {
     console.info('Cache hit', { before, after, q })
     return cloneCacheValue(hit)
   }
@@ -488,6 +504,6 @@ export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise
     avatar: $('.tgme_page_photo_image img').attr('src'),
   }
 
-  cache.set(cacheKey, channelInfo)
-  return cloneCacheValue(channelInfo)
+  activeCache.set(cacheKey, channelInfo)
+  return channelInfo
 }
