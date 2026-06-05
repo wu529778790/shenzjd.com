@@ -5,7 +5,7 @@ import { getEnv } from '../../../lib/env'
 import Layout from '../../../components/Layout'
 import List from '../../../components/List'
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 const breadcrumbClass = 'mb-5 py-[10px] font-semibold'
 const breadcrumbListClass = 'm-0 flex list-none items-center p-0'

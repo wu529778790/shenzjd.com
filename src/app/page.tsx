@@ -4,7 +4,7 @@ import { getEnv } from '../lib/env'
 import Layout from '../components/Layout'
 import List from '../components/List'
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 function getEmptyChannel() {
   return {
