@@ -1,18 +1,13 @@
-import type { ChannelInfo, NavItem } from '../types'
+import type { ChannelInfo } from '../types'
 import { getEnv } from '../lib/env'
+import { parseNavs } from '../lib/nav'
 
 const TAGS = getEnv('TAGS')
 const LINKS = getEnv('LINKS')
 const NAVS = getEnv('NAVS')
 const GOOGLE_SEARCH_SITE = getEnv('GOOGLE_SEARCH_SITE')
 
-const navs: NavItem[] = (NAVS || '')
-  .split(';')
-  .filter(Boolean)
-  .map((link) => {
-    const [title = '', href = ''] = link.split(',')
-    return { title, href }
-  })
+const navs = parseNavs(NAVS)
 
 function normalizePathname(p: string): string {
   return p.replace(/\/$/, '') || '/'
