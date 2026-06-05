@@ -123,7 +123,7 @@ function escapeHtmlAttribute(value: string): string {
 }
 
 function getImageLoading(index: number): 'eager' | 'lazy' {
-  return index > 15 ? 'lazy' : 'eager'
+  return index > 2 ? 'lazy' : 'eager'
 }
 
 function getStyleDimension(style: string | undefined, property: 'width' | 'height'): number | null {
