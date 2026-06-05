@@ -31,6 +31,7 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
   const timeout = setTimeout(() => controller.abort(), PROXY_TIMEOUT)
 
   try {
+    // Only send User-Agent — do NOT forward client headers to upstream
     const response = await fetch(target.toString(), {
       headers: { 'User-Agent': 'Mozilla/5.0' },
       signal: controller.signal,
