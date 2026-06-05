@@ -56,14 +56,16 @@ describe('relative time formatting', () => {
 })
 
 describe('locale support', () => {
-  it('supports Chinese locale', () => {
+  it('supports Chinese locale', async () => {
+    await import('dayjs/locale/zh-cn.js')
     dayjs.locale('zh-cn')
     const dt = dayjs().subtract(1, 'hour')
     expect(dt.fromNow()).toContain('前')
     dayjs.locale('en')
   })
 
-  it('supports Japanese locale', () => {
+  it('supports Japanese locale', async () => {
+    await import('dayjs/locale/ja.js')
     dayjs.locale('ja')
     const dt = dayjs().subtract(1, 'hour')
     expect(dt.fromNow()).toContain('前')
