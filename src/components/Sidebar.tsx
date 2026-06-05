@@ -1,5 +1,6 @@
-import type { ChannelInfo, NavItem } from "../types";
+import type { ChannelInfo } from "../types";
 import { getEnv } from "../lib/env";
+import { parseNavs } from "../lib/nav";
 
 const TAGS = getEnv("TAGS");
 const LINKS = getEnv("LINKS");
@@ -9,13 +10,7 @@ const TELEGRAM = getEnv("CHANNEL");
 const X_ACCOUNT = getEnv("X_ACCOUNT");
 const PROMOS = getEnv("PROMOS");
 
-const navs: NavItem[] = (NAVS || "")
-  .split(";")
-  .filter(Boolean)
-  .map((link) => {
-    const [title = "", href = ""] = link.split(",");
-    return { title, href };
-  });
+const navs = parseNavs(NAVS);
 
 interface PromoItem {
   title: string;
