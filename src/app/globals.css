@@ -12,8 +12,8 @@
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --font-serif:
-    Newsreader, Georgia, 'Times New Roman', 'Noto Serif', 'Source Serif 4', 'Literata', serif;
-  --font-display: Newsreader, Georgia, serif;
+    var(--font-newsreader), Georgia, 'Times New Roman', 'Noto Serif', 'Source Serif 4', 'Literata', serif;
+  --font-display: var(--font-newsreader), Georgia, serif;
   --breakpoint-sm: 37.5rem;
 
   /* Editorial palette — refined, calm,阅读优先 */
