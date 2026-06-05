@@ -52,6 +52,9 @@ export async function GET(request: Request) {
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   ${staticSitemaps}${postSitemaps}
 </sitemapindex>`, {
-    headers: { 'Content-Type': 'application/xml' },
+    headers: {
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+    },
   })
 }

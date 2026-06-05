@@ -53,6 +53,9 @@ ${items}
 </rss>`
 
   return new Response(rss, {
-    headers: { 'Content-Type': 'application/rss+xml; charset=utf-8' },
+    headers: {
+      'Content-Type': 'application/rss+xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=600, s-maxage=600',
+    },
   })
 }
