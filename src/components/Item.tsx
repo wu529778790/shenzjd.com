@@ -1,7 +1,6 @@
 import type { Post } from '../types'
 import dayjs from '../lib/dayjs'
 import { getEnv } from '../lib/env'
-import { sanitize } from '../lib/sanitize'
 import LazyTelegramWidget from './LazyTelegramWidget'
 
 const locale = getEnv('LOCALE')
@@ -52,7 +51,7 @@ export default function Item({ post, isItem = false, siteUrl, channelName, index
       {hasContent && (
         <div
           className="text-[15px] leading-[1.85] text-[var(--color-ink)] content"
-          dangerouslySetInnerHTML={{ __html: sanitize(post.content) }}
+          dangerouslySetInnerHTML={{ __html: post.content }}
         />
       )}
 
