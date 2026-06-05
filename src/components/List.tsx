@@ -1,6 +1,8 @@
 import type { ChannelInfo } from '../types'
 import { getEnv } from '../lib/env'
+import ErrorBoundary from './ErrorBoundary'
 import Item from './Item'
+import ItemError from './ItemError'
 
 interface ListProps {
   channel: ChannelInfo
@@ -50,7 +52,9 @@ export default function List({
           </div>
         )}
         {posts.map((post, index) => (
-          <Item key={post.id} post={post} isItem={isItem} siteUrl={siteUrl} channelName={getEnv('CHANNEL')} index={index} />
+          <ErrorBoundary key={post.id} fallback={<ItemError />}>
+            <Item post={post} isItem={isItem} siteUrl={siteUrl} channelName={getEnv('CHANNEL')} index={index} />
+          </ErrorBoundary>
         ))}
       </div>
       <nav className="mt-6 flex items-center justify-between" aria-label="Pagination">
