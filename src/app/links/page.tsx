@@ -6,7 +6,7 @@ import Layout from '../../components/Layout'
 import Header from '../../components/Header'
 import TagCloud from '../../components/TagCloud'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteUrl = getEnv('SITE_URL') ?? '/'

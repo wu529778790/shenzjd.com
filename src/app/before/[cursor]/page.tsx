@@ -5,7 +5,7 @@ import { isValidCursor } from '../../../lib/cursor'
 import Layout from '../../../components/Layout'
 import List from '../../../components/List'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 function getEmptyChannel() {
   return {
