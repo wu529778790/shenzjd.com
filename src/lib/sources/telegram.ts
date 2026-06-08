@@ -58,15 +58,11 @@ const CACHE_TTL = 1000 * 60 * 5 // 5 minutes
 const cache = new LRUCache<string, CacheValue>({
   ttl: CACHE_TTL,
   max: 100,
-  allowStale: true,
-  updateAgeOnGet: true,
 })
 
 const searchCache = new LRUCache<string, CacheValue>({
   ttl: 1000 * 60, // 60 seconds — search results are less cacheable
   max: 50,
-  allowStale: true,
-  updateAgeOnGet: true,
 })
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
