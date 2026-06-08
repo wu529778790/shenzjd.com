@@ -73,9 +73,22 @@ Parsing formats (semicolon/comma-delimited at module load time):
 - `LINKS` / `NAVS` — semicolon-delimited items, comma-separated key-value: `title,url;title,url`
 - `PROMOS` — pipe between fields, semicolon between items: `title|description|url;title|description|url`
 
+### Build Configuration
+
+- `next.config.ts`: `output: 'standalone'` for Docker/edge deployment; Turbopack root set to project root to prevent scanning home directory
+- `dev` script uses `NODE_OPTIONS=--max-old-space-size=2048` — large heap for Telegram HTML parsing
+- Vitest config (`vitest.config.ts`): test pattern `src/**/*.test.ts`, node environment, `@` alias mapped to `./src`
+- Test files live in `src/lib/__tests__/` and `src/lib/sources/__tests__/`
+
 ### Static Asset Proxy
 
 `/static/[...url]` proxies Telegram CDN resources through the app. Only domains in the whitelist (`t.me`, `telegram.org`, `cdn-telegram.org`, `telesco.pe`, etc.) are allowed. The `STATIC_PROXY` env var defaults to `/static/` and is prepended to all Telegram media URLs during HTML processing.
+
+### Deployment
+
+- **Docker**: `docker build -t shenzjd . && docker run -d --env-file .env -p 3000:3000 shenzjd`
+- **Vercel**: One-click deploy from GitHub repo; uses `standalone` output
+- CI/CD: push to `main` builds Docker image and deploys to server
 
 ### Key Patterns
 
