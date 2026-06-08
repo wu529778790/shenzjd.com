@@ -17,15 +17,16 @@ function getEmptyChannel() {
   }
 }
 
-export default async function AfterPage({ params }: { params: Promise<{ cursor: string }> }) {
+export default async function AfterPage({ params, searchParams }: { params: Promise<{ cursor: string }>, searchParams: Promise<{ maxId?: string }> }) {
   const { cursor } = await params
+  const { maxId } = await searchParams
   if (!isValidCursor(cursor)) redirect('/')
   const siteUrl = getEnv('SITE_URL') ?? '/'
 
   let channel
   let error: string | null = null
   try {
-    channel = await getChannelInfo({ after: cursor })
+    channel = await getChannelInfo({ after: cursor, before: maxId })
   } catch (err) {
     console.error('Failed to fetch newer posts:', err)
     channel = getEmptyChannel()

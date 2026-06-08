@@ -474,6 +474,8 @@ export async function getChannelPost(id: string): Promise<Post> {
   return post
 }
 
+const PAGE_SIZE = 20
+
 export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise<ChannelInfo> {
   const { before = '', after = '', q = '' } = params
   const cacheKey = JSON.stringify({ scope: 'channel', before, after, q })
@@ -484,13 +486,27 @@ export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise
     return cloneCacheValue(hit)
   }
 
-  const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ before, after, q })
+  // When both before and after are set ("上一页" from a /before/ page),
+  // fetch with `after` only to get all posts newer than the cursor, then
+  // take the last PAGE_SIZE — this gives the page immediately before the
+  // current one.
+  const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({
+    before: before && after ? '' : before,
+    after,
+    q,
+  })
   const postNodes = $('.tgme_channel_history .tgme_widget_message_wrap').toArray()
-  const posts = (await Promise.all(
+  let posts = (await Promise.all(
     postNodes.map((item, index) => extractPost($, item, { channel, staticProxy, index, reactionsEnabled })),
   ))
     .reverse()
     .filter(post => post.type === 'text' && Boolean(post.id) && Boolean(post.content))
+
+  // When navigating backwards with both cursors, take the last PAGE_SIZE
+  // posts — these are the page immediately before the current one.
+  if (before && after && posts.length > PAGE_SIZE) {
+    posts = posts.slice(-PAGE_SIZE)
+  }
 
   const channelInfo: ChannelInfo = {
     posts,
