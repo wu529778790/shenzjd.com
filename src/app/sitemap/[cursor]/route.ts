@@ -12,7 +12,8 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ cursor: string }> },
 ) {
-  const { cursor } = await params
+  const { cursor: rawCursor } = await params
+  const cursor = rawCursor.replace(/\.xml$/, '')
   const url = new URL(request.url)
   const origin = getOrigin(request, url)
   const channel = await getChannelInfo({ before: cursor })
