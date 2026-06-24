@@ -34,7 +34,9 @@ export async function GET(request: Request) {
 
   // Post sub-sitemaps
   const pageSize = 20
-  let count = +posts[0]?.id
+  // Extract numeric ID from post.id (e.g. "channel/4327" → 4327)
+  const firstId = posts[0]?.id ? Number(posts[0].id.split('/').pop()) : NaN
+  let count = firstId
 
   const pages: number[] = []
   pages.push(count)

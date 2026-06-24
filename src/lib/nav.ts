@@ -9,3 +9,7 @@ export function parseNavs(raw: string | undefined): NavItem[] {
       return { title, href }
     })
 }
+
+export function normalizePathname(p: string): string {
+  return p.replace(/\/$/, '') || '/'
+}

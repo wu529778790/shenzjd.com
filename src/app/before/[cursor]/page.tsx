@@ -1,21 +1,11 @@
 import { redirect } from 'next/navigation'
-import { getChannelInfo } from '../../../lib/sources'
+import { getChannelInfo, getEmptyChannel } from '../../../lib/sources'
 import { getEnv } from '../../../lib/env'
 import { isValidCursor } from '../../../lib/cursor'
 import Layout from '../../../components/Layout'
 import List from '../../../components/List'
 
 export const dynamic = 'force-dynamic'
-
-function getEmptyChannel() {
-  return {
-    posts: [],
-    title: getEnv('CHANNEL') ?? '',
-    description: '',
-    descriptionHTML: null,
-    avatar: undefined,
-  }
-}
 
 export default async function BeforePage({ params }: { params: Promise<{ cursor: string }> }) {
   const { cursor } = await params

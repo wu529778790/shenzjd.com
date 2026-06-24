@@ -1,6 +1,6 @@
 import type { ChannelInfo } from "../types";
 import { getEnv } from "../lib/env";
-import { parseNavs } from "../lib/nav";
+import { parseNavs, normalizePathname } from "../lib/nav";
 
 const TAGS = getEnv("TAGS");
 const LINKS = getEnv("LINKS");
@@ -31,10 +31,6 @@ interface SidebarProps {
   channel: ChannelInfo;
   siteUrl: string;
   pathname: string;
-}
-
-function normalizePathname(p: string): string {
-  return p.replace(/\/$/, "") || "/";
 }
 
 export default function Sidebar({ channel, siteUrl, pathname }: SidebarProps) {

@@ -44,7 +44,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         canonical: url,
       },
     }
-  } catch {
+  } catch (err) {
+    console.warn('Failed to generate post page metadata:', err)
     return {}
   }
 }
@@ -60,9 +61,18 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   try {
     channelInfo = await getChannelInfo()
     post = await getChannelPost(id)
-  } catch (err) {
-    console.error('Failed to fetch post data:', err)
-    notFound()
+  } catch (err: unknown) {
+    // Distinguish between "post not found" and "upstream temporarily unavailable".
+    // ofetch throws FetchError (with statusCode) for HTTP errors; network timeouts
+    // throw plain Error. Only call notFound() for genuine 404s from upstream.
+    const status = (err as { statusCode?: number })?.statusCode
+      ?? (err as { response?: { status?: number } })?.response?.status
+    if (status === 404) {
+      notFound()
+    }
+    // Re-throw for any other error — Next.js error.tsx will render a 500,
+    // which tells search engines the failure is temporary.
+    throw err
   }
 
   if (!post) notFound()

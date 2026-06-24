@@ -17,9 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TagsPage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const channel = await getChannelInfo()
-
-  channel.seo = { title: 'Tags' }
+  const channel = { ...await getChannelInfo(), seo: { title: 'Tags' } }
 
   const items = (getEnv('TAGS') || '')
     .split(',')

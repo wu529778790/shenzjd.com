@@ -9,6 +9,42 @@ const TARGET_WHITELIST = [
 ]
 
 const PROXY_TIMEOUT = 10_000
+const RATE_LIMIT_WINDOW_MS = 60_000 // 60 seconds
+const RATE_LIMIT_MAX_REQUESTS = 100
+
+const rateLimitMap = new Map<string, { count: number, resetAt: number }>()
+
+// Periodic cleanup to prevent unbounded memory growth
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, value] of rateLimitMap) {
+    if (now > value.resetAt) rateLimitMap.delete(key)
+  }
+}, RATE_LIMIT_WINDOW_MS).unref()
+
+function getClientIp(request: Request): string {
+  return (
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')
+    || 'unknown'
+  )
+}
+
+function checkRateLimit(request: Request): boolean {
+  const ip = getClientIp(request)
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
+    return true
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX_REQUESTS) return false
+
+  entry.count++
+  return true
+}
 
 export function resolveStaticProxyTarget(rawTarget: string): URL {
   const normalizedTarget = rawTarget.startsWith('//') ? `https:${rawTarget}` : rawTarget
@@ -22,6 +58,10 @@ export function isStaticProxyWhitelisted(target: URL): boolean {
 }
 
 export async function createStaticProxyResponse(request: Request, rawTarget: string): Promise<Response> {
+  if (!checkRateLimit(request)) {
+    return new Response('Too many requests', { status: 429 })
+  }
+
   const target = resolveStaticProxyTarget(rawTarget)
   if (!isStaticProxyWhitelisted(target)) {
     return new Response('Proxy target not allowed', { status: 403 })

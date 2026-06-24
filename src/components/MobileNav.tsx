@@ -1,6 +1,6 @@
 import type { ChannelInfo } from '../types'
 import { getEnv } from '../lib/env'
-import { parseNavs } from '../lib/nav'
+import { parseNavs, normalizePathname } from '../lib/nav'
 
 const TAGS = getEnv('TAGS')
 const LINKS = getEnv('LINKS')
@@ -8,10 +8,6 @@ const NAVS = getEnv('NAVS')
 const GOOGLE_SEARCH_SITE = getEnv('GOOGLE_SEARCH_SITE')
 
 const navs = parseNavs(NAVS)
-
-function normalizePathname(p: string): string {
-  return p.replace(/\/$/, '') || '/'
-}
 
 interface MobileNavProps {
   channel: ChannelInfo

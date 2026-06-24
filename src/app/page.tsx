@@ -1,20 +1,10 @@
 import type { Metadata } from 'next'
-import { getChannelInfo } from '../lib/sources'
+import { getChannelInfo, getEmptyChannel } from '../lib/sources'
 import { getEnv } from '../lib/env'
 import Layout from '../components/Layout'
 import List from '../components/List'
 
 export const dynamic = 'force-dynamic'
-
-function getEmptyChannel() {
-  return {
-    posts: [],
-    title: getEnv('CHANNEL') ?? '',
-    description: '',
-    descriptionHTML: null,
-    avatar: undefined,
-  }
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -33,7 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
         canonical: siteUrl,
       },
     }
-  } catch {
+  } catch (err) {
+    console.warn('Failed to generate home page metadata:', err)
     return {}
   }
 }

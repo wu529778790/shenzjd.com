@@ -7,6 +7,7 @@ import { LRUCache } from 'lru-cache'
 import { $fetch } from 'ofetch'
 import { getEnv, getRequiredEnv } from '../env'
 import prism from '../prism'
+import { sanitize } from '../sanitize'
 
 const STYLE_URL_REGEX = /url\(["'](.*?)["']/i
 const STYLE_DIMENSION_REGEX = {
@@ -14,7 +15,8 @@ const STYLE_DIMENSION_REGEX = {
   height: /height:\s*(\d+(?:\.\d+)?)px/i,
 } as const
 const STYLE_PADDING_TOP_REGEX = /padding-top:\s*(\d+(?:\.\d+)?)%/i
-const SYNTHETIC_IMAGE_DIMENSION = 1000
+const SYNTHETIC_IMAGE_DIMENSION_WIDTH = 1200
+const SYNTHETIC_IMAGE_DIMENSION_HEIGHT = 675
 const TITLE_PREVIEW_REGEX = /^.*?(?=[。\n]|http\S)/g
 const CONTENT_URL_REGEX = /(url\(["'])((https?:)?\/\/)/g
 const UNNECESSARY_HEADERS = new Set(['host', 'cookie', 'origin', 'referer'])
@@ -135,7 +137,7 @@ function getStylePaddingTop(style: string | undefined): number | null {
 function inferImageDimensions(
   $: CheerioAPI,
   node: AnyNode,
-  fallback = { width: SYNTHETIC_IMAGE_DIMENSION, height: SYNTHETIC_IMAGE_DIMENSION },
+  fallback = { width: SYNTHETIC_IMAGE_DIMENSION_WIDTH, height: SYNTHETIC_IMAGE_DIMENSION_HEIGHT },
 ): { width: number, height: number } {
   const element = $(node)
   const styles = [
@@ -410,6 +412,10 @@ async function extractPost($: CheerioAPI, item: AnyNode | null, options: Extract
   ]
     .filter(isNonEmptyString)
     .join('')
+
+  const safeContentHtml = sanitize(contentHtml)
+
+  const proxiedContentHtml = safeContentHtml
     .replace(CONTENT_URL_REGEX, (_match, prefix: string, protocol: string) => {
       const normalizedProtocol = protocol === '//' ? 'https://' : protocol
       return `${prefix}${staticProxy}${normalizedProtocol}`
@@ -422,7 +428,7 @@ async function extractPost($: CheerioAPI, item: AnyNode | null, options: Extract
     datetime: message.find('.tgme_widget_message_date time').attr('datetime') ?? '',
     tags,
     text: contentText,
-    content: contentHtml,
+    content: proxiedContentHtml,
     reactions: reactionsEnabled ? getReactions($, message, staticProxy) : [],
   }
 }
