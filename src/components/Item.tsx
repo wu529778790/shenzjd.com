@@ -2,6 +2,7 @@ import type { Post } from '../types'
 import dayjs from '../lib/dayjs'
 import { getEnv } from '../lib/env'
 import LazyTelegramWidget from './LazyTelegramWidget'
+import PrefetchLink from './PrefetchLink'
 
 const locale = getEnv('LOCALE')
 const timezone = getEnv('TIMEZONE')
@@ -38,12 +39,12 @@ export default function Item({ post, isItem = false, siteUrl, channelName, index
       <header className="mb-2 flex items-center leading-none">
         <span className="h-1 w-1 rounded-full bg-[var(--color-accent)]" aria-hidden="true" />
         <p className="ui-font m-0 flex-1 pl-2 text-[12px] font-medium tracking-wide text-[var(--color-muted)]">
-          <a
+          <PrefetchLink
             href={`${siteUrl}posts/${post.id}`}
             title={post.datetime}
             className="text-[var(--color-muted)] no-underline transition-colors duration-200 hover:text-[var(--color-heading)]">
             <time dateTime={post.datetime} title={timeago}>{timeago}</time>
-          </a>
+          </PrefetchLink>
         </p>
       </header>
 

@@ -56,16 +56,46 @@ interface LoadedChannelDocument {
 }
 
 const CACHE_TTL = 1000 * 60 * 5 // 5 minutes
+const CACHE_STALE_REVALIDATE = 1000 * 30 // serve stale for up to 30s while refreshing
+const META_CACHE_TTL = 1000 * 60 * 60 // 1 hour — channel metadata rarely changes
 
 const cache = new LRUCache<string, CacheValue>({
   ttl: CACHE_TTL,
   max: 100,
+  allowStale: true,
+  noDeleteOnStaleGet: true,
 })
 
 const searchCache = new LRUCache<string, CacheValue>({
   ttl: 1000 * 60, // 60 seconds — search results are less cacheable
   max: 50,
+  allowStale: true,
+  noDeleteOnStaleGet: true,
 })
+
+/** Metadata-only cache — stores just title/description/avatar, no posts */
+interface ChannelMeta {
+  title: string
+  description: string
+  descriptionHTML: string | null
+  avatar: string | undefined
+}
+const metaCache = new LRUCache<string, ChannelMeta>({
+  ttl: META_CACHE_TTL,
+  max: 1,
+})
+
+// Keys currently being refreshed in the background — prevents duplicate fetches
+const revalidatingKeys = new Set<string>()
+
+function shouldRevalidate(activeCache: LRUCache<string, CacheValue>, key: string): boolean {
+  if (revalidatingKeys.has(key)) return false
+  const remaining = activeCache.getRemainingTTL(key)
+  // remaining === Infinity means no TTL set; remaining === 0 means not in cache
+  if (remaining === Infinity || remaining === 0) return false
+  // Trigger background refresh when entry is within the stale-while-revalidate window
+  return remaining <= CACHE_STALE_REVALIDATE
+}
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
   // Shallow copy prevents cross-request mutation of the posts array
@@ -471,6 +501,13 @@ export async function getChannelPost(id: string): Promise<Post> {
   const hit = getCached(cacheKey, (v): v is Post => !isChannelInfo(v))
   if (hit) {
     console.info('Cache hit', { id })
+    // Fire-and-forget background refresh when stale
+    if (shouldRevalidate(cache, cacheKey)) {
+      revalidatingKeys.add(cacheKey)
+      loadAndCachePost(id, cacheKey)
+        .catch(() => { /* swallow */ })
+        .finally(() => revalidatingKeys.delete(cacheKey))
+    }
     return cloneCacheValue(hit)
   }
 
@@ -478,6 +515,16 @@ export async function getChannelPost(id: string): Promise<Post> {
   const post = await extractPost($, null, { channel, staticProxy, reactionsEnabled })
   cache.set(cacheKey, post)
   return post
+}
+
+/** Background refresh for a single post — errors are silently ignored */
+async function loadAndCachePost(id: string, cacheKey: string): Promise<void> {
+  try {
+    const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({ id })
+    const post = await extractPost($, null, { channel, staticProxy, reactionsEnabled })
+    cache.set(cacheKey, post)
+  }
+  catch { /* swallow — stale data continues to be served */ }
 }
 
 const PAGE_SIZE = 20
@@ -489,9 +536,26 @@ export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise
   const hit = activeCache.get(cacheKey)
   if (hit && isChannelInfo(hit)) {
     console.info('Cache hit', { before, after, q })
+    // Fire-and-forget background refresh when stale
+    if (shouldRevalidate(activeCache, cacheKey)) {
+      revalidatingKeys.add(cacheKey)
+      loadAndCacheChannel(params, cacheKey, activeCache)
+        .catch(() => { /* swallow — stale data continues to be served */ })
+        .finally(() => revalidatingKeys.delete(cacheKey))
+    }
     return cloneCacheValue(hit)
   }
 
+  return loadAndCacheChannel(params, cacheKey, activeCache)
+}
+
+/** Fetch, parse, cache, and return channel info. Used by both foreground and background paths. */
+async function loadAndCacheChannel(
+  params: GetChannelInfoParams,
+  cacheKey: string,
+  activeCache: LRUCache<string, CacheValue>,
+): Promise<ChannelInfo> {
+  const { before = '', after = '', q = '' } = params
   // When both before and after are set ("上一页" from a /before/ page),
   // fetch with `after` only to get all posts newer than the cursor, then
   // take the last PAGE_SIZE — this gives the page immediately before the
@@ -524,4 +588,28 @@ export async function getChannelInfo(params: GetChannelInfoParams = {}): Promise
 
   activeCache.set(cacheKey, channelInfo)
   return channelInfo
+}
+
+const META_CACHE_KEY = 'channel:meta'
+
+/**
+ * Returns channel metadata only (title, description, avatar) — no posts.
+ * Uses a separate 1-hour cache since metadata changes far less frequently
+ * than post content. Ideal for pages like /tags and /links that need
+ * layout chrome but not post data.
+ */
+export async function getChannelMeta(): Promise<ChannelMeta> {
+  const hit = metaCache.get(META_CACHE_KEY)
+  if (hit) return { ...hit }
+
+  // Fall back to full channel fetch, then cache just the metadata
+  const info = await getChannelInfo()
+  const meta: ChannelMeta = {
+    title: info.title,
+    description: info.description,
+    descriptionHTML: info.descriptionHTML,
+    avatar: info.avatar,
+  }
+  metaCache.set(META_CACHE_KEY, meta)
+  return { ...meta }
 }

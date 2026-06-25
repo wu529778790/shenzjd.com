@@ -3,6 +3,7 @@ import { getEnv } from '../lib/env'
 import ErrorBoundary from './ErrorBoundary'
 import Item from './Item'
 import ItemError from './ItemError'
+import PrefetchLink from './PrefetchLink'
 
 interface ListProps {
   channel: ChannelInfo
@@ -64,24 +65,24 @@ export default function List({
               &larr; 上一页
             </span>
           ) : (
-            <a
+            <PrefetchLink
               href={`${siteUrl}after/${prevCursor}${nextCursor ? `?maxId=${nextCursor}` : ''}`}
               title="上一页"
               className="ui-font inline-flex min-h-[44px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:translate-y-px">
               &larr; 上一页
-            </a>
+            </PrefetchLink>
           )
         ) : (
           <span className="inline-block w-[44px]" aria-hidden="true">&nbsp;</span>
         )}
         <div className="flex-1" />
         {after && nextCursor ? (
-          <a
+          <PrefetchLink
             href={`${siteUrl}before/${nextCursor}`}
             title="下一页"
             className="ui-font inline-flex min-h-[44px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-card)] px-4 py-2 text-[13px] font-medium text-[var(--color-muted)] no-underline transition-all duration-200 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:no-underline active:translate-y-px">
             下一页 &rarr;
-          </a>
+          </PrefetchLink>
         ) : (
           <span className="inline-block w-[36px]" aria-hidden="true">&nbsp;</span>
         )}

@@ -1,3 +1,6 @@
+import sharp from 'sharp'
+import { LRUCache } from 'lru-cache'
+
 const TARGET_WHITELIST = [
   't.me',
   'telegram.org',
@@ -12,6 +15,18 @@ const PROXY_TIMEOUT = 10_000
 const RATE_LIMIT_WINDOW_MS = 60_000 // 60 seconds
 const RATE_LIMIT_MAX_REQUESTS = 100
 
+const IMAGE_CONTENT_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/avif',
+  'image/svg+xml',
+  'image/bmp',
+])
+
+type OutputFormat = 'avif' | 'webp' | 'original'
+
 const rateLimitMap = new Map<string, { count: number, resetAt: number }>()
 
 // Periodic cleanup to prevent unbounded memory growth
@@ -21,6 +36,11 @@ setInterval(() => {
     if (now > value.resetAt) rateLimitMap.delete(key)
   }
 }, RATE_LIMIT_WINDOW_MS).unref()
+
+/** Cache for transformed image buffers — max 30 entries, no TTL (images are immutable) */
+const imageCache = new LRUCache<string, { data: Buffer, contentType: string }>({
+  max: 30,
+})
 
 function getClientIp(request: Request): string {
   return (
@@ -46,6 +66,48 @@ function checkRateLimit(request: Request): boolean {
   return true
 }
 
+/**
+ * Negotiate the best output image format based on the client's Accept header.
+ * AVIF offers the best compression, WebP is a good fallback, original as last resort.
+ */
+function negotiateImageFormat(accept: string | null): OutputFormat {
+  if (!accept) return 'original'
+  if (accept.includes('image/avif')) return 'avif'
+  if (accept.includes('image/webp')) return 'webp'
+  return 'original'
+}
+
+function outputContentType(format: OutputFormat, original: string): string {
+  if (format === 'avif') return 'image/avif'
+  if (format === 'webp') return 'image/webp'
+  return original
+}
+
+/**
+ * Transform an image buffer using sharp: convert to optimal format and optionally resize.
+ * Returns the original buffer if transformation fails.
+ */
+async function transformImage(
+  inputBuffer: Buffer,
+  format: OutputFormat,
+  width?: number,
+): Promise<Buffer> {
+  let pipeline = sharp(inputBuffer)
+
+  // Resize if width is specified and valid
+  if (width && width > 0 && width <= 2000) {
+    pipeline = pipeline.resize(width, null, { withoutEnlargement: true })
+  }
+
+  if (format === 'avif') {
+    pipeline = pipeline.avif({ quality: 70, effort: 4 })
+  } else if (format === 'webp') {
+    pipeline = pipeline.webp({ quality: 80 })
+  }
+
+  return pipeline.toBuffer()
+}
+
 export function resolveStaticProxyTarget(rawTarget: string): URL {
   const normalizedTarget = rawTarget.startsWith('//') ? `https:${rawTarget}` : rawTarget
   return new URL(normalizedTarget)
@@ -67,6 +129,30 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
     return new Response('Proxy target not allowed', { status: 403 })
   }
 
+  // Parse optional width parameter for responsive images
+  const requestUrl = new URL(request.url)
+  const targetWidth = Number(requestUrl.searchParams.get('w')) || undefined
+
+  // Negotiate output format
+  const accept = request.headers.get('accept')
+  const outputFormat = negotiateImageFormat(accept)
+
+  // Build cache key: URL + format + width
+  const cacheKey = `${target.toString()}|${outputFormat}|${targetWidth || ''}`
+
+  // Check image transform cache first
+  const cached = imageCache.get(cacheKey)
+  if (cached) {
+    return new Response(new Uint8Array(cached.data), {
+      status: 200,
+      headers: {
+        'Content-Type': cached.contentType,
+        'Cache-Control': 'public, max-age=604800, s-maxage=604800',
+        'Vary': 'Accept',
+      },
+    })
+  }
+
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), PROXY_TIMEOUT)
 
@@ -77,6 +163,39 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
       signal: controller.signal,
     })
 
+    const upstreamContentType = response.headers.get('content-type') || ''
+    const isImage = IMAGE_CONTENT_TYPES.has(upstreamContentType.split(';')[0].trim().toLowerCase())
+
+    // Only transform raster images (skip SVG, already-optimized formats, and non-images)
+    const shouldTransform = isImage
+      && outputFormat !== 'original'
+      && !upstreamContentType.includes('svg')
+      && !upstreamContentType.includes('gif')
+
+    if (shouldTransform) {
+      try {
+        const inputBuffer = Buffer.from(await response.arrayBuffer())
+        const outputBuffer = await transformImage(inputBuffer, outputFormat, targetWidth)
+        const contentType = outputContentType(outputFormat, upstreamContentType)
+
+        // Store in transform cache
+        imageCache.set(cacheKey, { data: outputBuffer, contentType })
+
+        return new Response(new Uint8Array(outputBuffer), {
+          status: response.status,
+          headers: {
+            'Content-Type': contentType,
+            'Cache-Control': 'public, max-age=604800, s-maxage=604800',
+            'Vary': 'Accept',
+          },
+        })
+      }
+      catch {
+        // Transformation failed — fall through to serve original
+      }
+    }
+
+    // Non-image, SVG, GIF, or transform failed — pass through original
     const headers = new Headers(response.headers)
     headers.set('Cache-Control', 'public, max-age=604800, s-maxage=604800')
     headers.delete('set-cookie')

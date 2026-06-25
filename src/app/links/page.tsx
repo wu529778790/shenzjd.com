@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { getChannelInfo } from '../../lib/sources'
+import { getChannelMeta } from '../../lib/sources'
 import { getEnv } from '../../lib/env'
 import Layout from '../../components/Layout'
 import Header from '../../components/Header'
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function LinksPage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const channel = { ...await getChannelInfo(), seo: { title: 'Links' } }
+  const channel = { ...await getChannelMeta(), seo: { title: 'Links' } }
 
   const links = (getEnv('LINKS') || '')
     .split(';')

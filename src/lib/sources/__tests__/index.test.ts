@@ -5,6 +5,7 @@ import type { ChannelInfo, Post } from '../../../types'
 vi.mock('../telegram', () => ({
   getChannelInfo: vi.fn(),
   getChannelPost: vi.fn(),
+  getChannelMeta: vi.fn(),
 }))
 
 import { getChannelInfo, getChannelPost } from '../index'

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
-import { getChannelInfo, getChannelPost } from '../../../lib/sources'
+import { getChannelMeta, getChannelPost } from '../../../lib/sources'
 import { getEnv } from '../../../lib/env'
 import Layout from '../../../components/Layout'
 import List from '../../../components/List'
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   try {
     const { id } = await params
     const siteUrl = getEnv('SITE_URL') ?? '/'
-    const channelInfo = await getChannelInfo()
+    const channelInfo = await getChannelMeta()
     const post = await getChannelPost(id)
     if (!post) return {}
 
@@ -59,7 +59,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
   let channelInfo, post
   try {
-    channelInfo = await getChannelInfo()
+    channelInfo = await getChannelMeta()
     post = await getChannelPost(id)
   } catch (err: unknown) {
     // Distinguish between "post not found" and "upstream temporarily unavailable".

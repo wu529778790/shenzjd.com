@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getChannelInfo } from '../../lib/sources'
+import { getChannelMeta } from '../../lib/sources'
 import { getEnv } from '../../lib/env'
 import Layout from '../../components/Layout'
 import Header from '../../components/Header'
@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TagsPage() {
   const siteUrl = getEnv('SITE_URL') ?? '/'
-  const channel = { ...await getChannelInfo(), seo: { title: 'Tags' } }
+  const channel = { ...await getChannelMeta(), seo: { title: 'Tags' } }
 
   const items = (getEnv('TAGS') || '')
     .split(',')
