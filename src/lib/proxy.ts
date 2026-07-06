@@ -1,14 +1,6 @@
 import sharp from 'sharp'
 import { LRUCache } from 'lru-cache'
 
-// Limit libvips internal pixel/operation cache so native memory stays bounded.
-// Without this, libvips hoards ~100MB+ of tile caches that never get released.
-sharp.cache({ memory: 10, files: 0, items: 0 })
-
-// Drop libvips thread pool to 1 — Alpine containers rarely have more than 1-2 cores,
-// and multi-threaded libvips would inflate RSS with thread-local tile buffers.
-sharp.concurrency(1)
-
 /**
  * Semaphore to limit concurrent sharp image transformations.
  * sharp/libvips uses ~5-10x source image size in memory during encode,
