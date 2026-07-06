@@ -32,4 +32,7 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -qO- http://localhost:3000/ || exit 1
 
-CMD ["node", "server.js"]
+# --shrink-global-heap and --gc-interval must be CLI args (not NODE_OPTIONS):
+# they force V8 to return freed heap pages to the OS and run GC more eagerly,
+# keeping RSS close to actual usage instead of the peak.
+CMD ["node", "--shrink-global-heap", "--gc-interval", "1000", "server.js"]
