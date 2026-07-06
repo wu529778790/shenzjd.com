@@ -1,6 +1,14 @@
 import sharp from 'sharp'
 import { LRUCache } from 'lru-cache'
 
+// Limit libvips internal pixel/operation cache so native memory stays bounded.
+// Without this, libvips hoards ~100MB+ of tile caches that never get released.
+sharp.cache({ memory: 10, files: 0, items: 0 })
+
+// Drop libvips thread pool to 1 — Alpine containers rarely have more than 1-2 cores,
+// and multi-threaded libvips would inflate RSS with thread-local tile buffers.
+sharp.concurrency(1)
+
 /**
  * Semaphore to limit concurrent sharp image transformations.
  * sharp/libvips uses ~5-10x source image size in memory during encode,
@@ -175,7 +183,8 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
   // Check image transform cache first
   const cached = imageCache.get(cacheKey)
   if (cached) {
-    return new Response(new Uint8Array(cached.data), {
+    // Pass Buffer directly to Response — no copy needed.
+    return new Response(cached.data as BodyInit, {
       status: 200,
       headers: {
         'Content-Type': cached.contentType,
@@ -223,7 +232,7 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
         // Store in transform cache
         imageCache.set(cacheKey, { data: outputBuffer, contentType })
 
-        return new Response(new Uint8Array(outputBuffer), {
+        return new Response(outputBuffer as BodyInit, {
           status: response.status,
           headers: {
             'Content-Type': contentType,

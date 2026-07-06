@@ -85,9 +85,9 @@ jobs:
               --name "$CONTAINER" \
               --restart unless-stopped \
               --memory=512m \
-              --memory-swap=512m \
+              --memory-swap=768m \
               --cpus=1.0 \
-              -e NODE_OPTIONS="--max-old-space-size=384" \
+              -e NODE_OPTIONS="--max-old-space-size=256 --shrink-global-heap --gc-interval=1000" \
               $ENV_FLAGS \
               -p 6669:3000 \
               "$IMAGE"
