@@ -17,7 +17,8 @@ interface ListProps {
 }
 
 /** Extract numeric message ID from post ID like "channel/4327" → "4327" */
-function extractId(postId: string): string | undefined {
+function extractId(postId: string | undefined): string | undefined {
+  if (!postId) return undefined
   const parts = postId.split('/')
   return parts[parts.length - 1]
 }
