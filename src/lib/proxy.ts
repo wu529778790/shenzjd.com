@@ -175,8 +175,10 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
   // Check image transform cache first
   const cached = imageCache.get(cacheKey)
   if (cached) {
-    // Pass Buffer directly to Response — no copy needed.
-    return new Response(cached.data as BodyInit, {
+    // Copy into a fresh Uint8Array so Response owns its own memory.
+    // Buffer may be a view into a larger ArrayBuffer pool; passing it
+    // directly can cause undici to send the entire pool, corrupting the image.
+    return new Response(new Uint8Array(cached.data), {
       status: 200,
       headers: {
         'Content-Type': cached.contentType,
@@ -224,7 +226,7 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
         // Store in transform cache
         imageCache.set(cacheKey, { data: outputBuffer, contentType })
 
-        return new Response(outputBuffer as BodyInit, {
+        return new Response(new Uint8Array(outputBuffer), {
           status: response.status,
           headers: {
             'Content-Type': contentType,
