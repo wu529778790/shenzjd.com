@@ -586,14 +586,14 @@ async function loadAndCacheChannel(
   cacheKey: string,
   activeCache: LRUCache<string, CacheValue>,
 ): Promise<ChannelInfo> {
-  const { before = '', after = '', q = '' } = params
+  const { before: beforeRaw = '', after: afterRaw = '', q = '' } = params
   // When both before and after are set ("上一页" from a /before/ page),
   // fetch with `after` only to get all posts newer than the cursor, then
   // take the last PAGE_SIZE — this gives the page immediately before the
   // current one.
   const { $, channel, staticProxy, reactionsEnabled } = await loadChannelDocument({
-    before: before && after ? '' : before,
-    after,
+    before: beforeRaw && afterRaw ? '' : beforeRaw,
+    after: afterRaw,
     q,
   })
   const postNodes = $('.tgme_channel_history .tgme_widget_message_wrap').toArray()
@@ -605,7 +605,7 @@ async function loadAndCacheChannel(
 
   // When navigating backwards with both cursors, take the last PAGE_SIZE
   // posts — these are the page immediately before the current one.
-  if (before && after && posts.length > PAGE_SIZE) {
+  if (beforeRaw && afterRaw && posts.length > PAGE_SIZE) {
     posts = posts.slice(-PAGE_SIZE)
   }
 
