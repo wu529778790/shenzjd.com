@@ -1,0 +1,29 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Dependencies (rebuilt inside container)
+node_modules
+
+# Dev / test artifacts
+.next
+.nyc_output
+coverage
+*.log
+.env
+.env.*
+
+# OS / editor junk
+.DS_Store
+.vscode
+.idea
+
+# Docs / meta
+*.md
+docs
+.claude
+.playwright-mcp
+
+# CI tests not needed in image
+src/lib/__tests__

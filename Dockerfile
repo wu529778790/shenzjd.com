@@ -5,7 +5,8 @@ FROM base AS builder
 ARG BUILD_TIME
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+# Cache npm downloads across builds via BuildKit mount — only re-runs when lockfile changes.
+RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 RUN npm run build
 

@@ -61,7 +61,7 @@ const META_CACHE_TTL = 1000 * 60 * 60 // 1 hour — channel metadata rarely chan
 
 const cache = new LRUCache<string, CacheValue>({
   ttl: CACHE_TTL,
-  max: 100,
+  max: 50,
   allowStale: true,
   noDeleteOnStaleGet: true,
 })
@@ -71,6 +71,15 @@ const searchCache = new LRUCache<string, CacheValue>({
   max: 50,
   allowStale: true,
   noDeleteOnStaleGet: true,
+})
+
+/**
+ * Cache for flourite language-detection results.
+ * Keyed by first 80 chars of code (cheap proxy for identity).
+ * Entries are immutable strings, so no TTL / cloning needed.
+ */
+const highlightCache = new LRUCache<string, string>({
+  max: 200,
 })
 
 /** Metadata-only cache — stores just title/description/avatar, no posts */
@@ -99,11 +108,16 @@ function shouldRevalidate(activeCache: LRUCache<string, CacheValue>, key: string
 
 function cloneCacheValue<T extends CacheValue>(value: T): T {
   // Shallow copy prevents cross-request mutation of the posts array
-  // while avoiding the CPU cost of deep-cloning large HTML strings
+  // while avoiding the CPU cost of deep-cloning large HTML strings.
+  // reactions/tags arrays are also cloned since they are mutable references.
   if (Array.isArray((value as any).posts)) {
     return {
       ...value,
-      posts: (value as any).posts.map((p: any) => ({ ...p })),
+      posts: (value as any).posts.map((p: any) => ({
+        ...p,
+        reactions: p.reactions?.slice(),
+        tags: p.tags?.slice(),
+      })),
     } as T
   }
   return { ...value } as T
@@ -358,7 +372,24 @@ async function modifyHTMLContent($: CheerioAPI, content: MessageSelection, optio
       const pre = $(preNode)
       pre.find('br').replaceWith('\n')
       const code = pre.text()
-      const language = flourite(code, { shiki: true, noUnknown: true }).language || 'text'
+
+      // Skip flourite detection for long code blocks — statistical language
+      // detection is expensive (WASM-based) and unreliable on large inputs.
+      // Fall back to plaintext; still wrapped in <pre> so it renders fine.
+      let language: string
+      if (code.length > 500) {
+        language = 'text'
+      } else {
+        const cacheKey = code.slice(0, 80)
+        const cached = highlightCache.get(cacheKey)
+        if (cached) {
+          language = cached
+        } else {
+          language = flourite(code, { shiki: true, noUnknown: true }).language || 'text'
+          highlightCache.set(cacheKey, language)
+        }
+      }
+
       const grammar = prism.languages[language]
       if (!grammar) {
         pre.html(`<code class="language-plaintext">${code}</code>`)

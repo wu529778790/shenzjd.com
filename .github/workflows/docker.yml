@@ -56,7 +56,8 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
           build-args: |
             BUILD_TIME=${{ env.BUILD_TIME }}
-          no-cache: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build-and-push
@@ -83,6 +84,10 @@ jobs:
             sudo docker run -d \
               --name "$CONTAINER" \
               --restart unless-stopped \
+              --memory=512m \
+              --memory-swap=512m \
+              --cpus=1.0 \
+              -e NODE_OPTIONS="--max-old-space-size=384" \
               $ENV_FLAGS \
               -p 6669:3000 \
               "$IMAGE"

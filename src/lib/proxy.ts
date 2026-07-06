@@ -1,6 +1,37 @@
 import sharp from 'sharp'
 import { LRUCache } from 'lru-cache'
 
+/**
+ * Semaphore to limit concurrent sharp image transformations.
+ * sharp/libvips uses ~5-10x source image size in memory during encode,
+ * so unbounded concurrency causes OOM spikes when many images hit at once.
+ */
+class Semaphore {
+  private running = 0
+  private queue: (() => void)[] = []
+
+  constructor(private readonly max: number) {}
+
+  async acquire(): Promise<void> {
+    if (this.running < this.max) {
+      this.running++
+      return
+    }
+    await new Promise<void>(resolve => this.queue.push(resolve))
+    this.running++
+  }
+
+  release(): void {
+    this.running--
+    const next = this.queue.shift()
+    if (next) next()
+  }
+}
+
+// Cap at 2 concurrent sharp ops — libvips is threaded internally anyway,
+// and going higher just inflates peak memory without meaningful throughput gain.
+const sharpSemaphore = new Semaphore(2)
+
 const TARGET_WHITELIST = [
   't.me',
   'telegram.org',
@@ -100,7 +131,8 @@ async function transformImage(
   }
 
   if (format === 'avif') {
-    pipeline = pipeline.avif({ quality: 70, effort: 4 })
+    // effort 2: ~2x faster than default (4) with only marginally larger files
+    pipeline = pipeline.avif({ quality: 70, effort: 2 })
   } else if (format === 'webp') {
     pipeline = pipeline.webp({ quality: 80 })
   }
@@ -175,7 +207,17 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
     if (shouldTransform) {
       try {
         const inputBuffer = Buffer.from(await response.arrayBuffer())
-        const outputBuffer = await transformImage(inputBuffer, outputFormat, targetWidth)
+
+        // Bound concurrency so peak memory stays predictable
+        let outputBuffer: Buffer
+        await sharpSemaphore.acquire()
+        try {
+          outputBuffer = await transformImage(inputBuffer, outputFormat, targetWidth)
+        }
+        finally {
+          sharpSemaphore.release()
+        }
+
         const contentType = outputContentType(outputFormat, upstreamContentType)
 
         // Store in transform cache

@@ -19,6 +19,8 @@ export default function PrefetchLink({ href, children, ...props }: PrefetchLinkP
     prefetchedRef.current = true
     const link = document.createElement('link')
     link.rel = 'prefetch'
+    link.as = 'document'
+    link.crossOrigin = 'anonymous'
     link.href = href
     document.head.appendChild(link)
   }, [href])
