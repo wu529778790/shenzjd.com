@@ -11,15 +11,7 @@ export interface NavGroup {
  */
 export const defaultNavGroups: NavGroup[] = [
   {
-    title: '社交平台',
-    items: [
-      { title: 'Telegram', href: 'https://t.me/shenzjd_com' },
-      { title: 'GitHub', href: 'https://github.com/wu529778790' },
-      { title: 'X (Twitter)', href: 'https://x.com/shenzujiudi' },
-    ],
-  },
-  {
-    title: '在线服务',
+    title: '',
     items: [
       { title: '网址导航', href: 'https://navhub.shenzjd.com' },
       { title: '热门资源', href: 'https://shenzjd.com' },
