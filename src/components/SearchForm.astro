@@ -7,9 +7,12 @@ const mobileSearchDetailsClass = 'group pointer-events-none z-20 col-start-1 row
 const searchSummaryClass =
   'pointer-events-auto ml-auto mt-5 flex h-6 w-6 list-none items-center justify-center rounded-panel text-muted/55 transition-colors duration-150 hover:text-muted group-open:text-heading focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-heading md:hidden [&::-webkit-details-marker]:hidden'
 const mobileSearchFormClass =
-  'pointer-events-auto mt-2 hidden w-full rounded-panel border border-line/70 bg-paper/70 px-2 py-1 text-muted group-open:block'
+  'pointer-events-auto mt-2 hidden w-full rounded-md border border-line/60 bg-paper/80 px-2 py-1 text-muted group-open:block'
+
+// Desktop: clean underline-style instead of bordered pill
 const desktopSearchFormClass =
-  'hidden rounded-panel border border-line/70 bg-paper/60 px-2 py-1 text-muted transition-colors duration-150 focus-within:border-line focus-within:bg-paper md:block'
+  'hidden items-center gap-1 rounded-md border-b border-line/40 bg-transparent px-1 py-1 text-muted transition-colors duration-150 focus-within:border-heading/40 md:flex'
+
 const searchIconClass = 'h-3.5 w-3.5 shrink-0 text-muted/55'
 const searchLabelText = 'Search'
 const searchIconPath = 'm14.2 14.2 3.3 3.3M8.8 15.1a6.3 6.3 0 1 1 0-12.6 6.3 6.3 0 0 1 0 12.6Z'
