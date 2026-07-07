@@ -93,6 +93,7 @@ jobs:
               --cpus=1.0 \
               -e NODE_OPTIONS="--max-old-space-size=256" \
               $ENV_FLAGS \
+              -e NAVS= \
               -p 6669:4321 \
               "$IMAGE"
             sudo docker image prune -f
