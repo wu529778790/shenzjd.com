@@ -24,7 +24,6 @@ export interface ChannelInfo {
   description: string
   descriptionHTML: string | null
   avatar: string | undefined
-  seo?: SeoMeta
 }
 
 export interface SeoMeta {
@@ -34,13 +33,27 @@ export interface SeoMeta {
   nofollow?: string | boolean
 }
 
+/** Parameters accepted by getChannelInfo */
 export interface GetChannelInfoParams {
   before?: string
   after?: string
   q?: string
 }
 
+export interface AstroEnvContext {
+  locals?: App.Locals
+  request?: Request
+  url?: URL
+}
+
 export interface NavItem {
   title: string
   href: string
+}
+
+export interface TagCloudItem {
+  href: string
+  label: string
+  title?: string
+  external?: boolean
 }

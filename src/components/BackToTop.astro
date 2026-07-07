@@ -1,0 +1,13 @@
+---
+import backToTopIcon from '../assets/back-to-top.svg'
+
+const backToTopClass =
+  'pointer-events-auto z-50 flex h-8 w-8 items-center justify-center rounded-full bg-code text-2xl opacity-90 transition-transform duration-300 hover:-translate-y-1 active:translate-y-px'
+const backToTopIconClass = 'h-auto w-auto [filter:var(--icon-secondary-filter)]'
+---
+
+<div id="back-to-top-wrapper">
+  <a href="#main-content" id="back-to-top" class={backToTopClass} aria-label="Back to top">
+    <img {...backToTopIcon} class={backToTopIconClass} alt="" />
+  </a>
+</div>

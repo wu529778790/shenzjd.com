@@ -1,0 +1,90 @@
+---
+import '../styles/app.css'
+import { SEO } from 'astro-seo'
+import BackToTop from '../components/BackToTop.astro'
+import NavSidebar from '../components/NavSidebar.astro'
+import { getEnv, parseDelimitedItems } from '../lib/env'
+import { getPageSeo } from '../lib/seo'
+
+const { SITE_URL, RSS_URL, RSS_PREFIX } = Astro.locals
+const { channel, seo } = Astro.props
+
+const locale = getEnv(import.meta.env, Astro, 'LOCALE')
+const twitter = getEnv(import.meta.env, Astro, 'TWITTER')
+const { currentPathname, hasCustomTitle, linksPathname, seoParams, siteRootPathname, siteTitle, tagsPathname } =
+  getPageSeo({
+    Astro,
+    channel,
+    locale,
+    seo,
+    siteUrl: SITE_URL,
+  })
+
+const GOOGLE_SEARCH_SITE = getEnv(import.meta.env, Astro, 'GOOGLE_SEARCH_SITE')
+const searchAction = GOOGLE_SEARCH_SITE ? 'https://www.google.com/search' : `${SITE_URL}search/result`
+
+const HEADER_INJECT = getEnv(import.meta.env, Astro, 'HEADER_INJECT')
+const FOOTER_INJECT = getEnv(import.meta.env, Astro, 'FOOTER_INJECT')
+const TAGS = getEnv(import.meta.env, Astro, 'TAGS')
+const LINKS = getEnv(import.meta.env, Astro, 'LINKS')
+const navs = parseDelimitedItems(getEnv(import.meta.env, Astro, 'NAVS'))
+
+const layoutShellClass = 'mx-5'
+const layoutGridClass = 'mx-auto flex w-full max-w-4xl flex-col md:flex-row-reverse md:items-start'
+const mainPanelClass = 'w-full min-w-0 pb-5 pt-2.5 md:mr-5 md:flex-1 md:border-r md:border-line md:pr-8 md:pt-5'
+const asidePanelClass =
+  'sticky top-0 z-50 -mx-5 w-[calc(100%+2.5rem)] min-w-0 border-b border-line bg-paper px-5 pb-2.5 shadow-[0_4px_16px_-16px_rgba(0,0,0,0.1)] md:mx-0 md:w-52 md:min-w-52 md:self-start md:border-b-0 md:bg-transparent md:px-0 md:pb-5 md:shadow-none'
+const skipLinkClass =
+  'pointer-events-none absolute left-5 top-0 z-[1100] -translate-y-full rounded-panel bg-heading px-3 py-2 text-sm text-white no-underline transition-transform duration-150 focus-visible:pointer-events-auto focus-visible:translate-y-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading'
+const skipLinkText = 'Skip to main content'
+---
+
+<!doctype html>
+<html lang={locale ?? 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#FDFCFA" />
+    <link rel="alternate" type="application/rss+xml" title={`${RSS_PREFIX}${channel?.title}`} href={RSS_URL} />
+    <SEO
+      titleTemplate={hasCustomTitle ? `%s | ${siteTitle}` : undefined}
+      titleDefault={siteTitle || seoParams.description}
+      twitter={{
+        card: 'summary_large_image',
+        creator: twitter ? `@${twitter}` : undefined,
+      }}
+      {...seoParams}
+    />
+    <Fragment set:html={HEADER_INJECT} />
+  </head>
+
+  <body>
+    <a href="#main-content" class={skipLinkClass}>{skipLinkText}</a>
+    <div class={layoutShellClass}>
+      <div class={layoutGridClass}>
+        <aside class={asidePanelClass}>
+          <slot name="aside">
+            <NavSidebar
+              channelTitle={channel?.title}
+              currentPathname={currentPathname}
+              googleSearchSite={GOOGLE_SEARCH_SITE}
+              linksPathname={linksPathname}
+              navs={navs}
+              searchAction={searchAction}
+              showLinks={Boolean(LINKS)}
+              showTags={Boolean(TAGS)}
+              siteRootPathname={siteRootPathname}
+              siteUrl={SITE_URL}
+              tagsPathname={tagsPathname}
+            />
+          </slot>
+        </aside>
+        <main id="main-content" class={mainPanelClass}>
+          <slot />
+        </main>
+      </div>
+      <BackToTop />
+    </div>
+    <Fragment set:html={FOOTER_INJECT} />
+  </body>
+</html>

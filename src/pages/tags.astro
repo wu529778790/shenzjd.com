@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/base.astro'
+import Header from '../components/header.astro'
+import TagCloudSection from '../components/TagCloudSection.astro'
+import { getChannelInfo } from '../lib/telegram'
+import { getEnv, parseCsvList } from '../lib/env'
+
+const channel = await getChannelInfo(Astro)
+const pageSeo = { title: 'Tags' }
+const items = parseCsvList(getEnv(import.meta.env, Astro, 'TAGS')).map((tag) => ({
+  href: `/search/result?q=${encodeURIComponent(`#${tag}`)}`,
+  label: tag,
+}))
+---
+
+<Layout channel={channel} seo={pageSeo}>
+  <Header channel={channel} />
+
+  <TagCloudSection id="tags" title="Tags" items={items} />
+</Layout>

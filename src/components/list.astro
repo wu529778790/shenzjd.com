@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/base.astro'
+import Header from '../components/header.astro'
+import Item from '../components/item.astro'
+
+const { SITE_URL } = Astro.locals
+const { channel, before = true, after = true, isItem = false, pageHeading, pageSeo } = Astro.props
+const posts = channel.posts ?? []
+
+const beforeCursor = posts[posts.length - 1]?.id
+const afterCursor = posts[0]?.id
+const hasOlderPosts = before && beforeCursor && Number(beforeCursor) > 1
+const hasNewerPosts = after && afterCursor
+const itemsClass = 'mt-5 mb-0 ml-7 list-none pl-0 max-sm:ml-0'
+const paginationClass = 'my-5 flex items-center justify-between'
+const paginationLinkClass =
+  'inline-flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-muted no-underline transition-colors hover:text-accent hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading active:bg-line'
+const paginationNewerClass = 'ml-auto'
+---
+
+<Layout channel={channel} seo={pageSeo}>
+  {pageHeading ? <h1 class="sr-only">{pageHeading}</h1> : null}
+  <slot name="header">
+    <Header channel={channel} />
+  </slot>
+  <ol class={itemsClass} aria-label={isItem ? 'Post' : 'Posts'}>
+    {
+      posts.map((post) => (
+        <li>
+          <Item post={post} isItem={isItem} />
+        </li>
+      ))
+    }
+  </ol>
+
+  {
+    hasOlderPosts || hasNewerPosts ? (
+      <nav class={paginationClass} aria-label="Pagination">
+        {hasOlderPosts ? (
+          <a
+            href={`${SITE_URL}before/${beforeCursor}`}
+            title="Older posts"
+            aria-label="Older posts"
+            class={paginationLinkClass}
+          >
+            <span aria-hidden="true">←</span>
+          </a>
+        ) : null}
+        {hasNewerPosts ? (
+          <a
+            href={`${SITE_URL}after/${afterCursor}`}
+            title="Newer posts"
+            aria-label="Newer posts"
+            class:list={[paginationLinkClass, paginationNewerClass]}
+          >
+            <span aria-hidden="true">→</span>
+          </a>
+        ) : null}
+      </nav>
+    ) : null
+  }
+</Layout>

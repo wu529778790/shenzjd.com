@@ -1,72 +1,68 @@
 import sanitizeHtml from 'sanitize-html'
 
-/**
- * Sanitize HTML from external sources (Telegram, user-injected HTML).
- * Allows the tags/attributes needed for Telegram content while stripping
- * script injection, event handlers, and dangerous URLs.
- */
-export function sanitize(html: string): string {
-  return sanitizeHtml(html, {
-    allowedTags: [
-      // Text formatting
-      'b', 'strong', 'i', 'em', 'u', 'ins', 's', 'strike', 'del', 'sub', 'sup', 'small', 'mark',
-      // Structure
-      'p', 'br', 'hr', 'div', 'span', 'pre', 'code', 'blockquote',
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
-      'figure', 'figcaption', 'caption',
-      // Links and media
-      'a', 'img', 'video', 'source', 'audio',
-      // Telegram-specific
-      'tg-emoji', 'tg-spoiler',
-      // Interactive
-      'button', 'input', 'label',
-      // Details/summary for expandable
-      'details', 'summary',
+const mediaTags = ['img', 'video', 'audio', 'source']
+const interactiveTags = ['button', 'input', 'label']
+const telegramTags = ['tg-spoiler']
+const contentSanitizeOptions = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(mediaTags, interactiveTags, telegramTags),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    '*': [
+      'aria-controls',
+      'aria-hidden',
+      'aria-label',
+      'class',
+      'id',
+      'popover',
+      'role',
+      'style',
+      'title',
     ],
-    allowedAttributes: {
-      '*': ['class', 'id', 'style', 'role', 'aria-label', 'aria-controls', 'aria-hidden'],
-      'a': ['href', 'title', 'target', 'rel', 'data-*'],
-      'img': ['src', 'alt', 'width', 'height', 'loading', 'data-webp', 'popovertarget', 'popovertargetaction'],
-      'video': ['src', 'controls', 'preload', 'playsinline', 'webkit-playsinline', 'muted', 'loop', 'aria-label', 'disablepictureinpicture', 'poster'],
-      'audio': ['src', 'controls', 'preload'],
-      'source': ['src', 'type'],
-      'button': ['type', 'popovertarget', 'popovertargetaction', 'aria-label'],
-      'input': ['type', 'id', 'checked', 'aria-label', 'aria-controls'],
-      'label': ['for'],
-      'div': ['popover'],
-      'td': ['colspan', 'rowspan'],
-      'th': ['colspan', 'rowspan'],
-      'tg-emoji': ['emoji-id'],
+    'a': ['href', 'name', 'target', 'rel', 'title', 'class'],
+    'audio': ['src', 'controls', 'preload'],
+    'button': ['type', 'class', 'popovertarget', 'popovertargetaction', 'aria-label'],
+    'img': ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading', 'class'],
+    'input': ['type', 'id', 'class', 'aria-label', 'aria-controls'],
+    'label': ['for', 'class'],
+    'source': ['src', 'srcset', 'type'],
+    'video': [
+      'src',
+      'width',
+      'height',
+      'poster',
+      'controls',
+      'preload',
+      'muted',
+      'autoplay',
+      'loop',
+      'playsinline',
+      'webkit-playsinline',
+      'disablepictureinpicture',
+      'aria-label',
+    ],
+  },
+  allowedStyles: {
+    '*': {
+      'background': [/^(?!.*javascript:)[^;]+$/i],
+      'background-image': [/^url\((?!.*javascript:)[^)]+\)$/i],
+      'background-position': [/^[\w\s.%+-]+$/],
+      'background-size': [/^[\w\s.%+/-]+$/],
+      'height': [/^\d+(?:\.\d+)?(?:px|%)$/],
+      'padding-top': [/^\d+(?:\.\d+)?%$/],
+      'width': [/^\d+(?:\.\d+)?(?:px|%)$/],
     },
-    allowedSchemes: ['http', 'https', 'mailto', 'tel'],
-    allowedSchemesByTag: {
-      img: ['http', 'https', 'data'],
-      video: ['http', 'https'],
-      audio: ['http', 'https'],
-      source: ['http', 'https'],
-    },
-    // Strip everything not explicitly allowed
-    allowedIframeHostnames: [],
-    // Remove event handlers (onclick, onerror, etc.)
-    allowedSchemesAppliedToAttributes: ['href', 'src'],
-  })
+  },
 }
 
-/**
- * Sanitize raw HTML injection from env vars (HEADER_INJECT, FOOTER_INJECT).
- * Only allows safe tags — no scripts, no event handlers.
- */
-export function sanitizeInjection(html: string): string {
-  return sanitizeHtml(html, {
-    allowedTags: [
-      'link', 'meta', 'style',
-    ],
-    allowedAttributes: {
-      'link': ['rel', 'href', 'type', 'integrity', 'crossorigin'],
-      'meta': ['name', 'content', 'property', 'charset'],
-      '*': ['class', 'id'],
+export function sanitizeContentHtml(content: string): string {
+  return sanitizeHtml(content, contentSanitizeOptions)
+}
+
+export function sanitizeFeedHtml(content: string): string {
+  return sanitizeHtml(content, {
+    ...contentSanitizeOptions,
+    exclusiveFilter(frame) {
+      return frame.tag === 'img' && frame.attribs.class?.includes('modal-img')
     },
-    allowedSchemes: ['http', 'https', 'mailto'],
   })
 }

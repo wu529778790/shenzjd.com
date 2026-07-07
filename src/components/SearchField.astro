@@ -1,0 +1,37 @@
+---
+const { id, googleSearchSite } = Astro.props as {
+  id: string
+  googleSearchSite?: string
+}
+
+const searchFieldClass = 'flex items-center gap-1'
+const searchIconClass = 'h-3.5 w-3.5 shrink-0 text-muted/55'
+const searchInputClass =
+  'box-border min-w-0 flex-1 rounded-panel border-0 bg-transparent px-1 py-0.5 text-base leading-6 text-heading outline-none placeholder:text-muted/55 focus-visible:outline-none md:text-xs'
+const searchSubmitClass =
+  'inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-panel text-xs leading-none text-muted/60 transition-colors duration-150 hover:text-heading focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-heading'
+const searchLabelText = 'Search'
+const searchIconPath = 'm14.2 14.2 3.3 3.3M8.8 15.1a6.3 6.3 0 1 1 0-12.6 6.3 6.3 0 0 1 0 12.6Z'
+---
+
+{googleSearchSite ? <input type="hidden" name="as_sitesearch" value={googleSearchSite} /> : null}
+<label class="sr-only" for={id}>{searchLabelText}</label>
+<div class={searchFieldClass}>
+  <svg class={searchIconClass} viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <path d={searchIconPath} stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+    ></path>
+  </svg>
+  <input
+    id={id}
+    class={searchInputClass}
+    type="search"
+    name="q"
+    placeholder="Search…"
+    autocomplete="off"
+    inputmode="search"
+    spellcheck={false}
+  />
+  <button class={searchSubmitClass} type="submit" aria-label="Submit search">
+    <span aria-hidden="true">↵</span>
+  </button>
+</div>

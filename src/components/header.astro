@@ -1,0 +1,88 @@
+---
+import { Icon } from 'astro-icon/components'
+import ChannelAvatar from './ChannelAvatar.astro'
+import { getBooleanEnv, getEnv, getPodcastUrl } from '../lib/env'
+import { sanitizeContentHtml } from '../lib/sanitize'
+import { buildSocialLinks } from '../lib/social'
+import { siteTitleClass } from '../lib/style-classes'
+
+const { SITE_URL, RSS_URL } = Astro.locals
+const { channel } = Astro.props
+
+const PODCAST = getPodcastUrl(import.meta.env, Astro)
+const TWITTER = getEnv(import.meta.env, Astro, 'TWITTER')
+const GITHUB = getEnv(import.meta.env, Astro, 'GITHUB')
+const TELEGRAM = getEnv(import.meta.env, Astro, 'TELEGRAM')
+const DISCORD = getEnv(import.meta.env, Astro, 'DISCORD')
+const MASTODON = getEnv(import.meta.env, Astro, 'MASTODON')
+const BLUESKY = getEnv(import.meta.env, Astro, 'BLUESKY')
+
+const hideDescription = getBooleanEnv(import.meta.env, Astro, 'HIDE_DESCRIPTION')
+const descriptionHtml = channel?.descriptionHTML ? sanitizeContentHtml(channel.descriptionHTML) : ''
+
+const headerMainClass = 'mb-2.5 flex items-center p-2.5 font-semibold max-sm:p-0'
+const avatarClass = 'block h-10 w-10 rounded-full border-4 border-white object-cover shadow-soft'
+const titleWrapClass = 'ml-2.5 min-w-0 flex-1 pr-2.5 text-xl'
+const titleLinkClass = `text-heading no-underline hover:text-ink hover:underline ${siteTitleClass}`
+const iconNavClass = 'flex items-center gap-0.5'
+const socialLinkClass = 'group p-1 no-underline'
+const socialIconClass =
+  'h-[1em] w-[1em] align-bottom [filter:var(--icon-secondary-filter)] group-hover:[filter:var(--icon-hover-filter)]'
+const introClass =
+  'mb-5 ml-1 break-words rounded-panel border-l-2 border-line bg-code px-5 py-2.5 text-base leading-[1.6] text-muted shadow-soft max-sm:my-5 max-sm:ml-0'
+
+const socialLinks = buildSocialLinks({
+  rssUrl: RSS_URL,
+  podcast: PODCAST,
+  twitter: TWITTER,
+  github: GITHUB,
+  telegram: TELEGRAM,
+  discord: DISCORD,
+  mastodon: MASTODON,
+  bluesky: BLUESKY,
+})
+---
+
+<header>
+  <div class={headerMainClass}>
+    <a href={SITE_URL} title={channel?.title} aria-label="Home">
+      <ChannelAvatar
+        channel={channel}
+        alt=""
+        loading="eager"
+        fetchpriority="high"
+        width="40"
+        height="40"
+        class={avatarClass}
+      />
+    </a>
+    <div class={titleWrapClass}>
+      <a href={SITE_URL} class={titleLinkClass} title={channel?.title}>
+        {channel?.title}
+      </a>
+    </div>
+    <nav class={iconNavClass} aria-label="Channel links">
+      {
+        socialLinks.map((item) => (
+          <a
+            href={item.href}
+            title={item.title}
+            target="_blank"
+            rel={item.rel}
+            type={item.type}
+            aria-label={item.label}
+            class={socialLinkClass}
+          >
+            <Icon name={item.icon} class={socialIconClass} aria-hidden="true" />
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+{
+  !hideDescription && descriptionHtml.length > 0 && (
+    <div class:list={[introClass, 'content']} set:html={descriptionHtml} />
+  )
+}

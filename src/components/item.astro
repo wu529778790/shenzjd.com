@@ -1,0 +1,113 @@
+---
+import { getBooleanEnv, getEnv } from '../lib/env'
+import { sanitizeContentHtml } from '../lib/sanitize'
+import { formatPostTime, getReactionLabel, getTagHref, paidReactionClass } from '../lib/post-ui'
+import { tagChipLinkClass } from '../lib/style-classes'
+
+const locale = getEnv(import.meta.env, Astro, 'LOCALE')
+const timezone = getEnv(import.meta.env, Astro, 'TIMEZONE')
+
+const { SITE_URL } = Astro.locals
+const { post, isItem } = Astro.props
+
+const channelName = getEnv(import.meta.env, Astro, 'CHANNEL')
+const commentsEnabled = getBooleanEnv(import.meta.env, Astro, 'COMMENTS')
+const reactionsEnabled = getBooleanEnv(import.meta.env, Astro, 'REACTIONS')
+
+const timeago = await formatPostTime(post.datetime, timezone, locale)
+const contentHtml = sanitizeContentHtml(post.content)
+const hasContent = contentHtml.length > 0
+const hasReactions = Boolean(reactionsEnabled && post.reactions?.length > 0)
+const hasTags = post.tags.length > 0
+const articleClass = 'transition duration-200'
+const timeBoxClass = 'flex items-center leading-none'
+const timeDotClass = 'h-2 w-2 rounded-full bg-accent'
+const timeTextClass = 'm-0 flex-1 pl-2.5 text-sm font-medium text-accent'
+const itemLinkClass = 'text-accent no-underline hover:underline'
+const timelineRailClass = 'ml-1 border-l-2 border-line pl-4 md:pl-8'
+const contentClass = `${timelineRailClass} py-8 text-base leading-[1.6]`
+const reactionBoxClass = `${timelineRailClass} pb-6 pt-1.5`
+const reactionListClass = 'm-0 flex list-none flex-wrap gap-1.5 p-0'
+const reactionPillClass =
+  'inline-flex items-center gap-1 rounded-full border border-line bg-code py-1 pl-1.5 pr-2 text-xs text-muted'
+const reactionEmojiClass = 'inline-flex items-center text-sm leading-none'
+const reactionCountClass = 'font-medium opacity-80 [font-variant-numeric:tabular-nums]'
+const tagBoxClass = `${timelineRailClass} flex flex-wrap items-center gap-2 text-sm leading-[1.6]`
+const tagPaddingClass = commentsEnabled && isItem ? 'pb-8' : 'pb-5'
+const tagStandaloneClass = 'pt-8'
+const tagLinkClass = tagChipLinkClass
+const commentsClass = `${timelineRailClass} pb-6 pt-1.5`
+---
+
+<article class={articleClass} style={{ 'view-transition-name': `post-${post.id}` }}>
+  <header class={timeBoxClass}>
+    <span class={timeDotClass} aria-hidden="true"></span>
+    <p class={timeTextClass}>
+      <a href={`${SITE_URL}posts/${post.id}`} title={post.datetime} class={itemLinkClass}>
+        <time datetime={post.datetime} title={timeago}>{timeago}</time>
+      </a>
+    </p>
+  </header>
+  {hasContent && <div class:list={[contentClass, 'content']} set:html={contentHtml} />}
+  {
+    hasReactions && (
+      <div class:list={[reactionBoxClass, hasContent && '-mt-3 pt-0']}>
+        <ul class={reactionListClass} role="list" aria-label="Reactions">
+          {post.reactions.map((reaction) => (
+            <li
+              class:list={[reactionPillClass, reaction.isPaid && paidReactionClass]}
+              aria-label={getReactionLabel(reaction)}
+            >
+              <span class={reactionEmojiClass}>
+                {reaction.isPaid ? (
+                  '\u2B50'
+                ) : reaction.emojiImage ? (
+                  <img
+                    src={reaction.emojiImage}
+                    alt={reaction.emoji || 'emoji'}
+                    loading="lazy"
+                    width="20"
+                    height="20"
+                    class="block h-[1em] w-[1em]"
+                  />
+                ) : (
+                  reaction.emoji
+                )}
+              </span>
+              <span class={reactionCountClass}>{reaction.count}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+  {
+    hasTags && (
+      <footer class:list={[tagBoxClass, tagPaddingClass, !hasContent && tagStandaloneClass]}>
+        <span class="tag-icon" aria-hidden="true" />
+        {post.tags.map((tag: string) => (
+          <a href={getTagHref(tag)} title={tag} class={tagLinkClass}>
+            {tag}
+          </a>
+        ))}
+      </footer>
+    )
+  }
+
+  {
+    commentsEnabled && isItem && (
+      <section class={commentsClass} aria-label="Telegram comments">
+        {/* Telegram comments are the only intentional client-side JS exception. */}
+        <script
+          is:inline
+          async
+          src="https://telegram.org/js/telegram-widget.js"
+          data-telegram-discussion={`${channelName}/${post.id}`}
+          data-comments-limit="50"
+          data-colorful="1"
+          data-color="454545"
+        />
+      </section>
+    )
+  }
+</article>

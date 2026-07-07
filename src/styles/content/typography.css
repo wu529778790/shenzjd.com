@@ -1,0 +1,171 @@
+@layer components {
+  .content {
+    @apply break-words;
+
+    p {
+      margin: 1em 0;
+    }
+
+    ul,
+    ol {
+      @apply ps-10;
+      margin: 1em 0;
+    }
+
+    ul {
+      @apply list-disc;
+    }
+
+    ol {
+      @apply list-decimal;
+    }
+
+    h1 {
+      @apply text-2xl font-bold;
+      margin: 0.67em 0;
+    }
+
+    h2 {
+      @apply text-xl font-bold;
+      margin-top: 1.5em;
+      margin-bottom: 0.83em;
+    }
+
+    h3 {
+      @apply text-base font-bold;
+      margin-top: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    h4 {
+      @apply text-sm font-bold;
+      margin-top: 1.5em;
+      margin-bottom: 1.33em;
+    }
+
+    h5 {
+      @apply text-xs font-bold;
+      margin-top: 1.5em;
+      margin-bottom: 1.67em;
+    }
+
+    h6 {
+      @apply text-[10px] font-bold;
+      margin-top: 1.5em;
+      margin-bottom: 2.33em;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      @apply scroll-mt-4;
+    }
+
+    ul:first-child,
+    ol:first-child,
+    p:first-child,
+    h1:first-child,
+    h2:first-child,
+    h3:first-child,
+    h4:first-child,
+    h5:first-child,
+    h6:first-child {
+      @apply mt-0;
+    }
+
+    ul:last-child,
+    ol:last-child,
+    p:last-child,
+    h1:last-child,
+    h2:last-child,
+    h3:last-child,
+    h4:last-child,
+    h5:last-child,
+    h6:last-child {
+      @apply mb-0;
+    }
+
+    li {
+      line-break: anywhere;
+    }
+
+    a:link,
+    a:visited {
+      line-break: anywhere;
+    }
+
+    pre {
+      @apply whitespace-pre-wrap rounded-panel border border-line bg-code p-2.5 shadow-soft;
+      font-size: 0.9em;
+    }
+
+    > pre {
+      @apply overflow-x-auto;
+      width: calc(100% - var(--box-margin));
+      max-width: 456px;
+    }
+
+    code {
+      line-break: anywhere;
+    }
+
+    :not(pre) > code {
+      @apply rounded-panel bg-surface px-1 py-0.5;
+    }
+
+    figure {
+      margin-inline-start: 0;
+      margin-inline-end: 10px;
+    }
+
+    figcaption {
+      @apply text-footer;
+      font-size: 0.8em;
+    }
+
+    > iframe {
+      @apply rounded-media border border-line shadow-soft;
+      max-width: calc(100% - 1px);
+    }
+
+    table {
+      @apply table-auto w-full border-collapse p-0 shadow-soft;
+    }
+
+    table tr {
+      @apply m-0 border-t border-line bg-surface p-0;
+    }
+
+    table tr:nth-child(2n) {
+      @apply bg-code;
+    }
+
+    table tr th {
+      @apply m-0 border border-line bg-code px-3 py-1.5 font-bold;
+    }
+
+    table tr td {
+      @apply m-0 border border-line px-3 py-1.5;
+      line-break: anywhere;
+    }
+
+    table tr th :first-child,
+    table tr td :first-child {
+      @apply mt-0;
+    }
+
+    table tr th :last-child,
+    table tr td :last-child {
+      @apply mb-0;
+    }
+
+    blockquote {
+      @apply rounded-panel border-l-[3px] border-accent bg-surface p-1.5 pl-2.5;
+      margin: 16px 0;
+      font-size: 0.8em;
+    }
+  }
+}

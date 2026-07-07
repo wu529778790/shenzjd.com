@@ -1,0 +1,194 @@
+@import 'tailwindcss';
+@import './content.css';
+
+@view-transition {
+  navigation: auto;
+}
+
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif:
+    Georgia, 'Times New Roman', 'Noto Serif', 'Source Serif 4', 'Literata', serif;
+  --font-display:
+    Georgia, 'Times New Roman', 'Noto Serif', 'Source Serif 4', 'Literata', serif;
+  --breakpoint-sm: 37.5rem;
+  --color-paper: #FDFCFA;
+  --color-ink: #37352F;
+  --color-heading: #1A1714;
+  --color-accent: #D4523A;
+  --color-accent-light: #FDF0ED;
+  --color-surface: #FFFFFF;
+  --color-code: #F7F5F2;
+  --color-muted: #8B8680;
+  --color-link: #B8472E;
+  --color-link-hover: #1A1714;
+  --color-line: rgba(55, 53, 47, 0.06);
+  --color-line-strong: rgba(55, 53, 47, 0.12);
+  --color-footer: #A09A94;
+  --color-sidebar: #F7F5F2;
+  --color-tag-bg: #F0ECE6;
+  --color-tag-hover: #D4523A;
+  --color-paid: #92400E;
+  --color-paid-line: rgba(146, 64, 14, 0.28);
+  --color-paid-surface: rgba(212, 82, 58, 0.12);
+  --shadow-soft:
+    0 1px 3px rgba(45, 41, 38, 0.04), 0 4px 12px rgba(45, 41, 38, 0.03);
+  --radius-panel: 6px;
+  --radius-chip: 4px;
+  --radius-media: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #191816;
+    --color-surface: #23211D;
+    --color-code: #2A2722;
+    --color-ink: #D4CCC4;
+    --color-heading: #EAE2DA;
+    --color-accent: #D4523A;
+    --color-accent-light: #3D2A24;
+    --color-muted: #9A9088;
+    --color-link: #E8926A;
+    --color-link-hover: #EAE2DA;
+    --color-line: rgba(212, 204, 196, 0.06);
+    --color-line-strong: rgba(212, 204, 196, 0.12);
+    --color-footer: #7A706A;
+    --color-sidebar: #1F1D1A;
+    --color-tag-bg: #302A24;
+    --color-tag-hover: #D4523A;
+    --color-paid: #FDE68A;
+    --color-paid-line: #92400E;
+    --color-paid-surface: #78350F;
+    --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@layer base {
+  :root {
+    --box-margin: 10px;
+    --back-to-top-offset: 1.25rem;
+    --back-to-top-size: 2rem;
+    --dot-size: 8px;
+    --icon-hover-filter: invert(51%) sepia(0%) saturate(0%) hue-rotate(23deg) brightness(90%) contrast(90%);
+    --icon-secondary-filter: invert(97%) sepia(0%) saturate(0%) hue-rotate(129deg) brightness(86%) contrast(88%);
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    color-scheme: light dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  a:link,
+  a:visited {
+    color: var(--color-link);
+    text-decoration: none;
+    line-break: loose;
+  }
+
+  a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    text-underline-offset: 0.2rem;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--color-heading);
+    outline-offset: 2px;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    color: var(--color-line);
+    background-color: var(--color-line);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  .tag-icon {
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
+    opacity: 0.25;
+    background-image: url('../assets/tags.png');
+    background-repeat: no-repeat;
+    display: inline-block;
+  }
+
+  #main-content {
+    position: relative;
+  }
+
+  #back-to-top-wrapper {
+    pointer-events: none;
+  }
+
+  #back-to-top {
+    position: fixed;
+    inset-inline-end: var(--back-to-top-offset);
+    bottom: var(--back-to-top-offset);
+    pointer-events: auto;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    #back-to-top {
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      animation: back-to-top-reveal linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 100vh;
+    }
+
+    @keyframes back-to-top-reveal {
+      0%,
+      99% {
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+      }
+
+      100% {
+        opacity: 0.9;
+        pointer-events: auto;
+        visibility: visible;
+      }
+    }
+  }
+}

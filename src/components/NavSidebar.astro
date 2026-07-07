@@ -1,0 +1,90 @@
+---
+import type { NavItem } from '../types'
+import SearchForm from './SearchForm.astro'
+import SiteFooter from './SiteFooter.astro'
+
+const {
+  channelTitle,
+  currentPathname,
+  googleSearchSite,
+  linksPathname,
+  navs = [],
+  searchAction,
+  showLinks,
+  showTags,
+  siteRootPathname,
+  siteUrl,
+  tagsPathname,
+} = Astro.props as {
+  channelTitle?: string
+  currentPathname: string
+  googleSearchSite?: string
+  linksPathname: string
+  navs?: NavItem[]
+  searchAction: string
+  showLinks?: boolean
+  showTags?: boolean
+  siteRootPathname: string
+  siteUrl: string
+  tagsPathname: string
+}
+
+const asideInnerClass =
+  'relative grid grid-cols-1 items-start overflow-y-visible md:block md:max-h-[100svh] md:overflow-y-auto'
+const navClass = 'relative z-10 col-start-1 row-start-1 min-w-0 pr-8 md:block md:pr-0'
+const navListClass = 'm-0 flex list-none flex-wrap gap-0.5 pl-0 pt-5 md:block'
+const navItemClass = 'flex items-center text-sm leading-none md:mb-2.5 md:text-base md:leading-normal'
+const navLinkClass =
+  'flex-1 inline-block rounded-panel px-2.5 py-1.5 text-heading no-underline transition-[background-color,box-shadow] duration-150 ease-in-out hover:bg-white/65 hover:shadow-soft hover:no-underline'
+const navLinkCurrentClass = 'bg-white/75 shadow-soft'
+
+const primaryNavItems = [
+  {
+    href: siteUrl,
+    pathname: siteRootPathname,
+    title: 'Home',
+  },
+  showTags && {
+    href: `${siteUrl}tags`,
+    pathname: tagsPathname,
+    title: 'Tags',
+  },
+  showLinks && {
+    href: `${siteUrl}links`,
+    pathname: linksPathname,
+    title: 'Links',
+  },
+].filter((item): item is { href: string; pathname: string; title: string } => Boolean(item))
+---
+
+<div class={asideInnerClass}>
+  <nav class={navClass} aria-label="Primary navigation">
+    <ul class={navListClass}>
+      {
+        primaryNavItems.map((nav) => (
+          <li class={navItemClass}>
+            <a
+              href={nav.href}
+              title={nav.title === 'Home' ? channelTitle : nav.title}
+              class:list={[navLinkClass, currentPathname === nav.pathname && navLinkCurrentClass]}
+            >
+              {nav.title}
+            </a>
+          </li>
+        ))
+      }
+      {
+        navs.map((nav) => (
+          <li class={navItemClass}>
+            <a href={nav.href} title={nav.title} target="_blank" rel="noopener noreferrer" class={navLinkClass}>
+              {nav.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <SearchForm action={searchAction} googleSearchSite={googleSearchSite} />
+  <SiteFooter />
+</div>
