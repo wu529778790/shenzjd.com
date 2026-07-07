@@ -51,6 +51,11 @@ export interface NavItem {
   href: string
 }
 
+export interface NavGroup {
+  title: string
+  items: NavItem[]
+}
+
 export interface TagCloudItem {
   href: string
   label: string

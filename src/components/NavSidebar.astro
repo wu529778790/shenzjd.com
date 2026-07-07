@@ -1,5 +1,5 @@
 ---
-import type { NavItem } from '../types'
+import type { NavGroup } from '../types'
 import SearchForm from './SearchForm.astro'
 import SiteFooter from './SiteFooter.astro'
 
@@ -8,7 +8,7 @@ const {
   currentPathname,
   googleSearchSite,
   linksPathname,
-  navs = [],
+  navGroups = [],
   searchAction,
   showLinks,
   showTags,
@@ -20,7 +20,7 @@ const {
   currentPathname: string
   googleSearchSite?: string
   linksPathname: string
-  navs?: NavItem[]
+  navGroups?: NavGroup[]
   searchAction: string
   showLinks?: boolean
   showTags?: boolean
@@ -37,6 +37,7 @@ const navItemClass = 'flex items-center text-sm leading-none md:mb-2.5 md:text-b
 const navLinkClass =
   'flex-1 inline-block rounded-panel px-2.5 py-1.5 text-heading no-underline transition-[background-color,box-shadow] duration-150 ease-in-out hover:bg-white/65 hover:shadow-soft hover:no-underline'
 const navLinkCurrentClass = 'bg-white/75 shadow-soft'
+const navGroupTitleClass = 'px-2.5 pt-4 text-xs font-medium uppercase tracking-wide text-heading/55 first:pt-5'
 
 const primaryNavItems = [
   {
@@ -74,12 +75,19 @@ const primaryNavItems = [
         ))
       }
       {
-        navs.map((nav) => (
-          <li class={navItemClass}>
-            <a href={nav.href} title={nav.title} target="_blank" rel="noopener noreferrer" class={navLinkClass}>
-              {nav.title}
-            </a>
-          </li>
+        navGroups.map((group) => (
+          <Fragment>
+            {group.title && <li class={navGroupTitleClass}>{group.title}</li>}
+            {
+              group.items.map((nav) => (
+                <li class={navItemClass}>
+                  <a href={nav.href} title={nav.title} target="_blank" rel="noopener noreferrer" class={navLinkClass}>
+                    {nav.title}
+                  </a>
+                </li>
+              ))
+            }
+          </Fragment>
         ))
       }
     </ul>

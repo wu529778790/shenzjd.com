@@ -4,6 +4,7 @@ import { SEO } from 'astro-seo'
 import BackToTop from '../components/BackToTop.astro'
 import NavSidebar from '../components/NavSidebar.astro'
 import { getEnv, parseDelimitedItems } from '../lib/env'
+import { defaultNavGroups } from '../lib/nav'
 import { getPageSeo } from '../lib/seo'
 
 const { SITE_URL, RSS_URL, RSS_PREFIX } = Astro.locals
@@ -27,7 +28,10 @@ const HEADER_INJECT = getEnv(import.meta.env, Astro, 'HEADER_INJECT')
 const FOOTER_INJECT = getEnv(import.meta.env, Astro, 'FOOTER_INJECT')
 const TAGS = getEnv(import.meta.env, Astro, 'TAGS')
 const LINKS = getEnv(import.meta.env, Astro, 'LINKS')
-const navs = parseDelimitedItems(getEnv(import.meta.env, Astro, 'NAVS'))
+const navsEnv = getEnv(import.meta.env, Astro, 'NAVS')
+const navGroups = navsEnv
+  ? [{ title: '', items: parseDelimitedItems(navsEnv) }]
+  : defaultNavGroups
 
 const layoutShellClass = 'mx-5'
 const layoutGridClass = 'mx-auto flex w-full max-w-4xl flex-col md:flex-row-reverse md:items-start'
@@ -69,7 +73,7 @@ const skipLinkText = 'Skip to main content'
               currentPathname={currentPathname}
               googleSearchSite={GOOGLE_SEARCH_SITE}
               linksPathname={linksPathname}
-              navs={navs}
+              navGroups={navGroups}
               searchAction={searchAction}
               showLinks={Boolean(LINKS)}
               showTags={Boolean(TAGS)}
