@@ -85,11 +85,13 @@ const loadTelegramHtml = defineCachedFunction(fetchTelegramHtml, {
   }),
   // Runs on every cache hit (and after a miss resolver). Cheap signal for
   // hit/miss ratio without instrumentation inside ocache.
-  transform(entry, args) {
-    const params = args[0] as TelegramHtmlParams
-    const url = params.id
-      ? `https://${params.host}/${params.channel}/${params.id}?embed=1&mode=tme`
-      : `https://${params.host}/s/${params.channel}`
+  // NOTE: ocache spreads the cachedFn args, so this receives the params object
+  // directly (`transform(entry, params)`), NOT wrapped in an array.
+  transform(entry, params) {
+    const p = params as TelegramHtmlParams
+    const url = p.id
+      ? `https://${p.host}/${p.channel}/${p.id}?embed=1&mode=tme`
+      : `https://${p.host}/s/${p.channel}`
     diag.logTelegram({ cache: 'hit', url })
     return entry.value as string
   },
