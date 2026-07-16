@@ -1,4 +1,11 @@
 import { defineMiddleware } from 'astro:middleware'
+import { diag } from './lib/diag'
+
+function getClientIp(request: Request): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    ?? request.headers.get('x-real-ip')
+    ?? ''
+}
 
 function getEncodedTagSearchQuery(pathname: string): string {
   if (!pathname.startsWith('/search/%23')) {
@@ -22,6 +29,13 @@ export function shouldApplyDefaultCache(response: Response): boolean {
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  diag.logAccess({
+    method: context.request.method,
+    path: context.url.pathname + context.url.search,
+    ua: context.request.headers.get('user-agent') ?? '',
+    ip: getClientIp(context.request),
+  })
+
   context.locals.SITE_URL = `${import.meta.env.SITE ?? ''}${import.meta.env.BASE_URL}`
   context.locals.RSS_URL = `${context.locals.SITE_URL}rss.xml`
   context.locals.RSS_PREFIX = ''

@@ -3,7 +3,14 @@ import type { LoadedChannelDocument, RequestContext } from './types'
 import * as cheerio from 'cheerio'
 import { defineCachedFunction } from 'ocache'
 import { $fetch } from 'ofetch'
-import { getBooleanEnv, getEnv, getStaticProxy } from '../env'
+import { getBooleanEnv, getEnv, getProcessEnv, getStaticProxy } from '../env'
+import { installLruCache } from '../cache-storage'
+import { diag } from '../diag'
+
+// Replace ocache's unbounded in-memory Map with a bounded LRU.
+// Tunable via TELEGRAM_HTML_CACHE_MAX; default keeps memory flat.
+const cacheMax = Number(getProcessEnv('TELEGRAM_HTML_CACHE_MAX') ?? 128)
+installLruCache(cacheMax)
 
 interface TelegramHtmlParams {
   host: string
@@ -35,25 +42,39 @@ async function fetchTelegramHtml({ host, channel, id, before, after, q, headers 
     ? `https://${host}/${channel}/${id}?embed=1&mode=tme`
     : `https://${host}/s/${channel}`
 
-  return await $fetch<string, 'text'>(requestUrl, {
-    headers,
-    query: {
-      before: before || undefined,
-      after: after || undefined,
-      q: q || undefined,
-    },
-    responseType: 'text',
-    timeout: 15000,
-    retry: 3,
-    retryDelay: 100,
-  })
+  // This resolver only runs on a cache miss, so every invocation here is a real
+  // outbound request to Telegram. Log outcome for diagnosing intermittent failures.
+  const start = Date.now()
+  try {
+    const html = await $fetch<string, 'text'>(requestUrl, {
+      headers,
+      query: {
+        before: before || undefined,
+        after: after || undefined,
+        q: q || undefined,
+      },
+      responseType: 'text',
+      timeout: 15000,
+      retry: 3,
+      retryDelay: 100,
+    })
+    diag.logTelegram({ cache: 'miss', url: requestUrl, status: 200, ms: Date.now() - start })
+    return html
+  }
+  catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    diag.logTelegram({ cache: 'miss', url: requestUrl, error: message, ms: Date.now() - start })
+    throw error
+  }
 }
 
 const loadTelegramHtml = defineCachedFunction(fetchTelegramHtml, {
   name: 'telegram-html',
   maxAge: 60 * 5,
   swr: true,
-  staleMaxAge: 60 * 60,
+  // Keep short: the LRU bounds total entries, but a shorter stale window means
+  // one-off pagination/search keys stop lingering once traffic moves on.
+  staleMaxAge: 60 * 5,
   getKey: ({ host, channel, id, before, after, q }) => JSON.stringify({
     host,
     channel,
@@ -62,6 +83,16 @@ const loadTelegramHtml = defineCachedFunction(fetchTelegramHtml, {
     after: after || '',
     q: q || '',
   }),
+  // Runs on every cache hit (and after a miss resolver). Cheap signal for
+  // hit/miss ratio without instrumentation inside ocache.
+  transform(entry, args) {
+    const params = args[0] as TelegramHtmlParams
+    const url = params.id
+      ? `https://${params.host}/${params.channel}/${params.id}?embed=1&mode=tme`
+      : `https://${params.host}/s/${params.channel}`
+    diag.logTelegram({ cache: 'hit', url })
+    return entry.value as string
+  },
 })
 
 export async function loadChannelDocument(
@@ -73,15 +104,25 @@ export async function loadChannelDocument(
   const channel = getRequiredEnv(context, 'CHANNEL')
   const staticProxy = getStaticProxy(import.meta.env, context)
   const reactionsEnabled = getBooleanEnv(import.meta.env, context, 'REACTIONS')
-  const html = await loadTelegramHtml({
-    host,
-    channel,
-    id,
-    before,
-    after,
-    q,
-    headers: getTelegramRequestHeaders(),
-  })
+
+  // fetchTelegramHtml logs every miss/failure via diag. Catch here so a flaky
+  // t.me degrades the page to "no posts" instead of throwing a 500 whose stack
+  // trace (the noisy [ERROR] FetchError lines) adds no diagnostic value.
+  let html = ''
+  try {
+    html = await loadTelegramHtml({
+      host,
+      channel,
+      id,
+      before,
+      after,
+      q,
+      headers: getTelegramRequestHeaders(),
+    })
+  }
+  catch {
+    // Intentionally swallowed: diag.logTelegram already recorded url/error/ms.
+  }
 
   return {
     $: cheerio.load(html, {}, false),

@@ -2,7 +2,7 @@ import type { AstroEnvContext, NavItem } from '../types'
 
 type Env = Record<string, string | undefined>
 
-function getProcessEnv(name: string): string | undefined {
+export function getProcessEnv(name: string): string | undefined {
   return (Reflect.get(globalThis, 'process') as { env?: Env } | undefined)?.env?.[name]
 }
 
