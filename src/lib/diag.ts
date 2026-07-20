@@ -3,10 +3,13 @@
  * Toggle via env:
  *   DIAG_ACCESS=1       -> one line per inbound request (method, path, UA, IP)
  *   DIAG_TELEGRAM=1     -> telegram fetch: cache hit/miss, status, error type, duration
+ *   DIAG_CACHE_STATS=1  -> emit Telegram HTML cache occupancy stats opportunistically
  *
  * Kept separate from ad-hoc console.* so each channel can be enabled
  * independently and the format stays consistent ("[diag] ...").
  */
+
+import { getCacheStats } from './cache-storage'
 
 function enabled(name: string): boolean {
   const v = (Reflect.get(globalThis, 'process') as { env?: Record<string, string> } | undefined)?.env?.[name]
@@ -20,6 +23,7 @@ function ts(): string {
 export const diag = {
   access: enabled('DIAG_ACCESS'),
   telegram: enabled('DIAG_TELEGRAM'),
+  cacheStats: enabled('DIAG_CACHE_STATS'),
 
   /** One line per inbound HTTP request. */
   logAccess(info: { method: string; path: string; ua: string; ip: string }): void {
@@ -43,5 +47,15 @@ export const diag = {
     } else {
       console.log(`${base} HTTP ${info.status} (${info.ms}ms)`)
     }
+  },
+
+  /** Periodic snapshot of Telegram HTML cache occupancy. Only emits when DIAG_CACHE_STATS=1. */
+  logCacheStats(): void {
+    if (!diag.cacheStats) return
+    const stats = getCacheStats()
+    // Estimated bytes derived from lru-cache's sizeCalculation (sum of
+    // stored value string lengths). `max` is the configured TELEGRAM_HTML_CACHE_MAX.
+    const mb = (stats.estimatedBytes / 1024 / 1024).toFixed(1)
+    console.log(`[diag] ${ts()} CACHE stats size=${stats.size}/${stats.max} bytes=${mb}MB`)
   },
 }

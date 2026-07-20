@@ -8,8 +8,10 @@ import { installLruCache } from '../cache-storage'
 import { diag } from '../diag'
 
 // Replace ocache's unbounded in-memory Map with a bounded LRU.
-// Tunable via TELEGRAM_HTML_CACHE_MAX; default keeps memory flat.
-const cacheMax = Number(getProcessEnv('TELEGRAM_HTML_CACHE_MAX') ?? 128)
+// Tunable via TELEGRAM_HTML_CACHE_MAX; default 2048 keeps memory ~400MB-1GB
+// (each cached Telegram HTML page is ~200-500KB). Lower this if the container
+// has less than 2GB heap.
+const cacheMax = Number(getProcessEnv('TELEGRAM_HTML_CACHE_MAX') ?? 2048)
 installLruCache(cacheMax)
 
 interface TelegramHtmlParams {
@@ -70,11 +72,16 @@ async function fetchTelegramHtml({ host, channel, id, before, after, q, headers 
 
 const loadTelegramHtml = defineCachedFunction(fetchTelegramHtml, {
   name: 'telegram-html',
-  maxAge: 60 * 5,
+  // 15min fresh window: keeps most traffic on the fast path before any
+  // stale revalidation. Combined with the 2048-entry LRU this avoids the
+  // previous pattern where main-page entries got evicted every 5 minutes,
+  // causing ~67 redundant outbound fetches per TTL window.
+  maxAge: 60 * 15,
   swr: true,
-  // Keep short: the LRU bounds total entries, but a shorter stale window means
-  // one-off pagination/search keys stop lingering once traffic moves on.
-  staleMaxAge: 60 * 5,
+  // 1hr stale window: if the outbound t.me fetch fails, srv returns the
+  // stale HTML instead of an empty page. The user sees slightly older
+  // content rather than a broken channel.
+  staleMaxAge: 60 * 60,
   getKey: ({ host, channel, id, before, after, q }) => JSON.stringify({
     host,
     channel,

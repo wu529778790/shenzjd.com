@@ -17,6 +17,11 @@ const FORWARDED_REQUEST_HEADERS = new Set([
   'user-agent',
 ])
 
+// Files proxied from the Telegram CDN are immutable: they are keyed by a
+// content hash in the path and never change. Cache aggressively at every
+// layer (browser + CDN + any downstream proxy).
+const STATIC_TTL_SECONDS = 60 * 60 * 24 * 30 // 30 days
+
 export function resolveStaticProxyTarget(rawTarget: string): URL {
   const normalizedTarget = rawTarget.startsWith('//') ? `https:${rawTarget}` : rawTarget
   return new URL(normalizedTarget)
@@ -37,6 +42,24 @@ function getForwardedRequestHeaders(request: Request): Headers {
   }
 
   return headers
+}
+
+// Telegram CDN file URLs embed a content hash in the path, so the bytes are
+// immutable for a given URL. If the upstream sent its own Cache-Control we
+// leave it intact; otherwise we stamp a 30-day public cache so the CDN
+// (Cloudflare / Vercel Edge / etc.) caches it on the edge and stops relaying
+// every image back through the origin. ~65k/day of these requests piggyback
+// on generic UAs that any browser / crawler profile would re-request anyway.
+function withCdnCacheHeaders(response: Response): Response {
+  const headers = new Headers(response.headers)
+  const existing = headers.get('cache-control')
+  if (!existing) {
+    headers.set('Cache-Control', `public, max-age=${STATIC_TTL_SECONDS}, immutable`)
+    headers.set('CDN-Cache-Control', `max-age=${STATIC_TTL_SECONDS}`)
+    headers.set('Vary', 'Accept')
+    return new Response(response.body, { status: response.status, statusText: response.statusText, headers })
+  }
+  return response
 }
 
 export async function createStaticProxyResponse(request: Request, rawTarget: string): Promise<Response> {
@@ -64,5 +87,5 @@ export async function createStaticProxyResponse(request: Request, rawTarget: str
     return new Response('Upstream fetch failed', { status: 502 })
   }
 
-  return new Response(response.body, response)
+  return withCdnCacheHeaders(response)
 }
