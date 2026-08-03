@@ -88,12 +88,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return new Response(null, { status: 444 })
   }
 
-  diag.logAccess({
-    method: context.request.method,
-    path: pathname + context.url.search,
-    ua: context.request.headers.get('user-agent') ?? '',
-    ip: getClientIp(context.request),
-  })
+  // Skip access logging for the image-proxy path (/static/https:/...): these
+  // are high-volume, low-diagnostic-value CDN fetches that previously made up
+  // the majority of log lines. Page/feed/sitemap requests are still logged.
+  if (!pathname.startsWith('/static/')) {
+    diag.logAccess({
+      method: context.request.method,
+      path: pathname + context.url.search,
+      ua: context.request.headers.get('user-agent') ?? '',
+      ip: getClientIp(context.request),
+    })
+  }
 
   // Opportunistic periodic cache stats snapshot — also helps avoid
   // single-tick timer drift on long-running Node processes.

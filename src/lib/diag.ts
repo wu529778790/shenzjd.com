@@ -28,8 +28,12 @@ export const diag = {
   /** One line per inbound HTTP request. */
   logAccess(info: { method: string; path: string; ua: string; ip: string }): void {
     if (!diag.access) return
+    // Truncate the path: image-proxy URLs (/static/https:/...telesco.pe/...)
+    // are hundreds of chars long and dominated log volume. Cap to keep
+    // each line small and the overall log downloadable.
+    const path = info.path.length > 160 ? `${info.path.slice(0, 160)}…` : info.path
     const ua = info.ua.slice(0, 80)
-    console.log(`[diag] ${ts()} ACCESS ${info.method} ${info.path} ip=${info.ip} ua="${ua}"`)
+    console.log(`[diag] ${ts()} ACCESS ${info.method} ${path} ip=${info.ip} ua="${ua}"`)
   },
 
   /** Telegram fetch lifecycle: issue (cache miss), ok, or fail. */

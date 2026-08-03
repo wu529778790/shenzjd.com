@@ -92,6 +92,8 @@ jobs:
               --memory=512m \
               --memory-swap=768m \
               --cpus=1.0 \
+              --log-opt max-size=10m \
+              --log-opt max-file=3 \
               -e NODE_OPTIONS="--max-old-space-size=256" \
               $ENV_FLAGS \
               -e NAVS= \
