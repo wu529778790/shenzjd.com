@@ -24,29 +24,34 @@ function ts(): string {
   return new Date().toISOString().slice(11, 19) // HH:MM:SS, matches existing log timestamps
 }
 
-// Per-URL throttle for successful TELEGRAM lines. A single hot URL (the
-// channel main page, /s/<channel>) can be fetched thousands of times a day
-// when the LRU evicts it under heavy traffic — logging every miss drowns the
-// log with identical lines. Errors always log; successful misses are capped
-// to one line per URL per window.
-const TELEGRAM_THROTTLE_MS = 60_000 // 1 min
-const _lastTelegramLog = new Map<string, number>()
+// Telegram fetch accounting for the periodic summary line. Successful fetches
+// are NOT logged per-line anymore — that was 90%+ of TELEGRAM log volume with
+// near-zero diagnostic value. Instead they accumulate here and are reported as
+// one aggregated line per window. Errors and slow fetches still log
+// immediately; those are the lines that actually help troubleshooting.
+const TELEGRAM_SLOW_MS = 3000 // normal t.me fetches are ~200-700ms; 3s+ is degraded
+const TELEGRAM_SUMMARY_MS = 5 * 60_000 // emit one summary line per 5min window
+let _tgCount = 0
+let _tgErrors = 0
+let _tgSlow = 0
+let _tgMsSum = 0
+let _tgMsMax = 0
+let _tgLastSummary = 0
 
-function throttleTelegram(url: string): boolean {
+function maybeTelegramSummary(): void {
   const now = Date.now()
-  const last = _lastTelegramLog.get(url)
-  if (last !== undefined && now - last < TELEGRAM_THROTTLE_MS) {
-    return false
-  }
-  _lastTelegramLog.set(url, now)
-  // Opportunistic cleanup: entries older than 2 windows are stale; drop them
-  // to keep the map bounded (URL set is small, but be safe on long runs).
-  if (_lastTelegramLog.size > 5000) {
-    for (const [u, t] of _lastTelegramLog) {
-      if (now - t > TELEGRAM_THROTTLE_MS * 2) _lastTelegramLog.delete(u)
-    }
-  }
-  return true
+  if (now - _tgLastSummary < TELEGRAM_SUMMARY_MS) return
+  _tgLastSummary = now
+  if (!_tgCount) return
+  const avg = Math.round(_tgMsSum / _tgCount)
+  const stats = getCacheStats()
+  const mb = (stats.estimatedBytes / 1024 / 1024).toFixed(1)
+  console.log(`[diag] ${ts()} TELEGRAM summary fetch=${_tgCount} err=${_tgErrors} slow=${_tgSlow} avg=${avg}ms max=${_tgMsMax}ms cache=${stats.size}/${stats.max} ${mb}MB`)
+  _tgCount = 0
+  _tgErrors = 0
+  _tgSlow = 0
+  _tgMsSum = 0
+  _tgMsMax = 0
 }
 
 export const diag = {
@@ -62,15 +67,29 @@ export const diag = {
     error?: string
   }): void {
     if (!diag.telegram) return
-    // Errors always log; successful misses are throttled per URL so a hot URL
-    // that keeps getting evicted from the LRU can't flood the log.
-    if (!info.error && !throttleTelegram(info.url)) return
-    const base = `[diag] ${ts()} TELEGRAM cache=${info.cache} url=${info.url}`
+    const ms = info.ms ?? 0
+
+    // Errors always log immediately — this is the troubleshooting channel.
     if (info.error) {
-      console.warn(`${base} ERROR ${info.error} (${info.ms}ms)`)
-    } else {
-      console.log(`${base} HTTP ${info.status} (${info.ms}ms)`)
+      _tgErrors++
+      console.warn(`[diag] ${ts()} TELEGRAM ERROR ${info.url} ${info.error} (${ms}ms)`)
+      maybeTelegramSummary()
+      return
     }
+
+    // Success: accumulate for the periodic summary instead of logging a line.
+    // A successful fetch is not actionable by itself; only the aggregate
+    // (volume, error rate, avg/max latency) tells us if t.me is degrading.
+    _tgCount++
+    _tgMsSum += ms
+    if (ms > _tgMsMax) _tgMsMax = ms
+    // Still surface unusually slow fetches individually: 3s+ on a ~200-700ms
+    // path usually means the proxy/egress is degrading even before it fails.
+    if (ms >= TELEGRAM_SLOW_MS) {
+      _tgSlow++
+      console.warn(`[diag] ${ts()} TELEGRAM SLOW ${info.url} HTTP ${info.status} (${ms}ms)`)
+    }
+    maybeTelegramSummary()
   },
 
   /** Periodic snapshot of Telegram HTML cache occupancy. Only emits when DIAG_CACHE_STATS=1. */
