@@ -2,7 +2,7 @@
 
 > 一个服务端渲染的极简微博客：把任意公开 Telegram 频道渲染成快速、对搜索引擎友好的阅读体验。
 
-[English](#english) · 许可证：[AGPL-3.0](./LICENSE)
+许可证：[AGPL-3.0](./LICENSE)
 
 ---
 
@@ -144,18 +144,3 @@ npm run test   # Vitest：env / feed / seo / prism / post-ui / static-proxy
 ## 许可证
 
 本项目以 **AGPL-3.0-or-later** 发布。根据 AGPL 第 13 条，通过网络提供本程序服务时，你必须向用户提供对应源代码的获取方式。详见 [LICENSE](./LICENSE) 与 [NOTICE](./NOTICE)。
-
----
-
-## English
-
-**shenzjd.com** is a server-rendered, minimal microblog that turns any public Telegram channel into a fast, SEO-friendly reading experience.
-
-- **Zero client-side JavaScript** by default (Telegram comments widget excluded).
-- **GFW-aware media proxy**: the server fetches Telegram CDN assets and streams them through `/static/...`, so visitors behind the GFW can load media.
-- **Caching**: `ocache` with SWR (15-min freshness, 1-hour stale) backed by a bounded `lru-cache`, plus in-flight request coalescing to avoid thundering-herd on cold cache.
-- **Tiered diagnostics**: `[diag]` logs with full errors, slow-fetch alerts (≥3s), and a 5-minute aggregate summary line (`fetch/err/slow/avg/max/cache`) — small volume, actionable signals. Per-request access logs were removed entirely.
-- **Routes**: `/`, `/posts/[id]`, `/before|after/[cursor]`, `/search`, `/tags`, `/links`, `/rss.xml|json`, `/sitemap.xml`, `/static/...` media proxy.
-- **Stack**: Astro (server output, `@astrojs/node` standalone), Tailwind CSS v4, `cheerio` + `sanitize-html`, `prismjs`.
-- **Deploy**: Docker standalone image built by GitHub Actions and pushed to GHCR, then SSH-deployed.
-- **License**: AGPL-3.0-or-later.
