@@ -20,6 +20,31 @@ function ts(): string {
   return new Date().toISOString().slice(11, 19) // HH:MM:SS, matches existing log timestamps
 }
 
+// Per-URL throttle for successful TELEGRAM lines. A single hot URL (the
+// channel main page, /s/<channel>) can be fetched thousands of times a day
+// when the LRU evicts it under heavy traffic — logging every miss drowns the
+// log with identical lines. Errors always log; successful misses are capped
+// to one line per URL per window.
+const TELEGRAM_THROTTLE_MS = 60_000 // 1 min
+const _lastTelegramLog = new Map<string, number>()
+
+function throttleTelegram(url: string): boolean {
+  const now = Date.now()
+  const last = _lastTelegramLog.get(url)
+  if (last !== undefined && now - last < TELEGRAM_THROTTLE_MS) {
+    return false
+  }
+  _lastTelegramLog.set(url, now)
+  // Opportunistic cleanup: entries older than 2 windows are stale; drop them
+  // to keep the map bounded (URL set is small, but be safe on long runs).
+  if (_lastTelegramLog.size > 5000) {
+    for (const [u, t] of _lastTelegramLog) {
+      if (now - t > TELEGRAM_THROTTLE_MS * 2) _lastTelegramLog.delete(u)
+    }
+  }
+  return true
+}
+
 export const diag = {
   access: enabled('DIAG_ACCESS'),
   telegram: enabled('DIAG_TELEGRAM'),
@@ -45,6 +70,9 @@ export const diag = {
     error?: string
   }): void {
     if (!diag.telegram) return
+    // Errors always log; successful misses are throttled per URL so a hot URL
+    // that keeps getting evicted from the LRU can't flood the log.
+    if (!info.error && !throttleTelegram(info.url)) return
     const base = `[diag] ${ts()} TELEGRAM cache=${info.cache} url=${info.url}`
     if (info.error) {
       console.warn(`${base} ERROR ${info.error} (${info.ms}ms)`)

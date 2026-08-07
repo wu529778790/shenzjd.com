@@ -83,8 +83,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Drop known-bad scanner traffic before any other work. 444 = close without
   // reply; the client sees a connection reset, which is cheaper than a 404
   // (no response body, no Astro rendering, no cache lookup).
+  // No diag.logAccess here: these are automated probes (wp-login/timthumb/
+  // xmlrpc/...), not real users — logging them just inflates the log with
+  // thousands of noise lines per day.
   if (isScanProbe(pathname)) {
-    diag.logAccess({ method: context.request.method, path: pathname, ua: context.request.headers.get('user-agent') ?? '', ip: getClientIp(context.request) })
     return new Response(null, { status: 444 })
   }
 
