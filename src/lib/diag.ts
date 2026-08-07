@@ -1,9 +1,13 @@
 /**
  * Lightweight diagnostic logging for production troubleshooting.
  * Toggle via env:
- *   DIAG_ACCESS=1       -> one line per inbound request (method, path, UA, IP)
- *   DIAG_TELEGRAM=1     -> telegram fetch: cache hit/miss, status, error type, duration
- *   DIAG_CACHE_STATS=1  -> emit Telegram HTML cache occupancy stats opportunistically
+ *   DIAG_TELEGRAM=1    -> telegram fetch: cache hit/miss, status, error type, duration
+ *   DIAG_CACHE_STATS=1 -> emit Telegram HTML cache occupancy stats opportunistically
+ *
+ * Per-request ACCESS logging was removed entirely (was ~70k lines / 10MB per
+ * day of crawler/scanner/sitemap noise) and is NOT env-gated: a stray
+ * DIAG_ACCESS=1 in the server .env can never re-inflate the log. If you ever
+ * need per-request logs again, add them deliberately in middleware.
  *
  * Kept separate from ad-hoc console.* so each channel can be enabled
  * independently and the format stays consistent ("[diag] ...").
@@ -46,20 +50,8 @@ function throttleTelegram(url: string): boolean {
 }
 
 export const diag = {
-  access: enabled('DIAG_ACCESS'),
   telegram: enabled('DIAG_TELEGRAM'),
   cacheStats: enabled('DIAG_CACHE_STATS'),
-
-  /** One line per inbound HTTP request. */
-  logAccess(info: { method: string; path: string; ua: string; ip: string }): void {
-    if (!diag.access) return
-    // Truncate the path: image-proxy URLs (/static/https:/...telesco.pe/...)
-    // are hundreds of chars long and dominated log volume. Cap to keep
-    // each line small and the overall log downloadable.
-    const path = info.path.length > 160 ? `${info.path.slice(0, 160)}…` : info.path
-    const ua = info.ua.slice(0, 80)
-    console.log(`[diag] ${ts()} ACCESS ${info.method} ${path} ip=${info.ip} ua="${ua}"`)
-  },
 
   /** Telegram fetch lifecycle: issue (cache miss), ok, or fail. */
   logTelegram(info: {

@@ -1,12 +1,6 @@
 import { defineMiddleware } from 'astro:middleware'
 import { diag } from './lib/diag'
 
-function getClientIp(request: Request): string {
-  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    ?? request.headers.get('x-real-ip')
-    ?? ''
-}
-
 function getEncodedTagSearchQuery(pathname: string): string {
   if (!pathname.startsWith('/search/%23')) {
     return ''
@@ -83,23 +77,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Drop known-bad scanner traffic before any other work. 444 = close without
   // reply; the client sees a connection reset, which is cheaper than a 404
   // (no response body, no Astro rendering, no cache lookup).
-  // No diag.logAccess here: these are automated probes (wp-login/timthumb/
-  // xmlrpc/...), not real users — logging them just inflates the log with
-  // thousands of noise lines per day.
   if (isScanProbe(pathname)) {
     return new Response(null, { status: 444 })
-  }
-
-  // Skip access logging for the image-proxy path (/static/https:/...): these
-  // are high-volume, low-diagnostic-value CDN fetches that previously made up
-  // the majority of log lines. Page/feed/sitemap requests are still logged.
-  if (!pathname.startsWith('/static/')) {
-    diag.logAccess({
-      method: context.request.method,
-      path: pathname + context.url.search,
-      ua: context.request.headers.get('user-agent') ?? '',
-      ip: getClientIp(context.request),
-    })
   }
 
   // Opportunistic periodic cache stats snapshot — also helps avoid
