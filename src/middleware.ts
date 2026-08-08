@@ -120,9 +120,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     if (shouldApplyDefaultCache(response)) {
       const ua = context.request.headers.get('user-agent') ?? ''
+      // Pagination pages (/before/N, /after/N) are noindexed and their
+      // content barely changes (historical message ranges). Cache them at the
+      // edge for a day so repeat visits — including crawlers that paged
+      // through hundreds of cursors — never hit the origin or re-fetch t.me.
+      const isPagination = pathname.startsWith('/before/') || pathname.startsWith('/after/')
       // Bots re-crawl the same URL many times per day; give them a longer
       // edge cache so the CDN absorbs the repeat hits instead of the origin.
-      const maxAge = isBot(ua) ? 7200 : 300
+      const maxAge = isPagination ? 86_400 : isBot(ua) ? 7200 : 300
       headers.set('Cache-Control', `public, max-age=${maxAge}, s-maxage=${maxAge}`)
       mutated = true
     }

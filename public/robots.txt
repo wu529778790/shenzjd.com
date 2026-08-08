@@ -1,3 +1,7 @@
 User-agent: *
+Disallow: /before/
+Disallow: /after/
+Disallow: /search/
+Disallow: /static/
 
 Sitemap: /sitemap.xml
