@@ -8,10 +8,10 @@ import { installLruCache } from '../cache-storage'
 import { diag } from '../diag'
 
 // Replace ocache's unbounded in-memory Map with a bounded LRU.
-// Tunable via TELEGRAM_HTML_CACHE_MAX; default 2048 keeps memory ~400MB-1GB
-// (each cached Telegram HTML page is ~200-500KB). Lower this if the container
-// has less than 2GB heap.
-const cacheMax = Number(getProcessEnv('TELEGRAM_HTML_CACHE_MAX') ?? 2048)
+// Tunable via TELEGRAM_HTML_CACHE_MAX; default 512. Measured in production:
+// ~64KB per cached HTML page, so 512 entries ≈ 32MB of strings (roughly 2x
+// that as real heap). Lower this further on small containers.
+const cacheMax = Number(getProcessEnv('TELEGRAM_HTML_CACHE_MAX') ?? 512)
 installLruCache(cacheMax)
 
 interface TelegramHtmlParams {

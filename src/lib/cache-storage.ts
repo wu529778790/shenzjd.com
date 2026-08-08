@@ -100,9 +100,11 @@ export function createLruStorage(maxEntries: number): StorageInterface {
  * Call once at module load, before any defineCachedFunction runs.
  *
  * Max entries is tunable via TELEGRAM_HTML_CACHE_MAX env so it can be adjusted
- * without a rebuild. Default 2048: at ~300KB/page that's ~600MB of HTML,
- * appropriate for containers with 1-2GB heap. Lower if your host is smaller.
+ * without a rebuild. Default 512: measured ~64KB per cached page in production,
+ * so ~32MB of strings / roughly 64MB real heap. Raise it only if the container
+ * has headroom — the request-volume win from a bigger LRU is marginal compared
+ * to robots.txt + edge-cache fixes.
  */
-export function installLruCache(maxEntries = 2048): void {
+export function installLruCache(maxEntries = 512): void {
   setStorage(createLruStorage(maxEntries))
 }
