@@ -125,9 +125,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
       // edge for a day so repeat visits — including crawlers that paged
       // through hundreds of cursors — never hit the origin or re-fetch t.me.
       const isPagination = pathname.startsWith('/before/') || pathname.startsWith('/after/')
+      // Post pages (/posts/N) reference one immutable Telegram message, so the
+      // rendered HTML only changes with reactions — cache at the edge for 1h.
+      // Without this, crawlers deep-crawling thousands of distinct post IDs
+      // each miss the 512-entry LRU (too many distinct keys) and every crawl
+      // re-fetches t.me (~11k/day measured).
+      const isPost = pathname.startsWith('/posts/')
       // Bots re-crawl the same URL many times per day; give them a longer
       // edge cache so the CDN absorbs the repeat hits instead of the origin.
-      const maxAge = isPagination ? 86_400 : isBot(ua) ? 7200 : 300
+      const maxAge = isPagination ? 86_400 : isPost ? 3600 : isBot(ua) ? 7200 : 300
       headers.set('Cache-Control', `public, max-age=${maxAge}, s-maxage=${maxAge}`)
       mutated = true
     }

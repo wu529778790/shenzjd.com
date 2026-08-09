@@ -73,9 +73,8 @@ async function fetchTelegramHtml({ host, channel, id, before, after, q, headers 
 const loadTelegramHtml = defineCachedFunction(fetchTelegramHtml, {
   name: 'telegram-html',
   // 15min fresh window: keeps most traffic on the fast path before any
-  // stale revalidation. Combined with the 2048-entry LRU this avoids the
-  // previous pattern where main-page entries got evicted every 5 minutes,
-  // causing ~67 redundant outbound fetches per TTL window.
+  // stale revalidation. Used for channel lists / main page / search, which
+  // change as new posts are published.
   maxAge: 60 * 15,
   swr: true,
   // 1hr stale window: if the outbound t.me fetch fails, srv returns the
@@ -102,6 +101,28 @@ const loadTelegramHtml = defineCachedFunction(fetchTelegramHtml, {
   },
 })
 
+// Single-post fetches (/posts/N) reference one immutable Telegram message:
+// the rendered HTML only changes when reactions update. Cache for 24h so
+// crawlers deep-crawling thousands of distinct post IDs don't re-fetch t.me
+// for each one every 15 minutes — measured ~11k/day of avoidable fetches.
+const loadTelegramPostHtml = defineCachedFunction(fetchTelegramHtml, {
+  name: 'telegram-post-html',
+  maxAge: 60 * 60 * 24,
+  swr: true,
+  staleMaxAge: 60 * 60 * 24 * 7,
+  getKey: ({ host, channel, id, before, after, q }) => JSON.stringify({
+    host,
+    channel,
+    id: id || '',
+    before: before || '',
+    after: after || '',
+    q: q || '',
+  }),
+  transform(entry, params) {
+    return entry.value as string
+  },
+})
+
 export async function loadChannelDocument(
   context: RequestContext,
   params: GetChannelInfoParams & { id?: string } = {},
@@ -117,7 +138,10 @@ export async function loadChannelDocument(
   // trace (the noisy [ERROR] FetchError lines) adds no diagnostic value.
   let html = ''
   try {
-    html = await loadTelegramHtml({
+    // Single-post pages use the long-lived cache (24h — post content is
+    // immutable); list/main/search pages use the short one (15min).
+    const cached = id ? loadTelegramPostHtml : loadTelegramHtml
+    html = await cached({
       host,
       channel,
       id,
