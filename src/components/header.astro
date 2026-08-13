@@ -20,10 +20,11 @@ const BLUESKY = getEnv(import.meta.env, Astro, 'BLUESKY')
 const hideDescription = getBooleanEnv(import.meta.env, Astro, 'HIDE_DESCRIPTION')
 const descriptionHtml = channel?.descriptionHTML ? sanitizeContentHtml(channel.descriptionHTML) : ''
 
-const headerMainClass = 'mb-2.5 flex items-center p-2.5 font-semibold max-sm:p-0'
-const avatarClass = 'block h-10 w-10 rounded-full border-4 border-white object-cover shadow-soft'
-const titleWrapClass = 'ml-2.5 min-w-0 flex-1 pr-2.5 text-xl'
+const headerMainClass = 'mb-2.5 flex items-center gap-1 p-2.5 max-sm:p-0'
+const avatarClass = 'block h-11 w-11 shrink-0 rounded-full border-2 border-line-strong object-cover shadow-soft'
+const titleWrapClass = 'ml-2 min-w-0 flex-1 pr-2 text-xl'
 const titleLinkClass = `text-heading no-underline hover:text-ink hover:underline ${siteTitleClass}`
+const kickerClass = 'mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent max-sm:px-0'
 const iconNavClass = 'flex items-center gap-0.5'
 const socialLinkClass = 'group p-1 no-underline'
 const socialIconClass =
@@ -44,6 +45,7 @@ const socialLinks = buildSocialLinks({
 ---
 
 <header>
+  <p class={kickerClass}>Telegram 频道 · 每日速递</p>
   <div class={headerMainClass}>
     <a href={SITE_URL} title={channel?.title} aria-label="Home">
       <ChannelAvatar

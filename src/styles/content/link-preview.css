@@ -11,10 +11,15 @@
     }
 
     .tgme_widget_message_link_preview:has(.link_preview_site_name) {
-      @apply block rounded-panel border-l-[3px] border-accent bg-surface p-1.5 pl-2.5;
+      @apply block rounded-panel border border-line-strong bg-surface p-2 pl-3 shadow-soft;
+
+      .link_preview_site_name {
+        @apply block text-xs font-semibold uppercase tracking-[0.22em] text-accent;
+        margin-bottom: 0.25rem;
+      }
 
       .link_preview_title {
-        @apply block text-[1em] font-bold leading-8;
+        @apply block text-[1em] font-bold leading-7;
       }
 
       .link_preview_description {
