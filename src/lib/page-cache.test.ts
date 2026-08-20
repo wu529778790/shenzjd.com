@@ -65,4 +65,21 @@ describe('page cache', () => {
     vi.advanceTimersByTime(301_000)
     expect(mod.getCachedPage('/posts/1')).toBeUndefined()
   })
+
+  it('honors a per-entry TTL override longer than the default', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.advanceTimersByTime(100)
+    const mod = await loadFresh()
+    // 1h override for posts pages: survives past the 300s default window.
+    mod.setCachedPage('/posts/49', {
+      status: 200,
+      statusText: 'OK',
+      headers: [],
+      body: 'x',
+    }, 3_600_000)
+    vi.advanceTimersByTime(301_000)
+    expect(mod.getCachedPage('/posts/49')).toBeDefined()
+    vi.advanceTimersByTime(3_300_000)
+    expect(mod.getCachedPage('/posts/49')).toBeUndefined()
+  })
 })

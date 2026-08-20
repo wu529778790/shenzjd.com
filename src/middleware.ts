@@ -227,12 +227,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
     && finalResponse.status < 400
   ) {
     const body = await finalResponse.text()
+    // Per-route TTL, aligned with the Cache-Control max-age above: posts are
+    // immutable (1h), pagination barely changes (1d), everything else 5min.
+    const isPagination = pathname.startsWith('/before/') || pathname.startsWith('/after/')
+    const isPost = pathname.startsWith('/posts/')
+    const pageTtlMs = isPagination ? 86_400_000 : isPost ? 3_600_000 : undefined
     setCachedPage(pageCacheKey, {
       status: finalResponse.status,
       statusText: finalResponse.statusText,
       headers: [...finalResponse.headers],
       body,
-    })
+    }, pageTtlMs)
     return new Response(body, {
       status: finalResponse.status,
       statusText: finalResponse.statusText,

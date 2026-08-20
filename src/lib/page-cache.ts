@@ -53,8 +53,15 @@ export function getCachedPage(key: string): CachedPageResponse | undefined {
   return getPageCache().get(key)
 }
 
-export function setCachedPage(key: string, value: CachedPageResponse): void {
-  getPageCache().set(key, value)
+export function setCachedPage(key: string, value: CachedPageResponse, ttlMs?: number): void {
+  // Per-entry TTL override (e.g. posts 1h, pagination 1d); falls back to the
+  // cache-wide default when omitted.
+  if (ttlMs && ttlMs > 0) {
+    getPageCache().set(key, value, { ttl: ttlMs })
+  }
+  else {
+    getPageCache().set(key, value)
+  }
 }
 
 export interface PageCacheStats {
