@@ -1,5 +1,7 @@
 import { defineMiddleware } from 'astro:middleware'
+import { LRUCache } from 'lru-cache'
 import { diag } from './lib/diag'
+import { getCachedPage, setCachedPage } from './lib/page-cache'
 
 function getEncodedTagSearchQuery(pathname: string): string {
   if (!pathname.startsWith('/search/%23')) {
@@ -71,6 +73,50 @@ function isBot(ua: string): boolean {
 let _reqCount = 0
 const CACHE_STATS_INTERVAL = 250 // ~once per 250 requests
 
+// --- Full-page HTML cache -------------------------------------------------
+// Every HTML page the origin serves is rendered from t.me data. Without an
+// app-level cache of the *final* HTML, every request re-parses (cheerio) and
+// re-renders (SSR) even when the raw t.me HTML is cached — that parse+render
+// is the CPU hotspot. Caching the finished page makes repeat hits (real users
+// within TTL, crawlers re-crawling the same URL, pagination walks) free.
+//
+// Only GET page routes are cached; rss/sitemap/webmanifest/static proxy stay
+// dynamic. Key = pathname + q (search pages render differently per query).
+
+const CACHEABLE_PREFIXES = ['/before/', '/after/', '/posts/', '/search/result', '/tags', '/links']
+
+export function getPageCacheKey(request: Request, url: URL): string | null {
+  if (request.method !== 'GET') return null
+  const { pathname } = url
+  const isPage = pathname === '/' || CACHEABLE_PREFIXES.some(p => pathname === p || pathname.startsWith(p))
+  if (!isPage) return null
+  // Ignore scanner junk like ?golink=... which does not change rendering.
+  const q = url.searchParams.get('q')
+  return q ? `${pathname}?q=${q}` : pathname
+}
+
+// --- Crawler burst protection ----------------------------------------------
+// robots.txt can't stop the crawlers that actually hammer /posts/N: Meta's
+// crawler (2a03:2880::/32) deep-walks thousands of distinct post IDs per day,
+// Semrush and friends ignore robots too. Each distinct ID is a fresh page-cache
+// miss (too many keys for the LRU), so an uncontrolled crawl re-renders + (on
+// t.me cache miss) re-fetches for every ID. Throttle known-bot UAs that are
+// hammering /posts/ to a 60s window cap; over-limit gets a cheap 429.
+const BOT_BURST = new LRUCache<string, number[]>({ max: 1024, ttl: 60_000, ttlAutopurge: true })
+const BOT_BURST_LIMIT = 40 // /posts/ requests per bot per 60s window
+
+export function isPostsBotBurst(request: Request, pathname: string): boolean {
+  if (!pathname.startsWith('/posts/')) return false
+  const ua = request.headers.get('user-agent') ?? ''
+  if (!isBot(ua)) return false
+  const now = Date.now()
+  const key = ua.slice(0, 48)
+  const hits = (BOT_BURST.get(key) ?? []).filter(t => now - t < 60_000)
+  hits.push(now)
+  BOT_BURST.set(key, hits)
+  return hits.length > BOT_BURST_LIMIT
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const pathname = context.url.pathname
 
@@ -85,6 +131,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // single-tick timer drift on long-running Node processes.
   if (diag.cacheStats && ++_reqCount % CACHE_STATS_INTERVAL === 0) {
     diag.logCacheStats()
+  }
+
+  // Throttle bot deep-crawls of /posts/ before any rendering happens.
+  if (isPostsBotBurst(context.request, pathname)) {
+    return new Response(null, {
+      status: 429,
+      headers: { 'Retry-After': '60' },
+    })
   }
 
   context.locals.SITE_URL = `${import.meta.env.SITE ?? ''}${import.meta.env.BASE_URL}`
@@ -102,10 +156,26 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.RSS_PREFIX = `${tag} | `
   }
 
+  // Full-page cache: hit = skip fetch + parse + render entirely.
+  const pageCacheKey = getPageCacheKey(context.request, context.url)
+  if (pageCacheKey) {
+    const cached = getCachedPage(pageCacheKey)
+    if (cached) {
+      const headers = new Headers(cached.headers)
+      headers.set('X-Page-Cache', 'HIT')
+      return new Response(cached.body, {
+        status: cached.status,
+        statusText: cached.statusText,
+        headers,
+      })
+    }
+  }
+
   const response = legacyTagSearch
     ? await context.rewrite(`/search/result?q=${encodeURIComponent(legacyTagSearch)}`)
     : await next()
 
+  let finalResponse = response
   if (!response.bodyUsed) {
     // Copy headers into a fresh, mutable Headers instance. On Node ≥ 22 / undici
     // the Response returned by `next()` may have immutable headers, so mutating
@@ -139,12 +209,36 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
 
     if (mutated) {
-      return new Response(response.body, {
+      finalResponse = new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
         headers,
       })
     }
   }
-  return response
+
+  // Store the fully-rendered page (with final headers) so the next hit skips
+  // fetch + parse + render. Only successful, unconsumed HTML pages are cached.
+  if (
+    pageCacheKey
+    && !finalResponse.bodyUsed
+    && isHtmlResponse(finalResponse)
+    && finalResponse.status >= 200
+    && finalResponse.status < 400
+  ) {
+    const body = await finalResponse.text()
+    setCachedPage(pageCacheKey, {
+      status: finalResponse.status,
+      statusText: finalResponse.statusText,
+      headers: [...finalResponse.headers],
+      body,
+    })
+    return new Response(body, {
+      status: finalResponse.status,
+      statusText: finalResponse.statusText,
+      headers: finalResponse.headers,
+    })
+  }
+
+  return finalResponse
 })

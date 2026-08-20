@@ -14,6 +14,7 @@
  */
 
 import { getCacheStats } from './cache-storage'
+import { getPageCacheStats } from './page-cache'
 
 function enabled(name: string): boolean {
   const v = (Reflect.get(globalThis, 'process') as { env?: Record<string, string> } | undefined)?.env?.[name]
@@ -92,13 +93,15 @@ export const diag = {
     maybeTelegramSummary()
   },
 
-  /** Periodic snapshot of Telegram HTML cache occupancy. Only emits when DIAG_CACHE_STATS=1. */
+  /** Periodic snapshot of Telegram HTML cache + full-page cache occupancy. Only emits when DIAG_CACHE_STATS=1. */
   logCacheStats(): void {
     if (!diag.cacheStats) return
-    const stats = getCacheStats()
+    const tg = getCacheStats()
     // Estimated bytes derived from lru-cache's sizeCalculation (sum of
     // stored value string lengths). `max` is the configured TELEGRAM_HTML_CACHE_MAX.
-    const mb = (stats.estimatedBytes / 1024 / 1024).toFixed(1)
-    console.log(`[diag] ${ts()} CACHE stats size=${stats.size}/${stats.max} bytes=${mb}MB`)
+    const tgMb = (tg.estimatedBytes / 1024 / 1024).toFixed(1)
+    const page = getPageCacheStats()
+    const pageMb = (page.estimatedBytes / 1024 / 1024).toFixed(1)
+    console.log(`[diag] ${ts()} CACHE stats telegram=${tg.size}/${tg.max} ${tgMb}MB page=${page.size}/${page.max} ${pageMb}MB`)
   },
 }
