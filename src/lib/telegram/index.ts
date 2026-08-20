@@ -1,5 +1,6 @@
 import type { ChannelInfo, GetChannelInfoParams, Post } from '../../types'
 import type { RequestContext } from './types'
+import { getXPosts } from '../x'
 import { modifyHTMLContent } from './content'
 import { extractPost } from './parse'
 import { loadChannelDocument } from './request'
@@ -33,6 +34,23 @@ export async function getChannelInfo(context: RequestContext, params: GetChannel
     description: $('.tgme_channel_info_description').text(),
     descriptionHTML: (await modifyHTMLContent($, $('.tgme_channel_info_description'), { staticProxy })).html(),
     avatar: avatar ? normalizeUrlAttribute(avatar) : avatar,
+  }
+
+  // Home feed only (no pagination/search params): merge X tweets into a single
+  // unified timeline sorted by time. Pagination stays pure Telegram — X IDs are
+  // prefixed (x-handle-id) and are excluded from cursor logic in the list view.
+  if (!before && !after && !q) {
+    try {
+      const xPosts = await getXPosts()
+      if (xPosts.length > 0) {
+        channelInfo.posts = [...posts, ...xPosts].sort(
+          (a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime(),
+        )
+      }
+    }
+    catch (error) {
+      console.warn(`[diag] X merge failed: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
 
   return channelInfo

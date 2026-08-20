@@ -7,8 +7,12 @@ const { SITE_URL } = Astro.locals
 const { channel, before = true, after = true, isItem = false, pageHeading, pageSeo } = Astro.props
 const posts = channel.posts ?? []
 
-const beforeCursor = posts[posts.length - 1]?.id
-const afterCursor = posts[0]?.id
+// Pagination cursors are Telegram message IDs (pure digits). X tweets merged
+// into the home timeline carry prefixed ids (x-handle-...) and must not
+// participate in cursor pagination.
+const tgPosts = posts.filter((post) => /^\d+$/.test(post.id))
+const beforeCursor = tgPosts[tgPosts.length - 1]?.id
+const afterCursor = tgPosts[0]?.id
 const hasOlderPosts = before && beforeCursor && Number(beforeCursor) > 1
 const hasNewerPosts = after && afterCursor
 const itemsClass = 'mt-5 mb-0 ml-7 list-none pl-0 max-sm:ml-0'

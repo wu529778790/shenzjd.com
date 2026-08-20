@@ -86,6 +86,11 @@ jobs:
             if [ -f "$ENV_FILE" ]; then
               ENV_FLAGS="--env-file $ENV_FILE"
             fi
+            DATA_DIR="/opt/1panel/apps/openresty/openresty/www/sites/shenzjd.com/data"
+            sudo mkdir -p "$DATA_DIR"
+            # Container USER is nodejs (uid 1001); ensure it can write the
+            # persistent X feed (and any future on-disk state) here.
+            sudo chown -R 1001:1001 "$DATA_DIR"
             sudo docker run -d \
               --name "$CONTAINER" \
               --restart unless-stopped \
@@ -97,6 +102,7 @@ jobs:
               -e NODE_OPTIONS="--max-old-space-size=256" \
               $ENV_FLAGS \
               -e NAVS= \
+              -v "$DATA_DIR:/app/data" \
               -p 6669:4321 \
               "$IMAGE"
             sudo docker image prune -f

@@ -16,6 +16,8 @@ export interface Post {
   description?: string
   content: string
   reactions: Reaction[]
+  /** 外部来源原链（如 X 推文），渲染时时间链接指向它而非本地 /posts/N */
+  sourceUrl?: string
 }
 
 export interface ChannelInfo {
