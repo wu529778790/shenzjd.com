@@ -32,8 +32,15 @@ const asideClass =
 // --- search ---
 const searchWrapClass = 'mb-5 md:mb-4'
 
+// Mobile: nav collapses behind a toggle (checkbox + peer, no JS). md+: always visible.
+const navToggleClass =
+  'mb-3 flex cursor-pointer select-none items-center justify-between border border-line bg-surface px-3 py-2 md:hidden'
+const navToggleLabelClass = 'text-sm text-heading'
+const navToggleArrowClass =
+  'h-3 w-3 text-muted/60 transition-transform duration-150 peer-checked:rotate-180'
+
 // --- nav ---
-const navClass = 'relative z-10 col-start-1 row-start-1 min-w-0 pr-8 md:block md:pr-0'
+const navClass = 'relative z-10 hidden min-w-0 peer-checked:block md:block'
 const listClass = 'm-0 list-none flex-wrap gap-0 pl-0 pt-0 md:block'
 const itemClass = 'flex items-center text-sm leading-none'
 
@@ -49,7 +56,7 @@ const extArrowClass = 'h-2.5 w-2.5 text-muted/40 transition-colors duration-150 
 const dividerClass = 'mx-2 my-2 h-px bg-line/40 md:my-1.5'
 
 // --- footer ---
-const footerWrapClass = 'mt-6 md:mt-5'
+const footerWrapClass = 'mt-6 hidden peer-checked:block md:mt-5 md:block'
 
 const primaryNavItems = [
   showTags && {
@@ -69,6 +76,25 @@ const primaryNavItems = [
   <div class={searchWrapClass}>
     <SearchForm action={searchAction} googleSearchSite={googleSearchSite} />
   </div>
+
+  <input
+    type="checkbox"
+    id="mobile-nav-toggle"
+    class="peer sr-only"
+    aria-label="Toggle navigation"
+  />
+  <label for="mobile-nav-toggle" class={navToggleClass}>
+    <span class={navToggleLabelClass}>网址导航</span>
+    <svg class={navToggleArrowClass} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M3.5 6 8 10.5 12.5 6"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.4"
+      />
+    </svg>
+  </label>
 
   <nav class={navClass} aria-label="Primary navigation">
     <ul class={listClass}>
