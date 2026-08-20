@@ -71,6 +71,73 @@ function extractImages($: cheerio.CheerioAPI, article: cheerio.AnyNode): string[
   return [...new Set(urls)].slice(0, 4)
 }
 
+/**
+ * Approximate absolute time from x.com's relative label (e.g. "4h", "2d").
+ * Repost cards carry no absolute timestamp, only a relative one.
+ */
+function approximateDatetime(relTime: string): string {
+  const m = relTime.match(/^(\d+)(s|m|h|d|w|mo|yr)$/)
+  if (!m) {
+    return new Date().toISOString()
+  }
+  const units: Record<string, number> = {
+    s: 1000,
+    m: 60_000,
+    h: 3_600_000,
+    d: 86_400_000,
+    w: 604_800_000,
+    mo: 2_592_000_000,
+    yr: 31_536_000_000,
+  }
+  return new Date(Date.now() - Number(m[1]) * (units[m[2]] ?? 0)).toISOString()
+}
+
+/**
+ * Parse a repost (retweet) card. x.com renders these without schema.org
+ * microdata: the whole card text is `authorName@handleRelativeTime tweetText`,
+ * and there is no absolute timestamp. Extract what we can and approximate the
+ * datetime from the relative label.
+ */
+function parseRepost($: cheerio.CheerioAPI, article: cheerio.AnyNode, profileHandle: string): Post | null {
+  const id = $(article).attr('data-tweet-id')
+  if (!id) return null
+
+  const authorLink = $(article).find('a[href^="/"]').first().attr('href') ?? ''
+  const authorHandle = authorLink.replace(/^\//, '').split(/[/?#]/)[0] || profileHandle
+
+  const full = $(article).text().replace(/\s+/g, ' ').trim()
+  const atIndex = full.indexOf(`@${authorHandle}`)
+  const after = atIndex >= 0 ? full.slice(atIndex + authorHandle.length + 1) : full
+  const relMatch = after.match(/^\s*(\d+(?:[smhdw]|mo|yr))\s*(.*)$/)
+  const relTime = relMatch ? relMatch[1] : ''
+  const text = (relMatch ? relMatch[2] : after).trim()
+  if (!text) return null
+
+  const images = extractImages($, article)
+  let content = `<p class="x-repost">🔁 转自 <a href="https://x.com/${authorHandle}">@${authorHandle}</a></p>${xTextToHtml(text)}`
+  if (images.length > 0) {
+    const imagesHtml = images
+      .map((src) => `<img src="${STATIC_PROXY}${encodeURIComponent(src)}" alt="" loading="lazy" />`)
+      .join('')
+    content += `<div class="x-media">${imagesHtml}</div>`
+  }
+
+  const title = text.split('\n')[0].slice(0, 60) || text.slice(0, 60)
+
+  return {
+    id: `x-${authorHandle}-${id}`,
+    title,
+    type: 'text',
+    datetime: approximateDatetime(relTime),
+    tags: extractHashtags(text),
+    text,
+    description: text.slice(0, 120),
+    content,
+    reactions: [],
+    sourceUrl: `https://x.com/${authorHandle}/status/${id}`,
+  }
+}
+
 export function parseXProfile(html: string, handle: string): Post[] {
   const $ = cheerio.load(html, {}, false)
   const posts: Post[] = []
@@ -80,7 +147,12 @@ export function parseXProfile(html: string, handle: string): Post[] {
     if (!id) return
 
     const text = metaContent($, article, 'text')
-    if (!text) return
+    if (!text) {
+      // No schema text → this is a repost card, not an original tweet.
+      const repost = parseRepost($, article, handle)
+      if (repost) posts.push(repost)
+      return
+    }
 
     const datetime = metaContent($, article, 'datePublished') || metaContent($, article, 'dateCreated')
     if (!datetime) return

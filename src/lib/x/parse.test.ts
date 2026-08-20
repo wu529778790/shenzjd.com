@@ -74,9 +74,48 @@ describe('parseXProfile', () => {
     expect(posts[1].content).toContain('/static/https%3A%2F%2Fpbs.twimg.com')
   })
 
-  it('skips articles without text', () => {
+  it('skips articles without extractable text', () => {
     const empty = '<article data-tweet-id="123"><meta content="2026-01-01T00:00:00.000Z" itemProp="datePublished"/></article>'
     expect(parseXProfile(empty, 'x')).toHaveLength(0)
+  })
+})
+
+describe('parseXProfile reposts', () => {
+  const repostFixture = `
+<html><body>
+<article data-tweet-id="2090520410836095458">
+  <div class="flex p-3 flex-col gap-1">
+    <a class="" href="/JasonBud"><img alt="user avatar" src="https://pbs.twimg.com/profile_images/a_normal.jpg"/></a>
+    <div>Jason Ginsberg<span>@JasonBud</span><span>4h</span></div>
+    <div>This is the easiest way to get started with Grok Build. Just go to <a href="https://t.co/abc">grok.com/?mode=build</a></div>
+    <img src="https://pbs.twimg.com/media/HQJuw2BXUAA3cTG?format=jpg&name=small"/>
+  </div>
+</article>
+</body></html>
+`
+
+  it('parses repost cards without schema microdata', () => {
+    const posts = parseXProfile(repostFixture, 'elonmusk')
+    expect(posts).toHaveLength(1)
+    const p = posts[0]
+    expect(p.id).toBe('x-JasonBud-2090520410836095458')
+    expect(p.text).toContain('Grok Build')
+    expect(p.text).toContain('grok.com')
+    expect(p.content).toContain('🔁 转自')
+    expect(p.sourceUrl).toBe('https://x.com/JasonBud/status/2090520410836095458')
+  })
+
+  it('approximates datetime from the relative label', () => {
+    const before = Date.now()
+    const posts = parseXProfile(repostFixture, 'elonmusk')
+    const dt = new Date(posts[0].datetime).getTime()
+    expect(dt).toBeLessThanOrEqual(before)
+    expect(before - dt).toBeLessThan(5 * 3_600_000) // 4h label, allow slack
+  })
+
+  it('keeps repost images via the static proxy', () => {
+    const posts = parseXProfile(repostFixture, 'elonmusk')
+    expect(posts[0].content).toContain('/static/https%3A%2F%2Fpbs.twimg.com')
   })
 })
 
