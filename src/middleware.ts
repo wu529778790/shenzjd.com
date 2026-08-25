@@ -2,6 +2,7 @@ import { defineMiddleware } from 'astro:middleware'
 import { LRUCache } from 'lru-cache'
 import { diag } from './lib/diag'
 import { getCachedPage, setCachedPage } from './lib/page-cache'
+import { getProcessEnv } from './lib/env'
 
 function getEncodedTagSearchQuery(pathname: string): string {
   if (!pathname.startsWith('/search/%23')) {
@@ -141,7 +142,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     })
   }
 
-  context.locals.SITE_URL = `${import.meta.env.SITE ?? ''}${import.meta.env.BASE_URL}`
+  // SITE_URL 优先级：.env 里的 SITE_URL > astro config 的 site + base > 当前请求 origin
+  // .env 的 SITE_URL 是用户可信配置，强制作为绝对 URL（防 IP 泄露），
+  // 末尾必须以 "/" 结尾以避免 ${SITE_URL}rss.xml 拼成 https://shenzjd.comrss.xml。
+  const envSiteUrl = getProcessEnv('SITE_URL')
+  const fallback = `${import.meta.env.SITE ?? ''}${import.meta.env.BASE_URL || '/'}`
+  const raw = (envSiteUrl ?? (fallback || context.url.origin)).trim()
+  context.locals.SITE_URL = raw.endsWith('/') ? raw : `${raw}/`
   context.locals.RSS_URL = `${context.locals.SITE_URL}rss.xml`
   context.locals.RSS_PREFIX = ''
 
