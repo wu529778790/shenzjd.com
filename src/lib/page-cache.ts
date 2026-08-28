@@ -21,8 +21,9 @@ export interface CachedPageResponse {
 }
 
 // 可调：PAGE_CACHE_MAX 条目数、PAGE_CACHE_TTL 秒。默认 64 条 / 300s。
-const pageCacheMax = Number(process.env.PAGE_CACHE_MAX ?? 64)
-const pageCacheTtlMs = (Number(process.env.PAGE_CACHE_TTL ?? 300)) * 1000
+const pageEnv = (Reflect.get(globalThis, 'process') as { env?: Record<string, string | undefined> } | undefined)?.env
+const pageCacheMax = Number(pageEnv?.PAGE_CACHE_MAX ?? 64)
+const pageCacheTtlMs = (Number(pageEnv?.PAGE_CACHE_TTL ?? 300)) * 1000
 // 单页字节上限兜底（~1MB/条），防止极端大页面撑爆堆。
 const pageCacheMaxBytes = pageCacheMax * 1024 * 1024
 
@@ -42,7 +43,7 @@ function getPageCache(): LRUCache<string, CachedPageResponse> {
       // precision is plenty for a 5-minute TTL, and it keeps the cache
       // deterministic under test (fake timers fake Date reliably).
       perf: { now: () => Date.now() },
-      sizeCalculation: (v) => v.body.length,
+      sizeCalculation: v => v.body.length,
       maxSize: pageCacheMaxBytes,
     })
   }

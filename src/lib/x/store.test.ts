@@ -1,8 +1,8 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import type { Post } from '../../types'
+import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { Post } from '../../types'
 
 let tmp: string | null = null
 let seq = 0
@@ -61,7 +61,7 @@ describe('x store', () => {
       makePost('x-a-3', '2026-08-03T01:00:00.000Z'),
     ])
     expect(merged).toHaveLength(2)
-    expect(merged.find((p) => p.id === 'x-a-1')?.datetime).toBe('2026-08-03T00:00:00.000Z')
+    expect(merged.find(p => p.id === 'x-a-1')?.datetime).toBe('2026-08-03T00:00:00.000Z')
   })
 
   it('returns empty store when file is missing', async () => {

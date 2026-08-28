@@ -1,5 +1,5 @@
-import * as cheerio from 'cheerio'
 import type { Post } from '../../types'
+import * as cheerio from 'cheerio'
 import { getProcessEnv } from '../env'
 
 /**
@@ -19,7 +19,7 @@ function decodeEntities(text: string): string {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    .replace(/&#39;/g, '\'')
     .replace(/&nbsp;/g, ' ')
 }
 
@@ -54,7 +54,7 @@ export function xTextToHtml(text: string): string {
   // URLs → links (must run after escaping, on the escaped text)
   const linked = escaped.replace(
     /(https?:\/\/[^\s<]+)/g,
-    (url) => `<a href="${url}" rel="nofollow noopener noreferrer" target="_blank">${url}</a>`,
+    url => `<a href="${url}" rel="nofollow noopener noreferrer" target="_blank">${url}</a>`,
   )
   return linked.replace(/\n/g, '<br>')
 }
@@ -76,7 +76,7 @@ function extractImages($: cheerio.CheerioAPI, article: cheerio.AnyNode): string[
  * Repost cards carry no absolute timestamp, only a relative one.
  */
 function approximateDatetime(relTime: string): string {
-  const m = relTime.match(/^(\d+)(s|m|h|d|w|mo|yr)$/)
+  const m = relTime.match(/^(\d+)([smhdw]|mo|yr)$/)
   if (!m) {
     return new Date().toISOString()
   }
@@ -100,7 +100,8 @@ function approximateDatetime(relTime: string): string {
  */
 function parseRepost($: cheerio.CheerioAPI, article: cheerio.AnyNode, profileHandle: string): Post | null {
   const id = $(article).attr('data-tweet-id')
-  if (!id) return null
+  if (!id)
+    return null
 
   const authorLink = $(article).find('a[href^="/"]').first().attr('href') ?? ''
   const authorHandle = authorLink.replace(/^\//, '').split(/[/?#]/)[0] || profileHandle
@@ -108,16 +109,17 @@ function parseRepost($: cheerio.CheerioAPI, article: cheerio.AnyNode, profileHan
   const full = $(article).text().replace(/\s+/g, ' ').trim()
   const atIndex = full.indexOf(`@${authorHandle}`)
   const after = atIndex >= 0 ? full.slice(atIndex + authorHandle.length + 1) : full
-  const relMatch = after.match(/^\s*(\d+(?:[smhdw]|mo|yr))\s*(.*)$/)
+  const relMatch = after.match(/^\s*(\d+(?:[smhdw]|mo|yr))(?:\s+(\S.*))?$/)
   const relTime = relMatch ? relMatch[1] : ''
-  const text = (relMatch ? relMatch[2] : after).trim()
-  if (!text) return null
+  const text = (relMatch ? (relMatch[2] ?? '') : after).trim()
+  if (!text)
+    return null
 
   const images = extractImages($, article)
   let content = `<p class="x-repost">🔁 转自 <a href="https://x.com/${authorHandle}">@${authorHandle}</a></p>${xTextToHtml(text)}`
   if (images.length > 0) {
     const imagesHtml = images
-      .map((src) => `<img src="${STATIC_PROXY}${encodeURIComponent(src)}" alt="" loading="lazy" />`)
+      .map(src => `<img src="${STATIC_PROXY}${encodeURIComponent(src)}" alt="" loading="lazy" />`)
       .join('')
     content += `<div class="x-media">${imagesHtml}</div>`
   }
@@ -144,37 +146,41 @@ export function parseXProfile(html: string, handle: string): Post[] {
 
   $('article[data-tweet-id]').each((_, article) => {
     const id = $(article).attr('data-tweet-id')
-    if (!id) return
+    if (!id)
+      return
 
     const text = metaContent($, article, 'text')
     if (!text) {
       // No schema text → this is a repost card, not an original tweet.
       const repost = parseRepost($, article, handle)
-      if (repost) posts.push(repost)
+      if (repost)
+        posts.push(repost)
       return
     }
 
     const datetime = metaContent($, article, 'datePublished') || metaContent($, article, 'dateCreated')
-    if (!datetime) return
+    if (!datetime)
+      return
 
     const authorHandle = metaContent($, article, 'alternateName') || handle
-    const authorName = metaContent($, article, 'name') || handle
 
     const likes = interactionCount($, article, 'Likes')
     const retweets = interactionCount($, article, 'Retweets')
-    const replies = interactionCount($, article, 'Replies')
     const views = interactionCount($, article, 'Views')
 
     const reactions: Post['reactions'] = []
-    if (likes) reactions.push({ emoji: '❤️', count: likes, isPaid: false })
-    if (retweets) reactions.push({ emoji: '🔁', count: retweets, isPaid: false })
-    if (views) reactions.push({ emoji: '👁', count: views, isPaid: false })
+    if (likes)
+      reactions.push({ emoji: '❤️', count: likes, isPaid: false })
+    if (retweets)
+      reactions.push({ emoji: '🔁', count: retweets, isPaid: false })
+    if (views)
+      reactions.push({ emoji: '👁', count: views, isPaid: false })
 
     const images = extractImages($, article)
     let content = xTextToHtml(text)
     if (images.length > 0) {
       const imagesHtml = images
-        .map((src) => `<img src="${STATIC_PROXY}${encodeURIComponent(src)}" alt="" loading="lazy" />`)
+        .map(src => `<img src="${STATIC_PROXY}${encodeURIComponent(src)}" alt="" loading="lazy" />`)
         .join('')
       content += `<div class="x-media">${imagesHtml}</div>`
     }

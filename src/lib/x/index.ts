@@ -14,7 +14,7 @@ function getXHandles(): string[] {
   const raw = getProcessEnv('X_USERS') ?? ''
   return raw
     .split(',')
-    .map((h) => h.trim().replace(/^@/, ''))
+    .map(h => h.trim().replace(/^@/, ''))
     .filter(Boolean)
 }
 

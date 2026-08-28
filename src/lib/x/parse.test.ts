@@ -59,8 +59,8 @@ describe('parseXProfile', () => {
 
   it('maps Likes and Views to reactions', () => {
     const reactions = posts[0].reactions
-    expect(reactions.map((r) => `${r.emoji}${r.count}`)).toContain('❤️12')
-    expect(reactions.map((r) => `${r.emoji}${r.count}`)).toContain('👁183')
+    expect(reactions.map(r => `${r.emoji}${r.count}`)).toContain('❤️12')
+    expect(reactions.map(r => `${r.emoji}${r.count}`)).toContain('👁183')
   })
 
   it('renders content html with line breaks and auto-links', () => {

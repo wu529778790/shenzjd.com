@@ -15,7 +15,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     ssr: {
-      noExternal: process.env.DOCKER ? !!process.env.DOCKER : undefined,
+      noExternal: (Reflect.get(globalThis, 'process')?.env?.DOCKER) ? true : undefined,
     },
   },
 })

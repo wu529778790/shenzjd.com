@@ -43,11 +43,7 @@ const commentsClass = `${timelineRailClass} pb-6 pt-1.5`
   <header class={timeBoxClass}>
     <span class={timeDotClass} aria-hidden="true"></span>
     <p class={timeTextClass}>
-      <a
-        href={post.sourceUrl ?? `${SITE_URL}posts/${post.id}`}
-        title={post.datetime}
-        class={itemLinkClass}
-      >
+      <a href={post.sourceUrl ?? `${SITE_URL}posts/${post.id}`} title={post.datetime} class={itemLinkClass}>
         <time datetime={post.datetime} title={timeago}>{timeago}</time>
       </a>
     </p>

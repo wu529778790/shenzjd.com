@@ -1,5 +1,5 @@
-import { $fetch } from 'ofetch'
 import { LRUCache } from 'lru-cache'
+import { $fetch } from 'ofetch'
 import { getProcessEnv } from '../env'
 
 /**
@@ -33,7 +33,7 @@ function getLru(): LRUCache<string, string> {
       ttlAutopurge: true,
       ttlResolution: 0,
       perf: { now: () => Date.now() },
-      sizeCalculation: (v) => v.length,
+      sizeCalculation: v => v.length,
       maxSize: cacheMax * 1024 * 1024,
     })
   }

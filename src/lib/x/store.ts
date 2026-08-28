@@ -1,6 +1,6 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
 import type { Post } from '../../types'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { getProcessEnv } from '../env'
 
 /**
@@ -26,7 +26,8 @@ let _cache: Record<string, Post> | null = null
 
 function dataDir(): string {
   if (!_dataDir) {
-    _dataDir = getProcessEnv('X_DATA_DIR') ?? join(process.cwd(), 'data')
+    const cwd = (Reflect.get(globalThis, 'process') as { cwd?: () => string } | undefined)?.cwd?.() ?? '.'
+    _dataDir = getProcessEnv('X_DATA_DIR') ?? join(cwd, 'data')
   }
   return _dataDir
 }
@@ -55,7 +56,8 @@ function load(): Record<string, Post> {
 }
 
 function save(): void {
-  if (!_cache) return
+  if (!_cache)
+    return
   const posts = Object.values(_cache).sort(
     (a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime(),
   )

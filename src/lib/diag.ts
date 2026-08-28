@@ -41,13 +41,15 @@ let _tgLastSummary = 0
 
 function maybeTelegramSummary(): void {
   const now = Date.now()
-  if (now - _tgLastSummary < TELEGRAM_SUMMARY_MS) return
+  if (now - _tgLastSummary < TELEGRAM_SUMMARY_MS)
+    return
   _tgLastSummary = now
-  if (!_tgCount) return
+  if (!_tgCount)
+    return
   const avg = Math.round(_tgMsSum / _tgCount)
   const stats = getCacheStats()
   const mb = (stats.estimatedBytes / 1024 / 1024).toFixed(1)
-  console.log(`[diag] ${ts()} TELEGRAM summary fetch=${_tgCount} err=${_tgErrors} slow=${_tgSlow} avg=${avg}ms max=${_tgMsMax}ms cache=${stats.size}/${stats.max} ${mb}MB`)
+  console.info(`[diag] ${ts()} TELEGRAM summary fetch=${_tgCount} err=${_tgErrors} slow=${_tgSlow} avg=${avg}ms max=${_tgMsMax}ms cache=${stats.size}/${stats.max} ${mb}MB`)
   _tgCount = 0
   _tgErrors = 0
   _tgSlow = 0
@@ -67,7 +69,8 @@ export const diag = {
     ms?: number
     error?: string
   }): void {
-    if (!diag.telegram) return
+    if (!diag.telegram)
+      return
     const ms = info.ms ?? 0
 
     // Errors always log immediately — this is the troubleshooting channel.
@@ -83,7 +86,8 @@ export const diag = {
     // (volume, error rate, avg/max latency) tells us if t.me is degrading.
     _tgCount++
     _tgMsSum += ms
-    if (ms > _tgMsMax) _tgMsMax = ms
+    if (ms > _tgMsMax)
+      _tgMsMax = ms
     // Still surface unusually slow fetches individually: 3s+ on a ~200-700ms
     // path usually means the proxy/egress is degrading even before it fails.
     if (ms >= TELEGRAM_SLOW_MS) {
@@ -95,13 +99,14 @@ export const diag = {
 
   /** Periodic snapshot of Telegram HTML cache + full-page cache occupancy. Only emits when DIAG_CACHE_STATS=1. */
   logCacheStats(): void {
-    if (!diag.cacheStats) return
+    if (!diag.cacheStats)
+      return
     const tg = getCacheStats()
     // Estimated bytes derived from lru-cache's sizeCalculation (sum of
     // stored value string lengths). `max` is the configured TELEGRAM_HTML_CACHE_MAX.
     const tgMb = (tg.estimatedBytes / 1024 / 1024).toFixed(1)
     const page = getPageCacheStats()
     const pageMb = (page.estimatedBytes / 1024 / 1024).toFixed(1)
-    console.log(`[diag] ${ts()} CACHE stats telegram=${tg.size}/${tg.max} ${tgMb}MB page=${page.size}/${page.max} ${pageMb}MB`)
+    console.info(`[diag] ${ts()} CACHE stats telegram=${tg.size}/${tg.max} ${tgMb}MB page=${page.size}/${page.max} ${pageMb}MB`)
   },
 }

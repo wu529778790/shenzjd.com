@@ -1,8 +1,8 @@
 import { defineMiddleware } from 'astro:middleware'
 import { LRUCache } from 'lru-cache'
 import { diag } from './lib/diag'
-import { getCachedPage, setCachedPage } from './lib/page-cache'
 import { getProcessEnv } from './lib/env'
+import { getCachedPage, setCachedPage } from './lib/page-cache'
 
 function getEncodedTagSearchQuery(pathname: string): string {
   if (!pathname.startsWith('/search/%23')) {
@@ -87,10 +87,12 @@ const CACHE_STATS_INTERVAL = 250 // ~once per 250 requests
 const CACHEABLE_PREFIXES = ['/before/', '/after/', '/posts/', '/search/result', '/tags', '/links']
 
 export function getPageCacheKey(request: Request, url: URL): string | null {
-  if (request.method !== 'GET') return null
+  if (request.method !== 'GET')
+    return null
   const { pathname } = url
   const isPage = pathname === '/' || CACHEABLE_PREFIXES.some(p => pathname === p || pathname.startsWith(p))
-  if (!isPage) return null
+  if (!isPage)
+    return null
   // Ignore scanner junk like ?golink=... which does not change rendering.
   const q = url.searchParams.get('q')
   return q ? `${pathname}?q=${q}` : pathname
@@ -107,9 +109,11 @@ const BOT_BURST = new LRUCache<string, number[]>({ max: 1024, ttl: 60_000, ttlAu
 const BOT_BURST_LIMIT = 40 // /posts/ requests per bot per 60s window
 
 export function isPostsBotBurst(request: Request, pathname: string): boolean {
-  if (!pathname.startsWith('/posts/')) return false
+  if (!pathname.startsWith('/posts/'))
+    return false
   const ua = request.headers.get('user-agent') ?? ''
-  if (!isBot(ua)) return false
+  if (!isBot(ua))
+    return false
   const now = Date.now()
   const key = ua.slice(0, 48)
   const hits = (BOT_BURST.get(key) ?? []).filter(t => now - t < 60_000)

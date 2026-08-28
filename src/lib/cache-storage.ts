@@ -1,5 +1,6 @@
-import { setStorage, type StorageInterface } from 'ocache'
+import type { StorageInterface } from 'ocache'
 import { LRUCache } from 'lru-cache'
+import { setStorage } from 'ocache'
 
 /**
  * ocache storage shape (StorageInterface): get returns T|null|Promise<T|null>,
@@ -57,7 +58,8 @@ export function createLruStorage(maxEntries: number): StorageInterface {
     // The dominant cost is the stored string value; metadata fields are tiny.
     sizeCalculation(entry) {
       const v = entry.value
-      if (typeof v === 'string') return v.length
+      if (typeof v === 'string')
+        return v.length
       return 1
     },
     // ~1MB per entry soft cap → totals ~maxEntries MB. Acts as a backstop so
@@ -70,7 +72,8 @@ export function createLruStorage(maxEntries: number): StorageInterface {
   return {
     get<T = CacheEntry>(key: string): T | null {
       const entry = lru.get(key) as T | undefined
-      if (!entry) return null
+      if (!entry)
+        return null
       // Honor absolute expiry if ocache stamped one.
       const expires = (entry as CacheEntry).expires
       if (expires && Date.now() > expires) {
@@ -88,7 +91,8 @@ export function createLruStorage(maxEntries: number): StorageInterface {
       // ocache passes ttl in seconds; lru-cache accepts ms.
       if (opts?.ttl) {
         lru.set(key, entry, { ttl: opts.ttl * 1000 })
-      } else {
+      }
+      else {
         lru.set(key, entry)
       }
     },

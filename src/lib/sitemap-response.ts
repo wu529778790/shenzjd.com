@@ -18,12 +18,15 @@ export function computeSitemapETag(parts: (string | number)[]): string {
  */
 export function isSitemapNotModified(request: Request, etag: string): boolean {
   const inm = request.headers.get('if-none-match')
-  if (!inm) return false
-  if (inm.trim() === '*') return true
+  if (!inm)
+    return false
+  if (inm.trim() === '*')
+    return true
   // Comma-separated list of ETags is allowed by the spec (rare in practice)
   for (const tag of inm.split(',')) {
     const t = tag.trim()
-    if (t === etag || t === `W/${etag}`) return true
+    if (t === etag || t === `W/${etag}`)
+      return true
   }
   return false
 }

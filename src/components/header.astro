@@ -1,10 +1,9 @@
 ---
 import { Icon } from 'astro-icon/components'
-import ChannelAvatar from './ChannelAvatar.astro'
+import SearchForm from './SearchForm.astro'
 import { getBooleanEnv, getEnv, getPodcastUrl } from '../lib/env'
 import { sanitizeContentHtml } from '../lib/sanitize'
 import { buildSocialLinks } from '../lib/social'
-import { siteTitleClass } from '../lib/style-classes'
 
 const { SITE_URL, RSS_URL } = Astro.locals
 const { channel } = Astro.props
@@ -17,20 +16,19 @@ const DISCORD = getEnv(import.meta.env, Astro, 'DISCORD')
 const MASTODON = getEnv(import.meta.env, Astro, 'MASTODON')
 const BLUESKY = getEnv(import.meta.env, Astro, 'BLUESKY')
 
+const GOOGLE_SEARCH_SITE = getEnv(import.meta.env, Astro, 'GOOGLE_SEARCH_SITE')
+const searchAction = GOOGLE_SEARCH_SITE ? 'https://www.google.com/search' : `${SITE_URL}search/result`
+
 const hideDescription = getBooleanEnv(import.meta.env, Astro, 'HIDE_DESCRIPTION')
 const descriptionHtml = channel?.descriptionHTML ? sanitizeContentHtml(channel.descriptionHTML) : ''
 
-const headerMainClass = 'mb-2.5 flex items-center gap-1 p-2.5 max-sm:p-0'
-const avatarClass = 'block h-11 w-11 shrink-0 rounded-full border-2 border-line-strong object-cover shadow-soft'
-const titleWrapClass = 'ml-2 min-w-0 flex-1 pr-2 text-xl'
-const titleLinkClass = `text-heading no-underline hover:text-ink hover:underline ${siteTitleClass}`
-const kickerClass = 'mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent max-sm:px-0'
+const headerMainClass = 'mb-1 flex items-center justify-end gap-1 p-0'
 const iconNavClass = 'flex items-center gap-0.5'
 const socialLinkClass = 'group p-1 no-underline'
 const socialIconClass =
   'h-[1em] w-[1em] align-bottom [filter:var(--icon-secondary-filter)] group-hover:[filter:var(--icon-hover-filter)]'
 const introClass =
-  'mb-5 ml-1 break-words rounded-panel border-l-2 border-line bg-code px-5 py-2.5 text-base leading-[1.6] text-muted shadow-soft max-sm:my-5 max-sm:ml-0'
+  'mb-5 ml-1 break-words rounded-panel border-l-2 border-line bg-code px-5 py-2.5 text-base leading-[1.6] text-muted shadow-sm max-sm:my-5 max-sm:ml-0'
 
 const socialLinks = buildSocialLinks({
   rssUrl: RSS_URL,
@@ -42,30 +40,16 @@ const socialLinks = buildSocialLinks({
   mastodon: MASTODON,
   bluesky: BLUESKY,
 })
+// 只保留 RSS 图标(GitHub 等已由右侧浮窗提供)
+const rssLinks = socialLinks.filter((item) => item.type === 'application/rss+xml')
 ---
 
 <header>
-  <p class={kickerClass}>Telegram 频道 · 每日速递</p>
   <div class={headerMainClass}>
-    <a href={SITE_URL} title={channel?.title} aria-label="Home">
-      <ChannelAvatar
-        channel={channel}
-        alt=""
-        loading="eager"
-        fetchpriority="high"
-        width="40"
-        height="40"
-        class={avatarClass}
-      />
-    </a>
-    <div class={titleWrapClass}>
-      <a href={SITE_URL} class={titleLinkClass} title={channel?.title}>
-        {channel?.title}
-      </a>
-    </div>
+    <SearchForm action={searchAction} googleSearchSite={GOOGLE_SEARCH_SITE} />
     <nav class={iconNavClass} aria-label="Channel links">
       {
-        socialLinks.map((item) => (
+        rssLinks.map((item) => (
           <a
             href={item.href}
             title={item.title}

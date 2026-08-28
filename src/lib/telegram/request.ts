@@ -3,9 +3,9 @@ import type { LoadedChannelDocument, RequestContext } from './types'
 import * as cheerio from 'cheerio'
 import { defineCachedFunction } from 'ocache'
 import { $fetch } from 'ofetch'
-import { getBooleanEnv, getEnv, getProcessEnv, getStaticProxy } from '../env'
 import { installLruCache } from '../cache-storage'
 import { diag } from '../diag'
+import { getBooleanEnv, getEnv, getProcessEnv, getStaticProxy } from '../env'
 
 // Replace ocache's unbounded in-memory Map with a bounded LRU.
 // Tunable via TELEGRAM_HTML_CACHE_MAX; default 512. Measured in production:
@@ -96,7 +96,7 @@ const loadTelegramHtml = defineCachedFunction(fetchTelegramHtml, {
   // fetchTelegramHtml.
   // NOTE: ocache spreads the cachedFn args, so this receives the params object
   // directly (`transform(entry, params)`), NOT wrapped in an array.
-  transform(entry, params) {
+  transform(entry, _params) {
     return entry.value as string
   },
 })
@@ -118,7 +118,7 @@ const loadTelegramPostHtml = defineCachedFunction(fetchTelegramHtml, {
     after: after || '',
     q: q || '',
   }),
-  transform(entry, params) {
+  transform(entry, _params) {
     return entry.value as string
   },
 })
