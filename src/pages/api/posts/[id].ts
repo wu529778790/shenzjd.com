@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro'
-import { getChannelInfo, getChannelPost } from '../../../lib/telegram'
 import { absolutizeMediaUrls } from '../../../lib/feed'
+import { cleanContentHtml, formatDetailTime } from '../../../lib/mini-program'
 import { sanitizeFeedHtml } from '../../../lib/sanitize'
+import { getChannelInfo, getChannelPost } from '../../../lib/telegram'
 
 /**
  * 小程序 / 第三方消费方专用的单篇文章接口。
@@ -32,6 +33,12 @@ export const GET: APIRoute = async (context) => {
     })
   }
 
+  // 先做基础清洗与媒体绝对化，再做小程序专用清洗（去 modal/button/无用属性/重复标题/标签链接、img 自适应、换行转 <br/>）
+  const contentHtml = cleanContentHtml(
+    absolutizeMediaUrls(sanitizeFeedHtml(post.content), siteUrl),
+    post.title,
+  )
+
   return new Response(JSON.stringify({
     id: post.id,
     title: post.title,
@@ -42,7 +49,9 @@ export const GET: APIRoute = async (context) => {
     description: post.description,
     sourceUrl: post.sourceUrl,
     url: new URL(`posts/${post.id}`, siteUrl).toString(),
-    content_html: absolutizeMediaUrls(sanitizeFeedHtml(post.content), siteUrl),
+    // 小程序直接消费的最终字段：已格式化时间 + 已清洗 HTML
+    time: formatDetailTime(post.datetime),
+    content_html: contentHtml,
     reactions: post.reactions,
   }), {
     headers: {

@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro'
-import { getChannelInfo } from '../../lib/telegram'
 import { absolutizeMediaUrls } from '../../lib/feed'
+import { buildDescription, formatListTime } from '../../lib/mini-program'
+import { getChannelInfo } from '../../lib/telegram'
 
 /** 从正文 HTML 中提取第一张图片的绝对 URL（用于列表缩略图），无图返回 undefined */
 function extractFirstImage(content: string, siteUrl: URL): string | undefined {
@@ -34,6 +35,9 @@ export const GET: APIRoute = async (context) => {
     sourceUrl: post.sourceUrl,
     image: extractFirstImage(post.content, siteUrl),
     url: new URL(`posts/${post.id}`, siteUrl).toString(),
+    // 小程序直接消费的最终字段：已格式化时间 + 已生成摘要
+    time: formatListTime(post.datetime),
+    desc: buildDescription(post.text, post.title),
   }))
 
   // 分页游标基于 Telegram 消息 ID（纯数字）。X 推文合并进首页时间线时带
