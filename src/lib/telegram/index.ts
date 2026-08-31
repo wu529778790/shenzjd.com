@@ -4,7 +4,7 @@ import { getXPosts } from '../x'
 import { modifyHTMLContent } from './content'
 import { extractPost } from './parse'
 import { loadChannelDocument } from './request'
-import { normalizeUrlAttribute } from './url'
+import { getProxiedUrl, normalizeUrlAttribute } from './url'
 
 // 频道互推 / 相似推荐等广告推广内容，不爬取、不展示。
 // 用"标签 + 文本"双特征判断，避免只依赖标签（标签可能不完整）。
@@ -49,7 +49,9 @@ export async function getChannelInfo(context: RequestContext, params: GetChannel
     title: $('.tgme_channel_info_header_title').text(),
     description: $('.tgme_channel_info_description').text(),
     descriptionHTML: (await modifyHTMLContent($, $('.tgme_channel_info_description'), { staticProxy })).html(),
-    avatar: avatar ? normalizeUrlAttribute(avatar) : avatar,
+    // 头像走静态代理（/static/<url>），与正文图片一致，避免消费方直接访问
+    // Telegram CDN（如 cdn5.telesco.pe）因网络原因加载失败。
+    avatar: avatar ? getProxiedUrl(staticProxy, avatar) : avatar,
   }
 
   // Home feed only (no pagination/search params): merge X tweets into a single
