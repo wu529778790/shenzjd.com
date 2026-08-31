@@ -1,6 +1,6 @@
 import type { Post } from '../../types'
 import { describe, expect, it } from 'vitest'
-import { isRenderablePost } from './index'
+import { isPromotionPost, isRenderablePost } from './index'
 
 function createPost(overrides: Partial<Post> = {}): Post {
   return {
@@ -36,5 +36,24 @@ describe('post renderability', () => {
   it('rejects nullish posts', () => {
     expect(isRenderablePost(null)).toBe(false)
     expect(isRenderablePost(undefined)).toBe(false)
+  })
+})
+
+describe('promotion post detection', () => {
+  it('flags posts tagged as 频道互推', () => {
+    expect(isPromotionPost(createPost({ tags: ['频道互推', '相似推荐'] }))).toBe(true)
+  })
+
+  it('flags posts whose text mentions 互推入口', () => {
+    expect(isPromotionPost(createPost({ text: '#频道互推 #相似推荐\n互推入口：@sosoo' }))).toBe(true)
+  })
+
+  it('does not flag normal posts', () => {
+    expect(isPromotionPost(createPost())).toBe(false)
+    expect(isPromotionPost(createPost({ tags: ['Python', '工具'] }))).toBe(false)
+  })
+
+  it('rejects promotion posts from renderability', () => {
+    expect(isRenderablePost(createPost({ tags: ['频道互推'] }))).toBe(false)
   })
 })
