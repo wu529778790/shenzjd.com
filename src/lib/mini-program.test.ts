@@ -31,6 +31,15 @@ describe('buildDescription', () => {
   it('keeps text unchanged when it does not start with title', () => {
     expect(buildDescription('正文内容', '标题')).toBe('正文内容')
   })
+
+  it('removes title prefix when title has emoji but text does not', () => {
+    // 标题带 emoji，正文 text 里自定义 emoji 渲染成 <img> 取不到，故无 emoji
+    expect(buildDescription('即梦AI视频CLI工作流是面向AI短剧的', '🧠 即梦AI视频CLI工作流')).toBe('是面向AI短剧的')
+  })
+
+  it('removes title prefix when both title and text have emoji', () => {
+    expect(buildDescription('🧠 即梦AI视频CLI工作流是面向AI短剧的', '🧠 即梦AI视频CLI工作流')).toBe('是面向AI短剧的')
+  })
 })
 
 describe('cleanContentHtml', () => {
@@ -65,6 +74,23 @@ describe('cleanContentHtml', () => {
     expect(out).toContain('正文')
   })
 
+  it('removes duplicate title with nested emoji b and title without emoji', () => {
+    // 真实结构：<i class="emoji"><b>🟢</b></i> <b>标题</b>，标题字段不带 emoji
+    const html = '<i class="emoji"><b>🟢</b></i> <b>SRT转白板手绘视频工具</b><p>正文</p>'
+    const out = cleanContentHtml(html, 'SRT转白板手绘视频工具')
+    expect(out).not.toContain('SRT转白板手绘视频工具')
+    expect(out).not.toContain('emoji')
+    expect(out).toContain('正文')
+  })
+
+  it('removes duplicate title when title has emoji but body b does not', () => {
+    const html = '<i class="emoji"><b>🟢</b></i> <b>SRT转白板手绘视频工具</b><p>正文</p>'
+    const out = cleanContentHtml(html, '🟢 SRT转白板手绘视频工具')
+    expect(out).not.toContain('SRT转白板手绘视频工具')
+    expect(out).not.toContain('emoji')
+    expect(out).toContain('正文')
+  })
+
   it('removes tag links', () => {
     const html = '<p>正文 <a href="/search/result?q=%23tag">#tag</a></p>'
     const out = cleanContentHtml(html)
@@ -92,6 +118,15 @@ describe('cleanContentHtml', () => {
     const out = cleanContentHtml(html)
     expect(out).toContain('<img')
     expect(out).not.toContain('<br')
+  })
+
+  it('removes br created from newline right after img', () => {
+    // 图片后紧跟换行 \n，先转成 <br/> 再移除，避免产生空白行
+    const html = '<img src="/static/a.webp" />\nsrt-whiteboard-animation 是一个'
+    const out = cleanContentHtml(html)
+    expect(out).toContain('<img')
+    expect(out).not.toContain('<br')
+    expect(out).toContain('srt-whiteboard-animation 是一个')
   })
 
   it('converts newlines to br and collapses multiple br', () => {

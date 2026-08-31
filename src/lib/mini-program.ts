@@ -14,16 +14,37 @@ export function formatDetailTime(datetime: string): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+/** 匹配 emoji（含变体选择符、ZWJ 序列、肤色修饰符、键帽等） */
+const EMOJI_REGEX = /\p{Extended_Pictographic}/gu
+
+/** 去掉字符串中的 emoji，用于标题与正文的"去前缀"匹配（标题可能带 emoji，正文可能不带） */
+function stripEmoji(text: string): string {
+  return text.replace(EMOJI_REGEX, '').replace(/\s+/g, ' ').trim()
+}
+
 /**
  * 生成首页列表摘要：
  * 1. 压缩空白（连续空白 -> 单个空格）
  * 2. 去掉标题前缀（正文自带标题，与卡片标题重复）
  * 3. 截取前 60 字
+ *
+ * 标题可能带 emoji（如"🧠 即梦AI视频CLI工作流"），而正文 text 里自定义 emoji
+ * 被渲染成 <img>，.text() 取不到，导致直接 startsWith(title) 匹配失败。
+ * 因此先按原样匹配，失败后再去掉 emoji 匹配。
  */
 export function buildDescription(text: string, title?: string): string {
   let desc = text.replace(/\s+/g, ' ').trim()
-  if (title && desc.startsWith(title)) {
-    desc = desc.slice(title.length).trim()
+  if (title) {
+    const trimmedTitle = title.trim()
+    if (desc.startsWith(trimmedTitle)) {
+      desc = desc.slice(trimmedTitle.length).trim()
+    }
+    else {
+      const strippedTitle = stripEmoji(trimmedTitle)
+      if (strippedTitle && desc.startsWith(strippedTitle)) {
+        desc = desc.slice(strippedTitle.length).trim()
+      }
+    }
   }
   return desc.slice(0, 60)
 }
@@ -70,8 +91,9 @@ function convertNewlinesToBr($: cheerio.CheerioAPI, root: cheerio.Cheerio<cheeri
  * 5. 移除正文里的标签链接（<a href="/search/result?q=...">#标签</a>）
  * 6. 移除图片容器 <div class="image-list-container...">（保留内部 <img>）
  * 7. 给 <img> 加自适应样式并删除 width/height 属性
- * 8. 移除图片后紧跟的 <br/>
- * 9. 换行 \n -> <br/>，并压缩连续多个 <br/>（2 个以上 -> 1 个）
+ * 8. 换行 \n -> <br/>（需在移除图片后 <br/> 之前，因为图片后常是 \n 文本节点）
+ * 9. 移除图片后紧跟的 <br/>（跳过空白文本节点）
+ * 10. 压缩连续多个 <br/>（2 个以上 -> 1 个）
  */
 export function cleanContentHtml(content: string, title?: string): string {
   const $ = cheerio.load(content)
@@ -99,13 +121,17 @@ export function cleanContentHtml(content: string, title?: string): string {
 
   // 4. 移除正文里重复的标题（<i class="emoji">…</i> <b>标题</b>）
   if (title) {
-    const normalizedTitle = title.trim()
+    const trimmedTitle = title.trim()
+    const strippedTitle = stripEmoji(trimmedTitle)
     $('b').each((_, el) => {
       const $el = $(el)
-      if ($el.text().trim() === normalizedTitle) {
-        const prev = $el.prev()
-        if (prev.is('i.emoji')) {
-          prev.remove()
+      const text = $el.text().trim()
+      // 标题可能带 emoji，正文 <b> 可能不带，做 emoji 无关比较
+      if (text === trimmedTitle || (strippedTitle && stripEmoji(text) === strippedTitle)) {
+        // 标题前可能隔着空白文本节点，用 prevAll 找最近的 <i class="emoji">
+        const prevEmoji = $el.prevAll('i.emoji').first()
+        if (prevEmoji.length) {
+          prevEmoji.remove()
         }
         $el.remove()
         return false // 只移除第一个匹配
@@ -133,18 +159,24 @@ export function cleanContentHtml(content: string, title?: string): string {
     $el.attr('style', IMG_STYLE)
   })
 
-  // 8. 移除图片后紧跟的 <br/>
+  // 8. 换行 \n -> <br/>（先于"移除图片后 <br/>"，因为图片后常是 \n 文本节点）
+  convertNewlinesToBr($, $.root())
+
+  // 9. 移除图片后紧跟的 <br/>（跳过空白文本节点）
   $('img').each((_, el) => {
-    const next = $(el).next()
+    const $el = $(el)
+    let next = $el.next()
+    while (next.length && next[0]?.type === 'text' && (next.text() ?? '').trim() === '') {
+      next = next.next()
+    }
     if (next.is('br')) {
       next.remove()
     }
   })
 
-  // 9. 换行 \n -> <br/>，压缩连续多个 <br/>
-  convertNewlinesToBr($, $.root())
-  let html = $.html()
-  html = html.replace(/(<br\s*\/?>\s*){2,}/gi, '<br/>')
+  // 10. 压缩连续多个 <br/>
+  let out = $.html()
+  out = out.replace(/(<br\s*\/?>\s*){2,}/gi, '<br/>')
 
-  return html
+  return out
 }
