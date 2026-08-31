@@ -132,6 +132,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return new Response(null, { status: 444 })
   }
 
+  // AdSense / IAB 爬虫有时会以大小写变体请求 ads.txt（如 Ads.txt、ADS.TXT）。
+  // Linux/Docker 文件系统大小写敏感，只有小写文件，统一 rewrite 到小写即可。
+  if (pathname.toLowerCase() === '/ads.txt' && pathname !== '/ads.txt') {
+    return context.rewrite('/ads.txt')
+  }
+
   // Opportunistic periodic cache stats snapshot — also helps avoid
   // single-tick timer drift on long-running Node processes.
   if (diag.cacheStats && ++_reqCount % CACHE_STATS_INTERVAL === 0) {
