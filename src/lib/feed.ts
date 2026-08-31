@@ -28,6 +28,18 @@ export interface JsonFeedData {
   }[]
 }
 
+/**
+ * 把正文 HTML 里的相对媒体路径（如 /static/...）转成绝对路径。
+ *
+ * RSS / JSON Feed 是独立文档，没有"当前页面"可用来补全相对路径，
+ * 爬虫和阅读器（以及微信小程序）可能拿不到图片。这里统一补全为
+ * 站点绝对 URL，保证任何消费方都能直接访问。
+ */
+export function absolutizeMediaUrls(html: string, siteUrl: URL): string {
+  const base = siteUrl.toString().replace(/\/$/, '')
+  return html.replace(/(src|href|poster)="\/(static\/)/g, `$1="${base}/$2`)
+}
+
 export function buildJsonFeed({ channel, posts, siteUrl, title }: FeedData): JsonFeedData {
   return {
     version: 'https://jsonfeed.org/version/1.1',
@@ -45,7 +57,7 @@ export function buildJsonFeed({ channel, posts, siteUrl, title }: FeedData): Jso
         summary: item.description,
         date_published: new Date(item.datetime).toISOString(),
         tags: item.tags,
-        content_html: sanitizeFeedHtml(item.content),
+        content_html: absolutizeMediaUrls(sanitizeFeedHtml(item.content), siteUrl),
       }
     }),
   }

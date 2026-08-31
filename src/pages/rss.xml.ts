@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro'
 import rss from '@astrojs/rss'
 import { getBooleanEnv } from '../lib/env'
-import { getFeedData } from '../lib/feed'
+import { absolutizeMediaUrls, getFeedData } from '../lib/feed'
 import { sanitizeFeedHtml } from '../lib/sanitize'
 
 export const GET: APIRoute = async (context) => {
@@ -18,7 +18,7 @@ export const GET: APIRoute = async (context) => {
       title: item.title,
       description: item.description,
       pubDate: new Date(item.datetime),
-      content: sanitizeFeedHtml(item.content),
+      content: absolutizeMediaUrls(sanitizeFeedHtml(item.content), siteUrl),
     })),
   })
 
