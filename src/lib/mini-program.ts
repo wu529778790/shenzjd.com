@@ -162,15 +162,25 @@ export function cleanContentHtml(content: string, title?: string): string {
   // 8. 换行 \n -> <br/>（先于"移除图片后 <br/>"，因为图片后常是 \n 文本节点）
   convertNewlinesToBr($, $.root())
 
-  // 9. 移除图片后紧跟的 <br/>（跳过空白文本节点）
+  // 9. 移除图片后所有紧跟的 <br/> 与空白文本节点，避免产生空白行。
+  //    图片后常是"换行 + 缩进 + 换行"的空白序列，仅删第一个 <br/> 不够，
+  //    剩余的 <br/> 会被第 10 步压缩成一个，仍会留下空白行，因此要全部删掉。
+  //    注意：cheerio 的 .next() 会跳过文本节点，这里改用原生兄弟节点遍历，
+  //    才能同时删掉夹在 <br/> 之间的空白文本节点。
   $('img').each((_, el) => {
-    const $el = $(el)
-    let next = $el.next()
-    while (next.length && next[0]?.type === 'text' && (next.text() ?? '').trim() === '') {
-      next = next.next()
-    }
-    if (next.is('br')) {
-      next.remove()
+    let node = el.nextSibling
+    while (node) {
+      const next = node.nextSibling
+      if (node.type === 'tag' && node.name === 'br') {
+        $(node).remove()
+      }
+      else if (node.type === 'text' && (node.data ?? '').trim() === '') {
+        $(node).remove()
+      }
+      else {
+        break
+      }
+      node = next
     }
   })
 

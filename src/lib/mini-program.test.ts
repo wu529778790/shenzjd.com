@@ -122,7 +122,17 @@ describe('cleanContentHtml', () => {
 
   it('removes br created from newline right after img', () => {
     // 图片后紧跟换行 \n，先转成 <br/> 再移除，避免产生空白行
-    const html = '<img src="/static/a.webp" />\nsrt-whiteboard-animation 是一个'
+    const html = '<img src="/static/a-1" />\nsrt-whiteboard-animation 是一个'
+    const out = cleanContentHtml(html)
+    expect(out).toContain('<img')
+    expect(out).not.toContain('<br')
+    expect(out).toContain('srt-whiteboard-animation 是一个')
+  })
+
+  it('removes all brs after img from whitespace+newline sequence', () => {
+    // 真实结构：图片容器被解包后，图片后是"换行+缩进+换行"的空白序列，
+    // 换行转 <br> 后会产生多个 <br>，需全部移除，避免压缩后仍留空白行
+    const html = '<img src="/static/a-1" />\n      \n      \n    \n srt-whiteboard-animation 是一个'
     const out = cleanContentHtml(html)
     expect(out).toContain('<img')
     expect(out).not.toContain('<br')
