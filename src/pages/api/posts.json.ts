@@ -36,11 +36,27 @@ export const GET: APIRoute = async (context) => {
     url: new URL(`posts/${post.id}`, siteUrl).toString(),
   }))
 
+  // 分页游标基于 Telegram 消息 ID（纯数字）。X 推文合并进首页时间线时带
+  // 前缀 id（x-handle-...），不能参与游标分页，需过滤掉。
+  // 与站点 list.astro 的分页逻辑保持一致：
+  //   - next_before = 本页最老一条的 id，用于"上滑加载更早"
+  //   - next_after  = 本页最新一条的 id，用于"下拉刷新更新"
+  // 游标天然稳定：新文章发布不会导致重复或遗漏（页码分页才会）。
+  const tgPosts = channel.posts.filter((post) => /^\d+$/.test(post.id))
+  const nextBefore = tgPosts[tgPosts.length - 1]?.id
+  const nextAfter = tgPosts[0]?.id
+  const pagination = {
+    // 最老一条 id > 1 才说明还有更早内容
+    next_before: nextBefore && Number(nextBefore) > 1 ? nextBefore : undefined,
+    next_after: nextAfter || undefined,
+  }
+
   return new Response(JSON.stringify({
     title: channel.title,
     description: channel.description,
     avatar: channel.avatar ? absolutizeMediaUrls(`<img src="${channel.avatar}" />`, siteUrl).match(/src="([^"]+)"/)?.[1] : undefined,
     posts,
+    pagination,
   }), {
     headers: {
       'Cache-Control': 'public, max-age=300',
