@@ -112,6 +112,10 @@ export async function extractPost($: CheerioAPI, item: AnyNode | null, options: 
     message.find(hasReplyText ? '.tgme_widget_message_text.js-message_text' : '.tgme_widget_message_text'),
     { index, staticProxy, normalizeUrls: false },
   )
+  // cheerio 的 .text() 会丢弃 <br>，导致标题行与正文粘连（如"标题正文"）。
+  // 先把 <br> 替换为换行符，再提取纯文本，这样 text 保留换行结构，
+  // TITLE_PREVIEW_REGEX 也能通过 \n 正确识别出 Telegram 消息里的标题行。
+  content.find('br').replaceWith('\n')
   const contentText = content.text()
   const title = contentText.match(TITLE_PREVIEW_REGEX)?.[0] ?? contentText
   const id = message.attr('data-post')?.replace(new RegExp(`${channel}/`, 'i'), '') ?? ''
