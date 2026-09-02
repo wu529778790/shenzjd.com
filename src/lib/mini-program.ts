@@ -1,17 +1,40 @@
 import * as cheerio from 'cheerio'
 
-const pad = (n: number): string => String(n).padStart(2, '0')
+/**
+ * 按北京时间（Asia/Shanghai）取各时间字段。
+ * 用 Intl 而非 getHours() 等本地时区方法：部署环境时区是 UTC（如 Cloudflare Workers），
+ * 用本地时区会返回 UTC 时间。
+ */
+const BEIJING_FORMATTER = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Shanghai',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
 
-/** 把 ISO 8601 UTC 时间格式化为本地时间 MM-DD HH:mm（首页列表用） */
-export function formatListTime(datetime: string): string {
-  const date = new Date(datetime)
-  return `${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+function formatBeijing(datetime: string): { date: string, time: string } {
+  const parts = Object.fromEntries(
+    BEIJING_FORMATTER.formatToParts(new Date(datetime)).map(p => [p.type, p.value]),
+  )
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    time: `${parts.hour}:${parts.minute}`,
+  }
 }
 
-/** 把 ISO 8601 UTC 时间格式化为本地时间 YYYY-MM-DD HH:mm（详情页用） */
+/** 把 ISO 8601 UTC 时间格式化为北京时间 MM-DD HH:mm（首页列表用） */
+export function formatListTime(datetime: string): string {
+  const { date, time } = formatBeijing(datetime)
+  return `${date.slice(5)} ${time}`
+}
+
+/** 把 ISO 8601 UTC 时间格式化为北京时间 YYYY-MM-DD HH:mm（详情页用） */
 export function formatDetailTime(datetime: string): string {
-  const date = new Date(datetime)
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+  const { date, time } = formatBeijing(datetime)
+  return `${date} ${time}`
 }
 
 /** 匹配 emoji（含变体选择符、ZWJ 序列、肤色修饰符、键帽等） */
