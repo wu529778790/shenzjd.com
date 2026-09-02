@@ -115,8 +115,11 @@ export async function extractPost($: CheerioAPI, item: AnyNode | null, options: 
   // cheerio 的 .text() 会丢弃 <br>，导致标题行与正文粘连（如"标题正文"）。
   // 先把 <br> 替换为换行符，再提取纯文本，这样 text 保留换行结构，
   // TITLE_PREVIEW_REGEX 也能通过 \n 正确识别出 Telegram 消息里的标题行。
-  content.find('br').replaceWith('\n')
-  const contentText = content.text()
+  // 必须在克隆上做替换：content 还会被 renderPostContent 输出为正文 HTML，
+  // 若直接改原 DOM，web/RSS 端的 <br> 会变成 \n，浏览器折叠空白后不再换行。
+  const textSource = content.clone()
+  textSource.find('br').replaceWith('\n')
+  const contentText = textSource.text()
   const title = contentText.match(TITLE_PREVIEW_REGEX)?.[0] ?? contentText
   const id = message.attr('data-post')?.replace(new RegExp(`${channel}/`, 'i'), '') ?? ''
   const tags = collectTags($, content)
