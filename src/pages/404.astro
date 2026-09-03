@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/base.astro'
+
+const { SITE_URL } = Astro.locals
+const pageSeo = { title: '404' }
+const backLinkClass =
+  'inline-block rounded-chip border border-line-strong px-3 py-1.5 text-xs tracking-wide text-muted no-underline transition-colors duration-150 hover:border-accent hover:bg-accent hover:text-paper'
+---
+
+<Layout seo={pageSeo}>
+  <section class="py-20 text-center">
+    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-accent">404</p>
+    <h1 class="mt-3 text-2xl font-bold text-heading">这一页被剪掉了</h1>
+    <p class="mt-2 text-sm text-muted">你要找的内容不在档案里,可能已被删除或从未存在。</p>
+    <a href={SITE_URL} class:list={[backLinkClass, 'mt-6']}>回到首页</a>
+  </section>
+</Layout>

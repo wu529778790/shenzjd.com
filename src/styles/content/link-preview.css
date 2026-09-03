@@ -32,11 +32,18 @@
       @apply relative flex border-0 bg-transparent p-0;
 
       .link_preview_image {
-        @apply aspect-[1200/630] object-cover;
+        @apply aspect-[1200/630] rounded-media border border-line object-cover shadow-soft transition-shadow duration-200;
+      }
+
+      &:hover .link_preview_image {
+        /* 与照片图一致的悬停抬升,提示可点击 */
+        box-shadow:
+          0 1px 2px rgba(20, 16, 8, 0.07),
+          0 6px 16px rgba(20, 16, 8, 0.09);
       }
 
       .link_preview_site_name {
-        @apply absolute block rounded-panel bg-[rgba(0,0,0,0.66)] px-1 text-sm leading-normal text-white truncate;
+        @apply absolute block rounded-panel bg-black/60 px-1.5 text-[11px] font-semibold uppercase leading-normal tracking-[0.18em] text-white truncate backdrop-blur-sm;
         bottom: var(--box-margin);
         left: var(--box-margin);
         max-width: calc(100% - 28px);

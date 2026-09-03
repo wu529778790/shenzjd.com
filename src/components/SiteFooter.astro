@@ -1,16 +1,29 @@
 ---
-const footerClass = 'hidden px-2 text-[11px] leading-5 text-footer/70 md:block'
+import { getEnv } from '../lib/env'
+
+const { RSS_URL, SITE_URL } = Astro.locals
+const GITHUB = getEnv(import.meta.env, Astro, 'GITHUB')
+const year = new Date().getFullYear()
+
+const footerClass =
+  'flex flex-wrap items-center justify-between gap-2 border-t border-line px-2 pt-3 text-[11px] leading-5 tracking-wide text-footer/80'
+const footerLinkClass =
+  'text-footer/90 no-underline transition-colors duration-150 hover:text-heading hover:no-underline'
 ---
 
 <footer class={footerClass}>
-  Build with
-  <a
-    href="https://github.com/wu529778790/shenzjd.com"
-    title="GitHub 仓库"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="text-footer/90 no-underline transition-colors duration-150 hover:text-heading hover:no-underline"
-  >
-    GitHub
-  </a>
+  <p>
+    © {year} · Build with <a
+      href={GITHUB ?? 'https://github.com/'}
+      title="GitHub 仓库"
+      target="_blank"
+      rel="noopener noreferrer"
+      class={footerLinkClass}>GitHub</a
+    >
+  </p>
+  <nav aria-label="Footer">
+    <a href={`${SITE_URL}tags`} title="Tags" class={footerLinkClass}>Tags</a>
+    <span aria-hidden="true"> · </span>
+    <a href={RSS_URL} title="RSS" class={footerLinkClass}>RSS</a>
+  </nav>
 </footer>

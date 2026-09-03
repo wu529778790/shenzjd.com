@@ -83,8 +83,15 @@
 
   body {
     background-color: var(--color-paper);
+    /* 纸张颗粒:低透明度噪点,打破数码平面感(明暗两种纸色下都成立) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
     color: var(--color-ink);
     font-family: var(--font-serif);
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-paper);
   }
 
   img {
@@ -150,6 +157,12 @@
 
   #main-content {
     position: relative;
+  }
+
+  /* 帖子之间的剪报分隔线:细 hairline,保持呼吸感 */
+  .post-list > li + li {
+    border-top: 1px solid var(--color-line);
+    padding-top: 1.25rem;
   }
 
   #back-to-top-wrapper {

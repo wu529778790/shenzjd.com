@@ -15,10 +15,10 @@ const beforeCursor = tgPosts[tgPosts.length - 1]?.id
 const afterCursor = tgPosts[0]?.id
 const hasOlderPosts = before && beforeCursor && Number(beforeCursor) > 1
 const hasNewerPosts = after && afterCursor
-const itemsClass = 'mt-5 mb-0 ml-7 list-none pl-0 max-sm:ml-0'
+const itemsClass = 'post-list mt-5 mb-0 ml-7 list-none pl-0 max-sm:ml-0'
 const paginationClass = 'my-5 flex items-center justify-between'
 const paginationLinkClass =
-  'inline-flex h-8 w-8 items-center justify-center rounded-full text-xl leading-none text-muted no-underline transition-colors hover:text-accent hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading active:bg-line'
+  'inline-flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-transparent text-lg leading-none text-muted no-underline transition-all duration-200 hover:border-accent hover:bg-accent hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading active:scale-95'
 const paginationNewerClass = 'ml-auto'
 ---
 

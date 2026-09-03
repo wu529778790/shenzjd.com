@@ -20,16 +20,17 @@ const hasContent = contentHtml.length > 0
 const hasReactions = Boolean(reactionsEnabled && post.reactions?.length > 0)
 const hasTags = post.tags.length > 0
 const articleClass = 'transition duration-200'
-const timeBoxClass = 'flex items-center leading-none'
-const timeDotClass = 'h-2 w-2 rounded-full bg-accent'
-const timeTextClass = 'm-0 flex-1 pl-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent'
+const timeBoxClass = 'group flex items-center leading-none'
+const timeDotClass = 'h-2 w-2 rounded-full bg-accent transition-transform duration-200 group-hover:scale-125'
+const timeTextClass =
+  'm-0 flex-1 pl-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent [font-variant-numeric:tabular-nums]'
 const itemLinkClass = 'text-accent no-underline hover:underline'
 const timelineRailClass = 'ml-1 border-l border-line pl-4 md:pl-8'
 const contentClass = `${timelineRailClass} py-8 text-base leading-[1.6]`
 const reactionBoxClass = `${timelineRailClass} pb-6 pt-1.5`
 const reactionListClass = 'm-0 flex list-none flex-wrap gap-1.5 p-0'
 const reactionPillClass =
-  'inline-flex items-center gap-1 rounded-full border border-line bg-code py-1 pl-1.5 pr-2 text-xs text-muted'
+  'inline-flex items-center gap-1 rounded-full border border-line bg-code py-1 pl-1.5 pr-2 text-xs text-muted transition-colors duration-150 hover:border-accent hover:text-accent active:scale-[0.97]'
 const reactionEmojiClass = 'inline-flex items-center text-sm leading-none'
 const reactionCountClass = 'font-medium opacity-80 [font-variant-numeric:tabular-nums]'
 const tagBoxClass = `${timelineRailClass} flex flex-wrap items-center gap-2 text-sm leading-[1.6]`

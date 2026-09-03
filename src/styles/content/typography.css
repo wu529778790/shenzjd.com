@@ -4,6 +4,7 @@
 
     p {
       margin: 1em 0;
+      text-wrap: pretty;
     }
 
     ul,
@@ -62,6 +63,7 @@
     h5,
     h6 {
       @apply scroll-mt-4;
+      text-wrap: balance;
     }
 
     ul:first-child,
