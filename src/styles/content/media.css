@@ -14,6 +14,12 @@
       &.image-list-odd {
         :first-child {
           grid-column: 1 / 3;
+
+          @media (min-width: 37.5rem) {
+            justify-self: start;
+            /* 单图与多图网格单元格同宽(半栏)并靠左,避免单张大图占满版心 */
+            max-width: 50%;
+          }
         }
       }
     }
