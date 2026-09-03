@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro'
+import { getEnv } from '../../../lib/env'
 import { absolutizeMediaUrls } from '../../../lib/feed'
 import { cleanContentHtml, formatDetailTime } from '../../../lib/mini-program'
+import { isLinkSanitizationEnabled, MINI_PROGRAM_SANITIZE_ENV, sanitizeLinksInHtml } from '../../../lib/mini-program-links'
 import { sanitizeFeedHtml } from '../../../lib/sanitize'
 import { getChannelInfo, getChannelPost } from '../../../lib/telegram'
 
@@ -39,6 +41,12 @@ export const GET: APIRoute = async (context) => {
     post.title,
   )
 
+  // 外链脱敏开关（默认开启，审核通过后设 MINI_PROGRAM_SANITIZE_LINKS=false 恢复链接）
+  const sanitizeLinks = isLinkSanitizationEnabled(getEnv(import.meta.env, context, MINI_PROGRAM_SANITIZE_ENV))
+
+  // 脱敏正文：GitHub 改写为「GitHub：owner/repo」、其余站外链接删除、删链后变空的行整行剔除
+  const sanitizedContentHtml = sanitizeLinks ? sanitizeLinksInHtml(contentHtml) : contentHtml
+
   return new Response(JSON.stringify({
     id: post.id,
     title: post.title,
@@ -51,7 +59,7 @@ export const GET: APIRoute = async (context) => {
     url: new URL(`posts/${post.id}`, siteUrl).toString(),
     // 小程序直接消费的最终字段：已格式化时间 + 已清洗 HTML
     time: formatDetailTime(post.datetime),
-    content_html: contentHtml,
+    content_html: sanitizedContentHtml,
     reactions: post.reactions,
   }), {
     headers: {

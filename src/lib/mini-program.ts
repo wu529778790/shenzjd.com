@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio'
+import { hasMeaningfulContent, sanitizeLinksInText } from './mini-program-links'
 
 /**
  * 按北京时间（Asia/Shanghai）取各时间字段。
@@ -70,6 +71,19 @@ export function buildDescription(text: string, title?: string): string {
     }
   }
   return desc.slice(0, 60)
+}
+
+/**
+ * 生成首页列表摘要（外链脱敏版）：
+ * 先删除/改写站外链接（GitHub 改写为「GitHub：owner/repo」纯文本，其余 URL 删除），
+ * 再复用 buildDescription 去标题前缀并截断；
+ * 脱敏后若不含任何字母/数字/汉字（只剩表情、箭头、标点），视为空内容，返回空字符串
+ * （前端卡片会据此自动隐藏摘要）。
+ */
+export function buildSanitizedDescription(text: string, title?: string): string {
+  const sanitized = sanitizeLinksInText(text)
+  const desc = buildDescription(sanitized, title)
+  return hasMeaningfulContent(desc) ? desc : ''
 }
 
 /** 需要从正文中移除的无用 / 浏览器专属属性 */

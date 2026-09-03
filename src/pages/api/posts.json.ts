@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro'
+import { getEnv } from '../../lib/env'
 import { absolutizeMediaUrls } from '../../lib/feed'
-import { buildDescription, formatListTime } from '../../lib/mini-program'
+import { buildDescription, buildSanitizedDescription, formatListTime } from '../../lib/mini-program'
+import { isLinkSanitizationEnabled, MINI_PROGRAM_SANITIZE_ENV } from '../../lib/mini-program-links'
 import { getChannelInfo } from '../../lib/telegram'
 
 /** 从正文 HTML 中提取第一张图片的绝对 URL（用于列表缩略图），无图返回 undefined */
@@ -24,6 +26,9 @@ export const GET: APIRoute = async (context) => {
   const siteUrl = new URL(context.locals.SITE_URL, context.url.origin)
   siteUrl.search = ''
 
+  // 外链脱敏开关（默认开启，审核通过后设 MINI_PROGRAM_SANITIZE_LINKS=false 恢复链接）
+  const sanitizeLinks = isLinkSanitizationEnabled(getEnv(import.meta.env, context, MINI_PROGRAM_SANITIZE_ENV))
+
   const posts = channel.posts.map((post) => ({
     id: post.id,
     title: post.title,
@@ -37,7 +42,9 @@ export const GET: APIRoute = async (context) => {
     url: new URL(`posts/${post.id}`, siteUrl).toString(),
     // 小程序直接消费的最终字段：已格式化时间 + 已生成摘要
     time: formatListTime(post.datetime),
-    desc: buildDescription(post.text, post.title),
+    desc: sanitizeLinks
+      ? buildSanitizedDescription(post.text, post.title)
+      : buildDescription(post.text, post.title),
   }))
 
   // 分页游标基于 Telegram 消息 ID（纯数字）。X 推文合并进首页时间线时带
