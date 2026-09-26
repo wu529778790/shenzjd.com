@@ -81,6 +81,14 @@
     scroll-behavior: smooth;
   }
 
+  /* site-navbar 由 unpkg 异步脚本定义（defer），脚本到达前自定义元素高度为 0，
+     导航栏出现时会把全页内容往下挤（CLS）。按组件实际渲染高度（.sn-bar
+     43.68px ≈ 2.73rem）给未升级状态预留占位，升级后无缝替换。 */
+  site-navbar:not(:defined) {
+    display: block;
+    height: 2.73rem;
+  }
+
   body {
     background-color: var(--color-paper);
     /* 纸张颗粒:低透明度噪点,打破数码平面感(明暗两种纸色下都成立) */
