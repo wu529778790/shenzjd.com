@@ -4,7 +4,7 @@ vi.mock('astro:middleware', () => ({
   defineMiddleware: <T>(handler: T): T => handler,
 }))
 
-const { isHtmlResponse, shouldApplyDefaultCache, getPageCacheKey, isPostsBotBurst } = await import('./middleware')
+const { isHtmlResponse, shouldApplyDefaultCache, getPageCacheKey, isPostsBotBurst, isPageCacheRefreshRequest } = await import('./middleware')
 
 describe('middleware response header helpers', () => {
   it('applies default cache to successful responses without cache headers', () => {
@@ -77,6 +77,22 @@ describe('getPageCacheKey', () => {
   it('does not cache non-GET requests', () => {
     const url = new URL('https://shenzjd.com/')
     expect(getPageCacheKey(new Request(url, { method: 'POST' }), url)).toBeNull()
+  })
+})
+
+describe('isPageCacheRefreshRequest', () => {
+  it('recognizes the internal SWR refresher by its user agent', () => {
+    const req = new Request('https://shenzjd.com/posts/49', {
+      headers: { 'user-agent': 'page-cache-swr/1.0' },
+    })
+    expect(isPageCacheRefreshRequest(req)).toBe(true)
+  })
+
+  it('treats normal visitors and bots as non-refresh requests', () => {
+    for (const ua of ['Mozilla/5.0 (Macintosh)', 'facebookexternalhit/1.1', '']) {
+      const req = new Request('https://shenzjd.com/', { headers: ua ? { 'user-agent': ua } : {} })
+      expect(isPageCacheRefreshRequest(req)).toBe(false)
+    }
   })
 })
 

@@ -82,4 +82,60 @@ describe('page cache', () => {
     vi.advanceTimersByTime(3_300_000)
     expect(mod.getCachedPage('/posts/49')).toBeUndefined()
   })
+
+  it('serves expired entries from the stale layer within the stale window', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.advanceTimersByTime(100)
+    const mod = await loadFresh()
+    mod.setCachedPage('/posts/1', {
+      status: 200,
+      statusText: 'OK',
+      headers: [],
+      body: 'stale-body',
+    })
+    vi.advanceTimersByTime(301_000)
+    // 新鲜层已过期，stale 层仍可在 1h 窗口内兜底。
+    expect(mod.getCachedPage('/posts/1')).toBeUndefined()
+    expect(mod.getStalePage('/posts/1')?.body).toBe('stale-body')
+  })
+
+  it('expires stale entries after fresh TTL plus the stale window', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.advanceTimersByTime(100)
+    const mod = await loadFresh()
+    mod.setCachedPage('/posts/1', {
+      status: 200,
+      statusText: 'OK',
+      headers: [],
+      body: 'x',
+    }, 3_600_000)
+    // 1h 新鲜 TTL + 1h stale 窗口：中间时刻仍在，超过后彻底消失。
+    vi.advanceTimersByTime(3_600_000 + 1_800_000)
+    expect(mod.getStalePage('/posts/1')).toBeDefined()
+    vi.advanceTimersByTime(1_800_000 + 1_000)
+    expect(mod.getStalePage('/posts/1')).toBeUndefined()
+  })
+
+  it('refreshes the stale entry when a page is re-rendered', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.advanceTimersByTime(100)
+    const mod = await loadFresh()
+    mod.setCachedPage('/posts/1', {
+      status: 200,
+      statusText: 'OK',
+      headers: [],
+      body: 'old',
+    })
+    vi.advanceTimersByTime(301_000)
+    expect(mod.getStalePage('/posts/1')?.body).toBe('old')
+    // 后台重渲染完成后回写，stale 层同步拿到新值。
+    mod.setCachedPage('/posts/1', {
+      status: 200,
+      statusText: 'OK',
+      headers: [],
+      body: 'new',
+    })
+    expect(mod.getCachedPage('/posts/1')?.body).toBe('new')
+    expect(mod.getStalePage('/posts/1')?.body).toBe('new')
+  })
 })

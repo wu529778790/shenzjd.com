@@ -54,15 +54,41 @@ export function getCachedPage(key: string): CachedPageResponse | undefined {
   return getPageCache().get(key)
 }
 
+// --- Stale layer (stale-while-revalidate) ----------------------------------
+// 过期条目不立即丢弃，而是挪进第二个更长 TTL 的 LRU。新鲜缓存 miss 时若
+// stale 层还有旧值，中间件可以先返回旧页（用户零等待），再在后台触发一次
+// 自请求重新渲染。stale 窗口默认 1h，可调 PAGE_CACHE_STALE_TTL（秒）。
+const staleTtlMs = (Number(pageEnv?.PAGE_CACHE_STALE_TTL ?? 3600)) * 1000
+
+let _staleCache: LRUCache<string, CachedPageResponse> | null = null
+
+function getStaleCache(): LRUCache<string, CachedPageResponse> {
+  if (!_staleCache) {
+    _staleCache = new LRUCache<string, CachedPageResponse>({
+      max: pageCacheMax,
+      ttl: staleTtlMs,
+      ttlAutopurge: true,
+      ttlResolution: 0,
+      perf: { now: () => Date.now() },
+      sizeCalculation: v => v.body.length,
+      maxSize: pageCacheMaxBytes,
+    })
+  }
+  return _staleCache
+}
+
+/** 新鲜缓存 miss 时的兜底读取：返回过期但仍在 stale 窗口内的旧页。 */
+export function getStalePage(key: string): CachedPageResponse | undefined {
+  return getStaleCache().get(key)
+}
+
 export function setCachedPage(key: string, value: CachedPageResponse, ttlMs?: number): void {
   // Per-entry TTL override (e.g. posts 1h, pagination 1d); falls back to the
   // cache-wide default when omitted.
-  if (ttlMs && ttlMs > 0) {
-    getPageCache().set(key, value, { ttl: ttlMs })
-  }
-  else {
-    getPageCache().set(key, value)
-  }
+  const effectiveTtlMs = ttlMs && ttlMs > 0 ? ttlMs : pageCacheTtlMs
+  getPageCache().set(key, value, { ttl: effectiveTtlMs })
+  // stale 层比新鲜层多活一个 stale 窗口，作为 SWR 的旧页来源。
+  getStaleCache().set(key, value, { ttl: effectiveTtlMs + staleTtlMs })
 }
 
 export interface PageCacheStats {

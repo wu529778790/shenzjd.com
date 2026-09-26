@@ -2,7 +2,7 @@ import { defineMiddleware } from 'astro:middleware'
 import { LRUCache } from 'lru-cache'
 import { diag } from './lib/diag'
 import { getProcessEnv } from './lib/env'
-import { getCachedPage, setCachedPage } from './lib/page-cache'
+import { getCachedPage, getStalePage, setCachedPage } from './lib/page-cache'
 
 function getEncodedTagSearchQuery(pathname: string): string {
   if (!pathname.startsWith('/search/%23')) {
@@ -122,6 +122,36 @@ export function isPostsBotBurst(request: Request, pathname: string): boolean {
   return hits.length > BOT_BURST_LIMIT
 }
 
+// --- Stale-while-revalidate background refresh ------------------------------
+// 页面缓存过期后，第一个请求拿到旧页立即返回（零等待），同时通过本机回环
+// 自请求触发一次真实渲染来回填缓存。in-flight 去重防止并发 stale 命中造成
+// 渲染风暴；自请求带 PAGE_CACHE_REFRESH 头，让下一次进入中间件时跳过 stale
+// 分支真正渲染（否则它会又拿一次 stale 直接返回，永远刷新不了）。
+const REFRESH_UA = 'page-cache-swr/1.0'
+const REFRESH_PORT = Number(getProcessEnv('PORT') ?? 4321)
+const refreshInflight = new Set<string>()
+
+export function isPageCacheRefreshRequest(request: Request): boolean {
+  return request.headers.get('user-agent') === REFRESH_UA
+}
+
+function schedulePageRefresh(key: string): void {
+  if (refreshInflight.has(key)) {
+    return
+  }
+  refreshInflight.add(key)
+  fetch(`http://127.0.0.1:${REFRESH_PORT}${key}`, {
+    headers: { 'user-agent': REFRESH_UA },
+    signal: AbortSignal.timeout(20_000),
+  })
+    .then((res) => {
+      // 渲染与回填都发生在服务端的中间件里，这里只需把响应排掉释放连接。
+      res.body?.cancel().catch(() => {})
+    })
+    .catch(() => {}) // 回环请求失败（重启中/端口变化）不影响已返回的 stale 响应
+    .finally(() => refreshInflight.delete(key))
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const pathname = context.url.pathname
 
@@ -175,6 +205,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   // Full-page cache: hit = skip fetch + parse + render entirely.
   const pageCacheKey = getPageCacheKey(context.request, context.url)
+  const isRefreshRequest = isPageCacheRefreshRequest(context.request)
   if (pageCacheKey) {
     const cached = getCachedPage(pageCacheKey)
     if (cached) {
@@ -185,6 +216,22 @@ export const onRequest = defineMiddleware(async (context, next) => {
         statusText: cached.statusText,
         headers,
       })
+    }
+    // 新鲜层过期但 stale 层还在：先返回旧页，再后台重渲染回填缓存。
+    // 后台自请求必须跳过 stale 分支——否则它会再拿一次旧页直接返回，
+    // 永远走不到真正的渲染路径。
+    if (!isRefreshRequest) {
+      const stale = getStalePage(pageCacheKey)
+      if (stale) {
+        schedulePageRefresh(pageCacheKey)
+        const headers = new Headers(stale.headers)
+        headers.set('X-Page-Cache', 'STALE')
+        return new Response(stale.body, {
+          status: stale.status,
+          statusText: stale.statusText,
+          headers,
+        })
+      }
     }
   }
 
