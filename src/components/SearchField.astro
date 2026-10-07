@@ -4,7 +4,8 @@ const { id, googleSearchSite } = Astro.props as {
   googleSearchSite?: string
 }
 
-const searchFieldClass = 'flex items-center gap-1'
+// min-w-0:作为表单(w-40)的 flex 子项,输入框固有宽度默认撑破容器把页面撑出横向滚动
+const searchFieldClass = 'flex min-w-0 flex-1 items-center gap-1'
 const searchIconClass = 'h-3.5 w-3.5 shrink-0 text-muted/55'
 const searchInputClass =
   'box-border min-w-0 flex-1 rounded-panel border-0 bg-transparent px-1 py-0.5 text-base leading-6 text-heading outline-none placeholder:text-muted/55 focus-visible:outline-none md:text-xs'
