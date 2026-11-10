@@ -43,46 +43,46 @@ describe('middleware response header helpers', () => {
 
 describe('getPageCacheKey', () => {
   it('caches GET page routes with a stable key', () => {
-    const url = new URL('https://shenzjd.com/posts/49')
+    const url = new URL('https://www.shenzjd.com/posts/49')
     expect(getPageCacheKey(new Request(url), url)).toBe('/posts/49')
   })
 
   it('caches the home page', () => {
-    const url = new URL('https://shenzjd.com/')
+    const url = new URL('https://www.shenzjd.com/')
     expect(getPageCacheKey(new Request(url), url)).toBe('/')
   })
 
   it('caches pagination routes', () => {
-    const url = new URL('https://shenzjd.com/before/5303')
+    const url = new URL('https://www.shenzjd.com/before/5303')
     expect(getPageCacheKey(new Request(url), url)).toBe('/before/5303')
   })
 
   it('includes the q param for search pages', () => {
-    const url = new URL('https://shenzjd.com/search/result?q=%23%E8%A7%86%E9%A2%91')
+    const url = new URL('https://www.shenzjd.com/search/result?q=%23%E8%A7%86%E9%A2%91')
     expect(getPageCacheKey(new Request(url), url)).toBe('/search/result?q=#视频')
   })
 
   it('ignores scanner params like golink on the home page', () => {
-    const url = new URL('https://shenzjd.com/?golink=aHR0cHM6Ly9mb28=')
+    const url = new URL('https://www.shenzjd.com/?golink=aHR0cHM6Ly9mb28=')
     expect(getPageCacheKey(new Request(url), url)).toBe('/')
   })
 
   it('does not cache non-page routes (rss, static proxy, webmanifest)', () => {
     for (const p of ['/rss.xml', '/sitemap.xml', '/static/foo.jpg', '/site.webmanifest', '/rules/prefetch.json']) {
-      const url = new URL(`https://shenzjd.com${p}`)
+      const url = new URL(`https://www.shenzjd.com${p}`)
       expect(getPageCacheKey(new Request(url), url)).toBeNull()
     }
   })
 
   it('does not cache non-GET requests', () => {
-    const url = new URL('https://shenzjd.com/')
+    const url = new URL('https://www.shenzjd.com/')
     expect(getPageCacheKey(new Request(url, { method: 'POST' }), url)).toBeNull()
   })
 })
 
 describe('isPageCacheRefreshRequest', () => {
   it('recognizes the internal SWR refresher by its user agent', () => {
-    const req = new Request('https://shenzjd.com/posts/49', {
+    const req = new Request('https://www.shenzjd.com/posts/49', {
       headers: { 'user-agent': 'page-cache-swr/1.0' },
     })
     expect(isPageCacheRefreshRequest(req)).toBe(true)
@@ -90,7 +90,7 @@ describe('isPageCacheRefreshRequest', () => {
 
   it('treats normal visitors and bots as non-refresh requests', () => {
     for (const ua of ['Mozilla/5.0 (Macintosh)', 'facebookexternalhit/1.1', '']) {
-      const req = new Request('https://shenzjd.com/', { headers: ua ? { 'user-agent': ua } : {} })
+      const req = new Request('https://www.shenzjd.com/', { headers: ua ? { 'user-agent': ua } : {} })
       expect(isPageCacheRefreshRequest(req)).toBe(false)
     }
   })
@@ -98,21 +98,21 @@ describe('isPageCacheRefreshRequest', () => {
 
 describe('isPostsBotBurst', () => {
   it('allows real user agents on /posts/', () => {
-    const req = new Request('https://shenzjd.com/posts/49', {
+    const req = new Request('https://www.shenzjd.com/posts/49', {
       headers: { 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' },
     })
     expect(isPostsBotBurst(req, '/posts/49')).toBe(false)
   })
 
   it('ignores non-post paths', () => {
-    const req = new Request('https://shenzjd.com/', {
+    const req = new Request('https://www.shenzjd.com/', {
       headers: { 'user-agent': 'facebookexternalhit/1.1' },
     })
     expect(isPostsBotBurst(req, '/')).toBe(false)
   })
 
   it('throttles a bot that hammers /posts/ beyond the window cap', () => {
-    const req = new Request('https://shenzjd.com/posts/49', {
+    const req = new Request('https://www.shenzjd.com/posts/49', {
       headers: { 'user-agent': 'facebookexternalhit/1.1' },
     })
     const limit = 41

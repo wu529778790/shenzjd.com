@@ -4,4 +4,4 @@ Disallow: /after/
 Disallow: /search/
 Disallow: /static/
 
-Sitemap: https://shenzjd.com/sitemap.xml
+Sitemap: https://www.shenzjd.com/sitemap.xml

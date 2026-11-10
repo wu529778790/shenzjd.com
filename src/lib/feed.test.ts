@@ -71,19 +71,19 @@ describe('json feed builder', () => {
     const feed = buildJsonFeed({
       channel,
       posts,
-      siteUrl: new URL('https://shenzjd.com/'),
+      siteUrl: new URL('https://www.shenzjd.com/'),
       tag: null,
       title: 'Feed title',
     })
 
     expect(feed.items[0]?.content_html).toBe(
-      '<img src="https://shenzjd.com/static/https://cdn-telegram.org/a.webp" /><video poster="https://shenzjd.com/static/p.webp"></video>',
+      '<img src="https://www.shenzjd.com/static/https://cdn-telegram.org/a.webp" /><video poster="https://www.shenzjd.com/static/p.webp"></video>',
     )
   })
 
   it('leaves already-absolute and non-media URLs untouched', () => {
     const html = '<a href="https://example.com/x">link</a><img src="/images/a.png" />'
-    expect(absolutizeMediaUrls(html, new URL('https://shenzjd.com/'))).toBe(
+    expect(absolutizeMediaUrls(html, new URL('https://www.shenzjd.com/'))).toBe(
       '<a href="https://example.com/x">link</a><img src="/images/a.png" />',
     )
   })
