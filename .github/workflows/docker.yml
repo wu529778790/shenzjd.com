@@ -94,8 +94,21 @@ jobs:
               echo "FATAL: 找不到站点目录（1Panel 站点根可能又变了），拒绝部署，旧容器未动" >&2
               exit 1
             fi
-            ENV_FILE="$SITE_DIR/index/.env"
+            # .env 存放约定（2026-11-11 起）：一律放 data/，不放 index/ ——
+            # index/ 是 OpenResty 的对外站点根，配置文件放那里属于安全隐患。
+            # 一次性迁移：老位置 index/.env 还在就挪到 data/.env，并在同一次
+            # 把 SITE_URL 从裸域改为 www（裸域被全站 301 到 www，canonical
+            # 指向重定向会让 Google 拒绝索引，GSC sitemap 已发现 0 条）。
+            # 迁移只会发生一次：此后 index/.env 不存在，块内不再执行。
             DATA_DIR="$SITE_DIR/data"
+            OLD_ENV="$SITE_DIR/index/.env"
+            ENV_FILE="$SITE_DIR/data/.env"
+            if [ -f "$OLD_ENV" ]; then
+              sudo mv "$OLD_ENV" "$ENV_FILE"
+              sudo sed -i 's#^SITE_URL=.*#SITE_URL=https://www.shenzjd.com/#' "$ENV_FILE"
+              sudo chmod 600 "$ENV_FILE"
+              echo "已迁移 .env：index/ → data/，SITE_URL 已改为 www"
+            fi
             if [ ! -f "$ENV_FILE" ]; then
               echo "FATAL: $ENV_FILE 不存在，拒绝以空配置启动（会导致站点 500）" >&2
               exit 1
