@@ -136,3 +136,15 @@ jobs:
               -p 6669:4321 \
               "$IMAGE"
             sudo docker image prune -f
+            # 部署后自检：环境变量是否如预期注入、页面实际输出什么。
+            # （曾出现「迁移日志正常但站点仍输出旧域名」的情况，自检可以直接定位）
+            sleep 3
+            echo "=== 部署后自检 ==="
+            echo "-- $ENV_FILE 中含 SITE_URL 的行（含行号，警惕重复/带空格的行）:"
+            sudo grep -n "SITE_URL" "$ENV_FILE" || echo "  (文件里没有 SITE_URL 行)"
+            echo "-- index/ 下是否还残留 .env:"
+            ls -la "$SITE_DIR/index/" | grep -F ".env" || echo "  (index/ 已无 .env，迁移干净)"
+            echo "-- 容器实际环境变量:"
+            sudo docker exec "$CONTAINER" env | grep -E "^(SITE_URL|NODE_ENV|DOCKER)" || echo "  (容器里没有 SITE_URL)"
+            echo "-- 容器端口直出的 canonical（绕过 OpenResty/CDN）:"
+            curl -s --max-time 10 http://127.0.0.1:6669/ | grep -oE '<link rel="canonical"[^>]*>' | head -1 || echo "  (curl 本地失败)"
