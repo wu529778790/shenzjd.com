@@ -66,6 +66,15 @@ const skipLinkText = 'Skip to main content'
       defer
       src="https://analytics.shenzjd.com/script.js"
       data-website-id="3e0d9034-3008-45c3-8f40-73be68eb0f72"></script>
+    <script is:inline>
+      ;(function () {
+        window._hmt = window._hmt || []
+        const hm = document.createElement('script')
+        hm.src = 'https://hm.baidu.com/hm.js?031a9fd764d11d6879025772c348b2e1'
+        const s = document.getElementsByTagName('script')[0]
+        s.parentNode.insertBefore(hm, s)
+      })()
+    </script>
     <Fragment set:html={HEADER_INJECT} />
   </head>
 
