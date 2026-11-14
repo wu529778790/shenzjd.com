@@ -9,6 +9,36 @@ import { normalizeUrlAttributes } from './url'
 
 const TITLE_PREVIEW_REGEX = /^.*?(?=[。\n]|http\S)/g
 
+// 机器人推广深链特征：t.me/tg:// 链接带 ?start= 归因参数（推广网络靠它结算拉新）。
+// 见 hasPromoLink。
+function isTelegramBotLink(href: string | undefined): boolean {
+  if (!href) {
+    return false
+  }
+  return /(?:^|\/\/)(?:t\.me|telegram\.me)\//i.test(href) || /^tg:\/\//i.test(href)
+}
+
+function isBotReferralHref(href: string | undefined): boolean {
+  return isTelegramBotLink(href) && /[?&]start=/.test(href ?? '')
+}
+
+function hasPromoLink($: CheerioAPI, message: MessageSelection): boolean {
+  // 正文、@提及、链接预览里的推广深链。
+  for (const node of message.find('a[href]').toArray()) {
+    if (isBotReferralHref($(node).attr('href'))) {
+      return true
+    }
+  }
+  // 内联键盘按钮：正常频道帖没有键盘，指向 t.me 的键盘按钮是推广机器人标配
+  // （单帖 embed 页 Telegram 会剥离键盘，列表页始终可见）。
+  for (const node of message.find('.tgme_widget_message_inline_button').toArray()) {
+    if (isTelegramBotLink($(node).attr('href'))) {
+      return true
+    }
+  }
+  return false
+}
+
 function isNonEmptyString(value: string | null | undefined): value is string {
   return Boolean(value)
 }
@@ -134,5 +164,6 @@ export async function extractPost($: CheerioAPI, item: AnyNode | null, options: 
     text: contentText,
     content: contentHtml,
     reactions: reactionsEnabled ? getReactions($, message, staticProxy) : [],
+    hasPromoLink: hasPromoLink($, message),
   }
 }

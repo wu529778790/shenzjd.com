@@ -6,20 +6,30 @@ import { extractPost } from './parse'
 import { loadChannelDocument } from './request'
 import { getProxiedUrl, normalizeUrlAttribute } from './url'
 
-// 频道互推 / 相似推荐等广告推广内容，不爬取、不展示。
-// 用"标签 + 文本"双特征判断，避免只依赖标签（标签可能不完整）。
+// 频道互推 / 机器人推广等广告内容，不爬取、不展示。三层特征：
+// 1. 结构层（parse.ts 探测，hasPromoLink）：t.me/tg:// 带 ?start= 归因参数的机器人深链、
+//    指向 t.me 的内联键盘按钮——推广机器人靠 start 参数结算拉新，正常帖没有这些结构。
+// 2. 标签层：互推板自带 #频道互推 / #相似推荐 标签。
+// 3. 文本层兜底：互推板话术 + 已知推广活动名。单帖 embed 页 Telegram 会剥离内联键盘，
+//    文本兜底保证 /posts/N 直链也不漏（关键字选专名/话术，避免误伤正常内容）。
 const PROMOTION_TAGS = ['频道互推', '相似推荐']
-const PROMOTION_TEXT_PATTERNS = ['#频道互推', '#相似推荐', '互推入口']
+const PROMOTION_TEXT_PATTERNS = ['#频道互推', '#相似推荐', '互推入口', '点击下方按钮', '毒舌加速器', '@xmsubbot', 'txwl']
+// t.me/xxx?start=…（telegram.me 同理）——文本里出现机器人归因深链即推广。
+const PROMOTION_TEXT_URL_PATTERN = /(?:t\.me|telegram\.me)\/\S+\?start=/i
 
 export function isPromotionPost(post: Post | null | undefined): boolean {
   if (!post) {
     return false
+  }
+  if (post.hasPromoLink) {
+    return true
   }
   if (post.tags.some((tag) => PROMOTION_TAGS.includes(tag))) {
     return true
   }
   const text = post.text ?? ''
   return PROMOTION_TEXT_PATTERNS.some((pattern) => text.includes(pattern))
+    || PROMOTION_TEXT_URL_PATTERN.test(text)
 }
 
 export function isRenderablePost(post: Post | null | undefined): post is Post {

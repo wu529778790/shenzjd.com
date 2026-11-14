@@ -18,6 +18,11 @@ export interface Post {
   reactions: Reaction[]
   /** 外部来源原链（如 X 推文），渲染时时间链接指向它而非本地 /posts/N */
   sourceUrl?: string
+  /**
+   * 帖子携带机器人推广链接：t.me/tg:// 深链带 ?start= 归因参数，或指向 t.me 的
+   * 内联键盘按钮（正常频道帖没有键盘）。解析时探测，由 isPromotionPost 过滤。
+   */
+  hasPromoLink?: boolean
 }
 
 export interface ChannelInfo {
