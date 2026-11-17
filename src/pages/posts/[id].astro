@@ -1,6 +1,7 @@
 ---
 import ChannelAvatar from '../../components/ChannelAvatar.astro'
 import List from '../../components/list.astro'
+import { buildPostSeo } from '../../lib/post-seo'
 import { siteTitleClass } from '../../lib/style-classes'
 import { getChannelInfo, getChannelPost } from '../../lib/telegram'
 
@@ -29,6 +30,10 @@ const channel = {
   posts: [post],
 }
 
+// 文章页 SEO：标题复用频道原文首行（可被覆盖表改写），摘要由正文清洗后生成，
+// 避免把整条消息原文（含裸外链、话题标签、换行）直接塞进 meta description。
+const postSeo = buildPostSeo(post)
+
 const breadcrumbClass = 'mb-5 py-2.5 font-semibold'
 const breadcrumbListClass = 'm-0 flex list-none items-center p-0'
 const breadcrumbLinkClass = 'inline-flex items-center no-underline'
@@ -41,8 +46,8 @@ const breadcrumbTitleClass = `ml-2.5 flex-1 text-sm text-heading ${siteTitleClas
   before={false}
   after={false}
   isItem={true}
-  pageHeading={post.title || channel.title}
-  pageSeo={post}
+  pageHeading={postSeo.title || channel.title}
+  pageSeo={postSeo}
 >
   <nav slot="header" class={breadcrumbClass} aria-label="Breadcrumb">
     <ol class={breadcrumbListClass}>
