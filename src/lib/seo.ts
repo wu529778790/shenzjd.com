@@ -13,6 +13,36 @@ const ARTICLE_PATH_REGEX = /\/posts\/[^/]+$/
  */
 const FALLBACK_SITE_DESCRIPTION = '每日整理 GitHub 开源项目、实用软件工具与热门网络资源，附官网地址与使用说明。'
 
+/**
+ * 首页标题在未配置 `HOME_TITLE` 时追加的定位后缀。
+ * 频道名本身只是品牌（「某某频道」），补一句定位才能在 SERP 里说明站点内容。
+ */
+const HOME_TITLE_SUFFIX = ' - 软件工具与开源项目合集'
+
+/**
+ * 频道名末尾的认证徽标/装饰符号（Telegram 的 🅥 是 So 类的 enclosed 字母，
+ * 不在 Extended_Pictographic 里）在 SERP 里常被渲染成方块，拼接标题前剥掉。
+ */
+const TRAILING_EMOJI_PATTERN = /[\p{S}\uFE0F\u200D\s]+$/u
+
+export function cleanSiteTitle(title: string): string {
+  return title.replace(TRAILING_EMOJI_PATTERN, '').trim()
+}
+
+/**
+ * 全站兜底 description：页面级摘要 > SITE_DESCRIPTION > 频道描述 > 内置定位文案。
+ * 首页在没有频道描述时会用它渲染一段可见简介，避免正文只剩帖子标题。
+ */
+export function getSiteDescription(
+  env: Record<string, string | undefined>,
+  Astro: AstroEnvContext,
+  channel?: ChannelInfo,
+): string {
+  return getEnv(env, Astro, 'SITE_DESCRIPTION')?.trim()
+    || channel?.description?.trim()
+    || FALLBACK_SITE_DESCRIPTION
+}
+
 export function normalizePathname(pathname: string): string {
   return pathname.replace(TRAILING_SLASH_REGEX, '') || '/'
 }
@@ -49,15 +79,16 @@ export function getPageSeo(options: {
   const { pathname } = new URL(canonical)
   const currentPathname = normalizePathname(pathname)
   const isSiteRoot = currentPathname === siteRootPathname
-  // 首页标题默认只有频道名（如「某某频道🅥」），SERP 里看不出站点在做什么；
-  // HOME_TITLE 单独覆盖首页标题，不会污染文章页的「标题 | 站点名」拼接。
-  const pageTitle = seo?.title?.trim()
-    || (isSiteRoot ? getEnv(import.meta.env, Astro, 'HOME_TITLE')?.trim() : undefined)
-  const siteTitle = channel?.title ?? ''
-  const seoDescription = seo?.text?.trim()
-    || getEnv(import.meta.env, Astro, 'SITE_DESCRIPTION')?.trim()
-    || channel?.description?.trim()
-    || FALLBACK_SITE_DESCRIPTION
+  const rawSiteTitle = channel?.title ?? ''
+  // 站点名用于所有非首页的「标题 | 站点名」拼接，顺带剥掉末尾的认证徽标符号。
+  const siteTitle = cleanSiteTitle(rawSiteTitle) || rawSiteTitle
+  // 首页标题默认只有频道名（如「某某频道🅥」），SERP 里看不出站点在做什么。
+  // HOME_TITLE 优先；没配时用「频道名 - 定位后缀」兜底，保证发版即生效。
+  // 该覆盖只作用于首页，不会污染文章页的「标题 | 站点名」拼接。
+  const homeTitle = getEnv(import.meta.env, Astro, 'HOME_TITLE')?.trim()
+    || (siteTitle ? `${siteTitle}${HOME_TITLE_SUFFIX}` : undefined)
+  const pageTitle = seo?.title?.trim() || (isSiteRoot ? homeTitle : undefined)
+  const seoDescription = seo?.text?.trim() || getSiteDescription(import.meta.env, Astro, channel)
   const shareImage = channel?.avatar
     ? `https://wsrv.nl/?w=1200&h=630&fit=cover&url=ssl:${channel.avatar.replace(URL_PROTOCOL_REGEX, '')}`
     : new URL('favicon.ico', absoluteSiteUrl).toString()

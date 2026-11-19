@@ -1,8 +1,11 @@
 ---
+import Header from '../components/header.astro'
 import List from '../components/list.astro'
 import { getChannelInfo } from '../lib/telegram'
 
 const channel = await getChannelInfo(Astro)
 ---
 
-<List channel={channel} after={false} pageHeading={channel.title} />
+<List channel={channel} after={false} pageHeading={channel.title}>
+  <Header slot="header" channel={channel} showIntro />
+</List>

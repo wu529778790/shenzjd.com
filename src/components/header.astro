@@ -3,10 +3,13 @@ import { Icon } from 'astro-icon/components'
 import SearchForm from './SearchForm.astro'
 import { getBooleanEnv, getEnv, getPodcastUrl } from '../lib/env'
 import { sanitizeContentHtml } from '../lib/sanitize'
+import { getSiteDescription } from '../lib/seo'
 import { buildSocialLinks } from '../lib/social'
 
 const { SITE_URL, RSS_URL } = Astro.locals
-const { channel } = Astro.props
+// showIntro：频道没填描述时，用站点定位文案渲染一段可见简介。
+// 首页正文原本只有帖子标题（无任何主题文本），搜索引擎只能靠标题猜测站点主题。
+const { channel, showIntro = false } = Astro.props
 
 const PODCAST = getPodcastUrl(import.meta.env, Astro)
 const TWITTER = getEnv(import.meta.env, Astro, 'TWITTER')
@@ -21,6 +24,8 @@ const searchAction = GOOGLE_SEARCH_SITE ? 'https://www.google.com/search' : `${S
 
 const hideDescription = getBooleanEnv(import.meta.env, Astro, 'HIDE_DESCRIPTION')
 const descriptionHtml = channel?.descriptionHTML ? sanitizeContentHtml(channel.descriptionHTML) : ''
+const hasDescription = !hideDescription && descriptionHtml.length > 0
+const siteDescription = getSiteDescription(import.meta.env, Astro, channel)
 
 const headerMainClass = 'mb-1 flex items-center justify-end gap-1 p-0'
 const iconNavClass = 'flex items-center gap-0.5'
@@ -67,8 +72,5 @@ const rssLinks = socialLinks.filter((item) => item.type === 'application/rss+xml
   </div>
 </header>
 
-{
-  !hideDescription && descriptionHtml.length > 0 && (
-    <div class:list={[introClass, 'content']} set:html={descriptionHtml} />
-  )
-}
+{hasDescription && <div class:list={[introClass, 'content']} set:html={descriptionHtml} />}
+{showIntro && !hasDescription && <p class={introClass}>{siteDescription}</p>}

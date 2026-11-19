@@ -25,13 +25,22 @@ function seoFor(url: string, seo?: { title?: string, text?: string }) {
 }
 
 describe('site level SEO overrides', () => {
-  it('uses HOME_TITLE for the root page without appending the site title again', () => {
-    process.env.HOME_TITLE = 'AI情报局 - 软件工具与开源项目合集'
-
+  it('falls back to a positioned home title when HOME_TITLE is absent', () => {
     const { seoParams, hasCustomTitle } = seoFor('https://www.shenzjd.com/')
 
+    // 频道名末尾的 Telegram 认证徽标 🅥 会被剥掉
     expect(seoParams.title).toBe('AI情报局 - 软件工具与开源项目合集')
     expect(hasCustomTitle).toBe(false)
+  })
+
+  it('lets HOME_TITLE override the composed home title', () => {
+    process.env.HOME_TITLE = '自定义首页标题'
+
+    expect(seoFor('https://www.shenzjd.com/').seoParams.title).toBe('自定义首页标题')
+  })
+
+  it('strips the verified badge from the site title used in post titles', () => {
+    expect(seoFor('https://www.shenzjd.com/').siteTitle).toBe('AI情报局')
   })
 
   it('does not leak HOME_TITLE into article pages', () => {
