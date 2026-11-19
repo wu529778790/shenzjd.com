@@ -1,6 +1,7 @@
 ---
 import ChannelAvatar from '../../components/ChannelAvatar.astro'
 import List from '../../components/list.astro'
+import PostContextLinks from '../../components/PostContextLinks.astro'
 import { buildPostSeo } from '../../lib/post-seo'
 import { siteTitleClass } from '../../lib/style-classes'
 import { getChannelInfo, getChannelPost } from '../../lib/telegram'
@@ -66,4 +67,5 @@ const breadcrumbTitleClass = `ml-2.5 flex-1 text-sm text-heading ${siteTitleClas
       </li>
     </ol>
   </nav>
+  <PostContextLinks slot="after-posts" post={post} />
 </List>

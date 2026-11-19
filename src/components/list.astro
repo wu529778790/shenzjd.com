@@ -37,6 +37,8 @@ const paginationNewerClass = 'ml-auto'
     }
   </ol>
 
+  <slot name="after-posts" />
+
   {
     hasOlderPosts || hasNewerPosts ? (
       <nav class={paginationClass} aria-label="Pagination">

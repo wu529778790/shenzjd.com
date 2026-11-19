@@ -1,0 +1,48 @@
+---
+import type { Post } from '../types'
+import { buildPostContext } from '../lib/post-context'
+import { tagChipLinkClass } from '../lib/style-classes'
+
+interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+const context = buildPostContext(post)
+
+const boxClass = 'mt-8 border-t border-line pt-4'
+const titleClass = 'm-0 mb-2.5 text-[13px] font-medium tracking-wide text-muted'
+const actionsClass = 'flex flex-wrap items-center gap-2'
+const primaryClass =
+  'inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs text-paper no-underline transition-opacity duration-150 hover:no-underline hover:opacity-85'
+const secondaryClass =
+  'inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs text-muted no-underline transition-colors duration-150 hover:border-accent hover:text-accent hover:no-underline'
+const tagRowClass = 'mt-2.5 flex flex-wrap items-center gap-2 text-xs'
+const tagLabelClass = 'text-footer'
+---
+
+{
+  context && (
+    <section class={boxClass} aria-label="相关内容">
+      <p class={titleClass}>继续找「{context.keyword}」</p>
+      <div class={actionsClass}>
+        <a href={context.panhubUrl} class={primaryClass} rel="noopener">
+          <span aria-hidden="true">🔍</span>网盘搜索同名资源
+        </a>
+        <a href={context.siteSearchUrl} class={secondaryClass}>
+          <span aria-hidden="true">📄</span>本站还有哪些相关帖子
+        </a>
+      </div>
+      {context.tagLinks.length > 0 && (
+        <div class={tagRowClass}>
+          <span class={tagLabelClass}>相关标签</span>
+          {context.tagLinks.map((tag) => (
+            <a href={tag.href} class={tagChipLinkClass} title={tag.label}>
+              {tag.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
