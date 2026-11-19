@@ -4,7 +4,9 @@ import 'wx-auth-sdk/dist/style.css'
 import { SEO } from 'astro-seo'
 import BackToTop from '../components/BackToTop.astro'
 import SiteFooter from '../components/SiteFooter.astro'
+import SiteNav from '../components/SiteNav.astro'
 import { getEnv } from '../lib/env'
+import { parseNavItems } from '../lib/nav'
 import { getPageSeo } from '../lib/seo'
 
 const { SITE_URL, RSS_URL, RSS_PREFIX } = Astro.locals
@@ -22,6 +24,10 @@ const { hasCustomTitle, seoParams, siteTitle } = getPageSeo({
 
 const HEADER_INJECT = getEnv(import.meta.env, Astro, 'HEADER_INJECT')
 const FOOTER_INJECT = getEnv(import.meta.env, Astro, 'FOOTER_INJECT')
+// 站群导航：顶部导航条由 site-navbar 这个 web component 在浏览器里注入，
+// 服务端 HTML 里没有任何指向子站的链接（爬虫与禁用 JS 的访客都拿不到），
+// 这里额外渲染一份服务端的导航块，既是内链也是无 JS 兜底。
+const navItems = parseNavItems(getEnv(import.meta.env, Astro, 'NAVS'))
 const layoutShellClass = 'mx-5'
 const layoutGridClass = 'mx-auto flex w-full max-w-2xl flex-col'
 const mainPanelClass = 'w-full min-w-0 pb-5 pt-1 md:pt-2'
@@ -87,6 +93,7 @@ const skipLinkText = 'Skip to main content'
         <main id="main-content" class={mainPanelClass}>
           <slot />
           <div class={footerWrapClass}>
+            <SiteNav items={navItems} />
             <SiteFooter />
           </div>
         </main>
@@ -95,7 +102,10 @@ const skipLinkText = 'Skip to main content'
     </div>
     <Fragment set:html={FOOTER_INJECT} />
 
-    <script src="https://unpkg.com/@wu529778790/floating-qr@latest/dist/floating-qr.wc.js"></script>
+    {/* 组件脚本自托管并锁定版本：原来指向 unpkg @latest，国内经常拉不到，
+        且作者一发新版全站同时生效、无法回滚。升级时改这里的文件名即可。
+        必须 is:inline，否则 Astro 会把它当项目内模块去打包（public 目录里的文件解析不到，标签会被丢掉）。 */}
+    <script is:inline src="/vendor/floating-qr-0.1.16.js"></script>
     <script>
       import { WxAuth } from 'wx-auth-sdk'
 
@@ -111,6 +121,6 @@ const skipLinkText = 'Skip to main content'
         WxAuth.requireAuth()
       }
     </script>
-    <script defer src="https://unpkg.com/@wu529778790/site-navbar@latest/dist/site-navbar.wc.js"></script>
+    <script is:inline defer src="/vendor/site-navbar-0.1.25.js"></script>
   </body>
 </html>

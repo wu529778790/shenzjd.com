@@ -1,0 +1,42 @@
+---
+import type { NavItem } from '../types'
+import { withUtm } from '../lib/nav'
+
+interface Props {
+  items: NavItem[]
+  title?: string
+  campaign?: string
+}
+
+const { items, title = '站点导航', campaign = 'footer-nav' } = Astro.props
+
+// SITE_URL 在本地开发时可能只是 "/"（没有注入绝对地址），必须相对当前请求解析，
+// 否则 new URL('/') 直接抛 Invalid URL。
+let selfHost = Astro.url.hostname
+try {
+  selfHost = new URL(Astro.locals.SITE_URL ?? '/', Astro.url.origin).hostname || selfHost
+} catch {
+  // 解析失败就退回请求域名，仅影响「是否跳过给自己加 UTM」这一步
+}
+
+const navClass = 'mt-8 border-t border-line pt-3'
+const titleClass = 'mb-2 text-[11px] font-medium tracking-widest text-footer'
+const listClass = 'm-0 flex list-none flex-wrap gap-x-5 gap-y-1.5 p-0'
+const linkClass =
+  'text-[12px] leading-5 text-muted no-underline transition-colors duration-150 hover:text-heading hover:no-underline'
+---
+
+<nav class={navClass} aria-label={title}>
+  <h2 class={titleClass}>{title}</h2>
+  <ul class={listClass}>
+    {
+      items.map((item) => (
+        <li>
+          <a href={withUtm(item.href, campaign, { selfHost })} class={linkClass}>
+            {item.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
