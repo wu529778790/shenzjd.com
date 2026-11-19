@@ -14,6 +14,7 @@ const tagCloudClass =
   'mt-4 mb-0 columns-1 gap-5 list-none pl-0 leading-normal md:columns-2 md:gap-10 md:[column-rule:1px_solid_var(--color-line)]'
 const tagCloudItemClass = 'mb-2 block break-inside-avoid'
 const tagLinkClass = tagChipLinkClass
+const countClass = 'ml-1 text-[10px] tabular-nums opacity-60'
 ---
 
 <section aria-labelledby={titleId}>
@@ -31,6 +32,7 @@ const tagLinkClass = tagChipLinkClass
             rel={item.external ? 'noopener noreferrer' : undefined}
           >
             {item.label}
+            {typeof item.count === 'number' && <span class={countClass}>{item.count}</span>}
           </a>
         </li>
       ))

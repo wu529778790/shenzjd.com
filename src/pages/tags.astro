@@ -4,17 +4,40 @@ import Header from '../components/header.astro'
 import TagCloudSection from '../components/TagCloudSection.astro'
 import { getChannelInfo } from '../lib/telegram'
 import { getEnv, parseCsvList } from '../lib/env'
+import { collectTags } from '../lib/tags'
 
 const channel = await getChannelInfo(Astro)
-const pageSeo = { title: 'Tags' }
-const items = parseCsvList(getEnv(import.meta.env, Astro, 'TAGS')).map((tag) => ({
+const posts = channel.posts ?? []
+const configured = parseCsvList(getEnv(import.meta.env, Astro, 'TAGS'))
+const tags = collectTags(posts, configured)
+
+const items = tags.map(({ tag, count }) => ({
   href: `/search/result?q=${encodeURIComponent(`#${tag}`)}`,
   label: tag,
+  title: count > 0 ? `${tag} · ${count} 篇` : tag,
+  count,
 }))
+
+// 标签页是站内导航，本身没有独立内容；它的下级（搜索结果）也是 noindex，
+// 对外只剩一个薄页面。所以整页 noindex，避免给搜索引擎递一个空壳收录目标。
+const pageSeo = { title: 'Tags', noindex: true }
+
+const introClass = 'mt-3 mb-6 px-2.5 text-sm leading-6 text-muted'
 ---
 
 <Layout channel={channel} seo={pageSeo}>
   <Header channel={channel} />
 
-  <TagCloudSection id="tags" title="Tags" items={items} />
+  {
+    items.length > 0 ? (
+      <>
+        <p class={introClass}>
+          标签按最近更新的帖子自动汇总，数字是该标签目前的帖子数；点进去可看带同一标签的全部内容。
+        </p>
+        <TagCloudSection id="tags" title="Tags" items={items} />
+      </>
+    ) : (
+      <p class={introClass}>当前还没有标签，等频道里出现带 # 话题的帖子后会自动汇总到这里。</p>
+    )
+  }
 </Layout>

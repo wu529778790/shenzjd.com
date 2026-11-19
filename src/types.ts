@@ -68,4 +68,6 @@ export interface TagCloudItem {
   label: string
   title?: string
   external?: boolean
+  /** 该标签下的帖子数，仅用于展示，便于判断哪些标签是活跃的 */
+  count?: number
 }
